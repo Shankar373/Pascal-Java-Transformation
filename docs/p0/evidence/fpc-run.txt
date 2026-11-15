@@ -1,0 +1,24 @@
+RUN|applications\console_multiunit\miniapp.dpr|exit=0|ms=210|out=total=55
+SKIP|applications\console_multiunit\uMath.pas|unit (no executable produced; nothing to run)
+SKIP|applications\console_multiunit\uReport.pas|unit (no executable produced; nothing to run)
+SKIP|applications\lazarus_app\lazarusapp.lpr|did not compile: lazarusapp.lpr(6,3) Fatal: Can't find unit Forms used by LazarusApp
+SKIP|applications\lazarus_app\uMainForm.pas|did not compile: uMainForm.pas(8,22) Fatal: Can't find unit Forms used by uMainForm
+RUN|applications\project_files\delphi_style_app.dpr|exit=0|ms=203|out=calc total=10.99
+SKIP|dbaccess\ado_style_connection.pas|header: compile-only, no ADO provider registered; runtime path not exercised
+SKIP|dbaccess\bde_style_query.pas|did not compile: bde_style_query.pas(6,7) Fatal: Can't find unit DBTables used by BdeStyleQuery
+RUN|dbaccess\embedded_sql.pas|exit=0|ms=225|out=sql select len=160
+SKIP|dialects\delphi\DelphiClasses.pas|unit (no executable produced; nothing to run)
+RUN|dialects\fpc\mode_objfpc.pas|exit=0|ms=226|out=objfpc counter=42
+RUN|dialects\iso7185\hello_iso.pas|exit=0|ms=199|out=iso7185 total=42
+RUN|dialects\turbo\tp_point.pas|exit=0|ms=179|out=tp point=3,4
+RUN|directives\directive_ifdef.pas|exit=0|ms=209|out=directives=base+A+B
+RUN|directives\directive_include.pas|exit=0|ms=192|out=include magic=42
+RUN|directives\directive_range_checks.pas|exit=0|ms=204|out=checks small=32767 acc=0
+RUN|language\currency_math.pas|exit=0|ms=210|out=price=19.99 tax=1.45 total=21.44
+RUN|language\exception_flow.pas|exit=2|ms=194|out=caught=negative
+RUN|language\file_io.pas|exit=0|ms=182|out=read=line one
+SKIP|language\NestedRoutines.pas|unit (no executable produced; nothing to run)
+RUN|language\pointer_alloc.pas|exit=0|ms=174|out=1 2 3 4 
+RUN|language\records_sets.pas|exit=0|ms=199|out=grid tag11=0 allowed=TRUE
+RUN|language\string_kinds.pas|exit=0|ms=179|out=strlen=11 first=h shortlen=3
+RUN|language\variant_record.pas|exit=0|ms=222|out=variant int=123456

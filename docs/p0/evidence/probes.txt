@@ -1,0 +1,22 @@
+HOST|C:\FPC\3.2.2\bin\i386-Win32\fpc.exe|version=3.2.2
+P01|Result identifier visible in -Mfpc?|expect=FAIL|got=FAIL|OK|probe_result.pas(4,3) Error: Identifier not found "Result"
+P02|Result identifier visible in -Mtp?|expect=FAIL|got=FAIL|OK|probe_result.pas(4,3) Error: Identifier not found "Result"
+P03|Result identifier visible in -Mobjfpc?|expect=PASS|got=PASS|OK|8 lines compiled, 0.1 sec, 28768 bytes code, 1316 bytes data
+P04|Result identifier visible in -Mdelphi?|expect=PASS|got=PASS|OK|8 lines compiled, 0.1 sec, 28768 bytes code, 1316 bytes data
+P05|function-name assignment works in -Mfpc (control for P01)?|expect=PASS|got=PASS|OK|8 lines compiled, 0.1 sec, 28672 bytes code, 1316 bytes data
+P06|bare AssignFile/CloseFile visible in -Mfpc?|expect=FAIL|got=FAIL|OK|probe_assign.pas(5,3) Error: Identifier not found "AssignFile"
+P07|bare AssignFile/CloseFile visible in -Mobjfpc?|expect=PASS|got=PASS|OK|8 lines compiled, 0.1 sec, 28336 bytes code, 1316 bytes data
+P08|bare AssignFile/CloseFile visible in -Mdelphi?|expect=PASS|got=PASS|OK|8 lines compiled, 0.1 sec, 28336 bytes code, 1316 bytes data
+P09|uses ObjPas restores AssignFile in -Mfpc?|expect=PASS|got=PASS|OK|10 lines compiled, 0.1 sec, 28336 bytes code, 1316 bytes data ; probe_assign_objpas.pas(3,9) Warning: Don't load OBJPAS unit manually, use {$mode objfpc} or {$mode delphi} instead
+P10|System.AssignFile resolves in -Mfpc (System lacks it)?|expect=FAIL|got=FAIL|OK|probe_sysassign.pas(5,10) Error: Identifier not found "AssignFile"
+P11|ObjPas.AssignFile resolves in -Mobjfpc without a uses clause?|expect=PASS|got=PASS|OK|6 lines compiled, 0.1 sec, 28208 bytes code, 1316 bytes data
+P12|unit name equal to file name compiles (-Mdelphi)?|expect=PASS|got=PASS|OK|4 lines compiled, 0.0 sec
+P13|unit name different from file name is rejected?|expect=FAIL|got=FAIL|OK|ProbeUnit.pas(1,15) Error: Illegal unit name: OtherName (expecting PROGRAM)
+P14|program name different from file name is accepted?|expect=PASS|got=PASS|OK|4 lines compiled, 0.1 sec, 28224 bytes code, 1316 bytes data
+P15|string[31] variant-record field compiles in -Mfpc?|expect=PASS|got=PASS|OK|15 lines compiled, 0.1 sec, 28256 bytes code, 1316 bytes data
+P16|directive nested inside a brace comment in -Mfpc?|expect=PASS|got=PASS|OK|5 lines compiled, 0.1 sec, 28224 bytes code, 1316 bytes data ; probe_comment.pas(2,9) Warning: Comment level 2 found
+P17|directive nested inside a brace comment in -Mdelphi?|expect=FAIL|got=FAIL|OK|probe_comment.pas(2,29) Fatal: Syntax error, "BEGIN" expected but "identifier INNER" found
+P18|does fpc 3.2.2 accept -Miso (absent from -h list)?|expect=PASS|got=PASS|OK|4 lines compiled, 0.1 sec, 28480 bytes code, 1316 bytes data
+--- ppu scan: which RTL unit declares AssignFile/CloseFile ---
+system.ppu|path=C:\FPC\3.2.2\units\i386-win32\rtl\system.ppu|AssignFile=False|CloseFile=False|Rewrite=True|Reset=True
+objpas.ppu|path=C:\FPC\3.2.2\units\i386-win32\rtl\objpas.ppu|AssignFile=True|CloseFile=True|Rewrite=False|Reset=True

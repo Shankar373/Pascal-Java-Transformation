@@ -1,0 +1,24 @@
+PASS|objfpc|applications\console_multiunit\miniapp.dpr
+PASS|objfpc|applications\console_multiunit\uMath.pas
+PASS|objfpc|applications\console_multiunit\uReport.pas
+FAIL|objfpc|applications\lazarus_app\lazarusapp.lpr|lazarusapp.lpr(6,3) Fatal: Can't find unit Forms used by LazarusApp
+FAIL|objfpc|applications\lazarus_app\uMainForm.pas|uMainForm.pas(8,22) Fatal: Can't find unit Forms used by uMainForm
+FAIL|delphi|applications\project_files\delphi_style_app.dpr|delphi_style_app.dpr(6,13) Fatal: Can't find unit DelphiClasses used by DelphiStyleApp
+PASS|fpc|dbaccess\ado_style_connection.pas
+FAIL|fpc|dbaccess\bde_style_query.pas|bde_style_query.pas(6,7) Fatal: Can't find unit DBTables used by BdeStyleQuery
+PASS|objfpc|dbaccess\embedded_sql.pas
+FAIL|delphi|dialects\delphi\delphi_classes.pas|delphi_classes.pas(1,69) Fatal: Syntax error, "BEGIN" expected but "identifier UNDER" found
+PASS|objfpc|dialects\fpc\mode_objfpc.pas
+PASS|fpc|dialects\iso7185\hello_iso.pas
+PASS|fpc|dialects\turbo\tp_point.pas
+PASS|fpc|directives\directive_ifdef.pas
+PASS|fpc|directives\directive_include.pas
+PASS|fpc|directives\directive_range_checks.pas
+PASS|fpc|language\currency_math.pas
+FAIL|objfpc|language\exception_flow.pas|exception_flow.pas(6,30) Error: Identifier not found "Exception"
+FAIL|fpc|language\file_io.pas|file_io.pas(15,3) Error: Identifier not found "AssignFile"
+FAIL|delphi|language\nested_routines.pas|nested_routines.pas(3,20) Error: Illegal unit name: NestedRoutines (expecting PROGRAM)
+PASS|fpc|language\pointer_alloc.pas
+PASS|fpc|language\records_sets.pas
+PASS|fpc|language\string_kinds.pas
+FAIL|fpc|language\variant_record.pas|variant_record.pas(9,36) Error: Error in type definition

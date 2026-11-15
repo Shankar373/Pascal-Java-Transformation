@@ -1,0 +1,8 @@
+MODECLAIM|fpc=3.2.2|i386-win32|fresh -FE/-FU per compile|args=sweep-fpc.ps1 parity
+CLAIM|dialects\iso7185\hello_iso.pas|-Miso|header claims -Miso or -Mtp|PASS
+CLAIM|dialects\iso7185\hello_iso.pas|-Mtp|header claims -Miso or -Mtp|PASS
+CLAIM|dialects\turbo\tp_point.pas|-Mtp|header claims -Mtp (TP/BP 7.0)|PASS
+CROSS|dialects\turbo\tp_point.pas|-Miso|cross-check|PASS
+CONTROL|dialects\iso7185\hello_iso.pas|-Mfpc|mode sweep-fpc.ps1 actually used|PASS
+CONTROL|dialects\turbo\tp_point.pas|-Mfpc|mode sweep-fpc.ps1 actually used|PASS
+SUMMARY|tested=6|pass=6|fail=0

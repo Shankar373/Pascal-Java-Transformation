@@ -1,0 +1,24 @@
+PASS|objfpc|applications\console_multiunit\miniapp.dpr
+PASS|objfpc|applications\console_multiunit\uMath.pas
+PASS|objfpc|applications\console_multiunit\uReport.pas
+FAIL|objfpc|applications\lazarus_app\lazarusapp.lpr|lazarusapp.lpr(6,3) Fatal: Can't find unit Forms used by LazarusApp
+FAIL|objfpc|applications\lazarus_app\uMainForm.pas|uMainForm.pas(8,22) Fatal: Can't find unit Forms used by uMainForm
+PASS|delphi|applications\project_files\delphi_style_app.dpr
+PASS|fpc|dbaccess\ado_style_connection.pas
+FAIL|fpc|dbaccess\bde_style_query.pas|bde_style_query.pas(6,7) Fatal: Can't find unit DBTables used by BdeStyleQuery
+PASS|objfpc|dbaccess\embedded_sql.pas
+PASS|delphi|dialects\delphi\DelphiClasses.pas
+PASS|objfpc|dialects\fpc\mode_objfpc.pas
+PASS|fpc|dialects\iso7185\hello_iso.pas
+PASS|fpc|dialects\turbo\tp_point.pas
+PASS|fpc|directives\directive_ifdef.pas
+PASS|fpc|directives\directive_include.pas
+PASS|fpc|directives\directive_range_checks.pas
+PASS|fpc|language\currency_math.pas
+PASS|objfpc|language\exception_flow.pas
+PASS|objfpc|language\file_io.pas
+PASS|delphi|language\NestedRoutines.pas
+PASS|fpc|language\pointer_alloc.pas
+PASS|fpc|language\records_sets.pas
+PASS|fpc|language\string_kinds.pas
+PASS|fpc|language\variant_record.pas
