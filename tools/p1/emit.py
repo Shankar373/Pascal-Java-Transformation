@@ -33,6 +33,14 @@ from pathlib import Path, PurePosixPath
 from typing import Any
 
 from .dialects import MODE_TABLE, SourceAnalysis, visibility_for
+from .findings import (
+    BuildScriptFinding,
+    CompilerConfigFinding,
+    DirectoryEntry,
+    IntegrationFinding,
+    LibraryFinding,
+    RuntimeDependencyFinding,
+)
 from .graph import DependencyGraph
 from .limits import Limits
 from .metadata import (
@@ -88,6 +96,23 @@ class Discovery:
     #: Label recorded as ``source.origin`` — a name, never a path.
     origin_label: str = ""
     limits: Limits | None = None
+    # --- Stage 1 additions (consumed by ``p1.blueprint``; the P1 manifest is
+    #     deliberately unchanged so its schema and tests stay stable). -------
+    directories: list[DirectoryEntry] = field(default_factory=list)
+    build_scripts: list[BuildScriptFinding] = field(default_factory=list)
+    compiler_configs: list[CompilerConfigFinding] = field(default_factory=list)
+    integrations: list[IntegrationFinding] = field(default_factory=list)
+    libraries: list[LibraryFinding] = field(default_factory=list)
+    runtime_dependencies: list[RuntimeDependencyFinding] = field(
+        default_factory=list
+    )
+    #: Provenance of the pinned source (see docs/stage1/STAGE1_DESIGN.md §3):
+    #: ``{"ref": str, "commit": str, "remote": str, "tree_id": str}`` — values
+    #: are redacted; empty for ZIP and directory inputs.
+    source_provenance: dict[str, str] = field(default_factory=dict)
+    #: ``CheckpointInfo.as_dict()`` of the immutable checkpoint, when one was
+    #: created for this run; ``{}`` for the legacy ``ingest`` command.
+    checkpoint: dict[str, Any] = field(default_factory=dict)
 
     def analysis_of(self, path: str) -> tuple[object | None, SourceAnalysis | None]:
         """Return ``(scan, analysis)`` for *path*, or ``(None, None)``."""

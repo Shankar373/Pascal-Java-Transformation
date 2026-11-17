@@ -196,6 +196,41 @@ _add(
     "winapi.windows", "winapi.messages", "winapi.shellapi",
 )
 
+# --- Further Delphi RTL / Windows SDK units (stock, shipped with the IDE) ----
+_add(
+    "delphi-rtl",
+    "soaphttpclient", "invokeregistry", "rio", "soaphttptrans", "xsbuiltins",
+    "soapconn", "xmldoc", "xmlintf", "xmldom", "msxmldom", "xmlxform",
+    "syncobjs", "system.syncobjs", "threading", "system.threading",
+    "system.json", "system.zip", "system.zlib", "zlib", "ansistrings",
+    "system.ansistrings", "widestrings", "convutils", "stdconvs",
+    "system.convutils", "printers", "clipbrd", "vcl.printers", "vcl.clipbrd",
+    "system.generics.collections", "system.generics.defaults",
+    "system.inifiles", "system.win.crtl", "system.win.scktcomp",
+    "scktcomp",
+)
+_add(
+    "windows-platform",
+    "svcmgr", "winsvc", "wininet", "winsock", "winhttp", "urlmon", "commctrl",
+    "richedit", "shlobj", "winapi.winsvc", "winapi.wininet", "winapi.winsock",
+    "winapi.winhttp", "winapi.urlmon", "winapi.activex", "winapi.shlobj",
+    "winapi.commctrl", "winapi.richedit", "vcl.svcmgr", "system.win.comobj",
+    "system.win.comserv", "system.win.registry",
+)
+
+# Stock scoped units of the Delphi XML / SOAP / REST / Web namespaces, listed
+# by exact name: a whole-namespace rule would also hide a customer's own
+# ``Web.Core`` or ``Xml.Custom`` unit that is absent from the input.
+_add(
+    "delphi-rtl",
+    "soap.soaphttpclient", "soap.invokeregistry", "soap.rio",
+    "soap.soaphttptrans", "soap.xsbuiltins", "soap.soapconn",
+    "xml.xmldoc", "xml.xmlintf", "xml.xmldom", "xml.xmlxform",
+    "xml.win.msxmldom", "web.httpapp", "web.webreq", "web.webbroker",
+    "rest.client", "rest.types", "rest.json", "rest.authenticator.oauth",
+    "datasnap.dsserver", "datasnap.dsclientrest",
+)
+
 # --- FPC-flavoured RTL -----------------------------------------------------
 _add(
     "fpc-rtl",

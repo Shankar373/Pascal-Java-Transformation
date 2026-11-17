@@ -255,6 +255,12 @@ def parse_project_file(path: str, text: str) -> tuple[Profile, list[dict[str, ob
         if value:
             profile.platform = value
             note("platform", value, "PropertyGroup/Platform")
+    for element in _find_all(root, "ProjectVersion"):
+        # Stated by the IDE that wrote the file; the blueprint reports it as
+        # "indicated" and never maps it to a product release name.
+        value = (element.text or "").strip()
+        if value:
+            note("project_version", value, "PropertyGroup/ProjectVersion")
     for element in _find_all(root, "DCC_Define"):
         value = (element.text or "").strip()
         if value:

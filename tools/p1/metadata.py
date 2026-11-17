@@ -174,7 +174,7 @@ def detect_database(analysed: list[AnalysedFile]) -> list[DatabaseFinding]:
     for item in analysed:
         if item.scan is None:
             continue
-        source = PurePosixPath(item.path).name
+        source = item.path
 
         # (a) Component classes — distinctive names, safe as plain idents.
         for token in item.scan.tokens:
@@ -286,7 +286,7 @@ class SqlFileFinding:
                 {
                     "evidence": f"SQL dialect marker {m!r}",
                     "line": self.line,
-                    "source": PurePosixPath(self.path).name,
+                    "source": self.path,
                 }
                 for m in self.markers
             ],
@@ -379,7 +379,7 @@ def detect_native_libs(analysed: list[AnalysedFile]) -> list[NativeLibraryFindin
     found: dict[str, NativeLibraryFinding] = {}
 
     for item in analysed:
-        source = PurePosixPath(item.path).name
+        source = item.path
         if item.scan is not None:
             for ref in item.scan.native_refs:
                 if ref.kind == "os-api":
@@ -460,7 +460,7 @@ def detect_os_dependencies(
         entry.evidence.append(evidence)
 
     for item in analysed:
-        source = PurePosixPath(item.path).name
+        source = item.path
         if item.scan is None:
             continue
         # Platform units are only trusted from a real `uses` clause: `Windows`

@@ -24,6 +24,7 @@ __all__ = [
     "Classification",
     "classify",
     "extension_of",
+    "is_ci_config",
     "CLASS_VOCABULARY",
     "PASCAL_SOURCE_CLASSES",
 ]
@@ -146,6 +147,10 @@ _EXT_TABLE: dict[str, str] = {
     ".mak": "build_script",
     ".mk": "build_script",
     ".gradle": "build_script",
+    # Installer scripts (Inno Setup, NSIS)
+    ".iss": "build_script",
+    ".nsi": "build_script",
+    ".nsh": "build_script",
     # Documentation
     ".md": "documentation",
     ".rst": "documentation",
@@ -185,6 +190,15 @@ _NAME_TABLE: dict[str, str] = {
     "makefile": "build_script",
     "gnumakefile": "build_script",
     "dockerfile": "build_script",
+    # CI pipeline definitions with a fixed file name
+    "jenkinsfile": "build_script",
+    ".gitlab-ci.yml": "build_script",
+    "azure-pipelines.yml": "build_script",
+    "azure-pipelines.yaml": "build_script",
+    "appveyor.yml": "build_script",
+    ".appveyor.yml": "build_script",
+    "bitbucket-pipelines.yml": "build_script",
+    ".travis.yml": "build_script",
     "license": "licence",
     "licence": "licence",
     "copying": "licence",
@@ -201,6 +215,13 @@ _NAME_TABLE: dict[str, str] = {
     ".hgignore": "version_control",
     ".editorconfig": "configuration",
 }
+
+#: Fixed file names that are CI pipeline definitions.
+_CI_NAMES = frozenset({
+    "jenkinsfile", ".gitlab-ci.yml", "azure-pipelines.yml",
+    "azure-pipelines.yaml", "appveyor.yml", ".appveyor.yml",
+    "bitbucket-pipelines.yml", ".travis.yml",
+})
 
 #: Magic prefixes → class.  Checked before text heuristics.
 _MAGIC: tuple[tuple[bytes, str], ...] = (
@@ -251,6 +272,33 @@ class Classification:
         }
 
 
+def is_ci_config(path: str) -> bool:
+    """True for a CI pipeline definition (by file name or well-known folder).
+
+    Covers ``.github/workflows/*.yml|yaml``, ``.circleci/config.yml`` and the
+    fixed names in the name table (``Jenkinsfile``, ``.gitlab-ci.yml``,
+    ``azure-pipelines.yml``, ``appveyor.yml`` ...).  Pure function of the
+    path; never reads the file.
+    """
+
+    norm = path.replace("\\", "/")
+    parts = [p.lower() for p in PurePosixPath(norm).parts]
+    if not parts:
+        return False
+    name = parts[-1]
+    if name in _CI_NAMES:
+        return True
+    ext = extension_of(norm)
+    if ext in (".yml", ".yaml"):
+        folders = parts[:-1]
+        for index, folder in enumerate(folders[:-1]):
+            if folder == ".github" and folders[index + 1] == "workflows":
+                return True
+        if folders and folders[-1] == ".circleci" and name.startswith("config"):
+            return True
+    return False
+
+
 def extension_of(path: str) -> str:
     """Lower-cased extension including the dot; ``""`` when there is none.
 
@@ -292,6 +340,11 @@ def classify(
         return Classification(
             "version_control", ("path-segment",), "high", True
         )
+
+    # 0. CI pipeline folders (.github/workflows/*.yml): file name alone is
+    #    not enough, so this is decided on the path before the tables.
+    if is_ci_config(norm):
+        return Classification("build_script", ("ci-config",), "high", True)
 
     # 1. Exact file name wins (Makefile, LICENSE, .gitignore).
     if name in _NAME_TABLE:

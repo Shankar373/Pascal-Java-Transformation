@@ -32,17 +32,27 @@ from __future__ import annotations
 import os
 import re
 import subprocess
+from functools import lru_cache
 from pathlib import Path
+from typing import Mapping
 
 from .errors import (
     DiagnosticSink,
     IngestionError,
+    LimitExceededError,
     UnsupportedInputError,
 )
+from .gitproc import SizeWatch, run_process
+from .gittree import check_tree_listing
 from .limits import DEFAULT_LIMITS, Limits
 from .model import IngestionResult, ingest_directory, rmtree_force
 
-__all__ = ["ingest_git", "resolve_git_source"]
+__all__ = [
+    "SizeWatch",
+    "checkout_verify_inventory",
+    "ingest_git",
+    "resolve_git_source",
+]
 
 #: Pinned commit: 7–40 lowercase/uppercase hex characters (abbreviated ok).
 _COMMIT_RE = re.compile(r"^[0-9a-fA-F]{7,40}$")
@@ -53,6 +63,21 @@ _REMOTE_SCHEMES = ("http://", "https://", "ssh://", "git://", "ftps://", "sftp:/
 #: Hard cap on any single git invocation, so a pathological repo cannot hang
 #: a pipeline run indefinitely.
 _GIT_TIMEOUT_SECONDS = 300
+
+#: The git launcher.  A tuple so a test can substitute a stand-in program
+#: without touching ``PATH``; production code never changes it.
+_GIT_COMMAND: tuple[str, ...] = ("git",)
+
+#: Cap on the captured output of any single git invocation.
+_OUTPUT_CAP_BYTES = 8 * 1024 * 1024
+
+#: Variables a git child may inherit (compared upper-case).  Everything else
+#: in the parent environment, notably credentials and proxies, is dropped.
+_ENV_ALLOW = frozenset({
+    "PATH", "SYSTEMROOT", "WINDIR", "COMSPEC", "PATHEXT", "SYSTEMDRIVE",
+    "TEMP", "TMP", "TMPDIR", "LANG", "GIT_EXEC_PATH",
+    "SSL_CERT_FILE", "SSL_CERT_DIR", "CURL_CA_BUNDLE",
+})
 
 
 def resolve_git_source(source: str) -> tuple[str, str]:
@@ -79,6 +104,7 @@ def resolve_git_source(source: str) -> tuple[str, str]:
             )
     if lowered.startswith("file://"):
         path = _file_url_to_path(text)
+        _refuse_exotic_source(path, text)
         return "local", path
     if re.match(r"^[a-z0-9]+@[^:]+:", text) or text.startswith("git@"):
         raise UnsupportedInputError(
@@ -87,7 +113,29 @@ def resolve_git_source(source: str) -> tuple[str, str]:
             code="REMOTE_INPUT_UNSUPPORTED",
             path=text,
         )
+    _refuse_exotic_source(text, text)
     return "local", text
+
+
+_SCHEME_LIKE_RE = re.compile(r"^[A-Za-z][A-Za-z0-9+.-]+:")
+
+
+def _refuse_exotic_source(path: str, original: str) -> None:
+    """Refuse UNC paths, transport-helper syntax and unknown schemes.
+
+    A UNC path reaches an arbitrary SMB server, ``ext::`` runs a command, and
+    any other ``scheme:`` value is either a remote form or a typo.  A single
+    letter before the colon is a Windows drive and stays allowed.
+    """
+
+    unc = path.startswith(("//", "\\\\"))
+    if unc or "::" in path or _SCHEME_LIKE_RE.match(path):
+        raise UnsupportedInputError(
+            "git source refused: UNC paths, transport helpers and unknown "
+            "URL schemes are not accepted as local sources",
+            code="UNSUPPORTED_SOURCE",
+            path=original,
+        )
 
 
 def _file_url_to_path(url: str) -> str:
@@ -108,18 +156,18 @@ def _file_url_to_path(url: str) -> str:
 
 
 def _hardened_env(staging: Path) -> dict[str, str]:
-    """Environment in which git cannot see credentials or user configuration."""
+    """Child environment built from an allow-list, plus hardened git settings.
+
+    Nothing is inherited except what git needs to run (executable search path,
+    Windows system variables, temp directories, locale) and certificate-trust
+    locations.  Credentials, proxies, agents and every ``GIT_*`` variable of the
+    parent are therefore never visible to git or to anything it spawns.
+    """
 
     home = staging / ".p1-home"
     home.mkdir(parents=True, exist_ok=True)
 
-    env = dict(os.environ)
-    # Drop anything that points git at an existing repository or worktree.
-    for key in list(env):
-        if key.startswith("GIT_") and key not in (
-            "GIT_EXEC_PATH",  # harmless: locates the git binary's helpers
-        ):
-            env.pop(key, None)
+    env = allow_listed_environment(os.environ)
     env["GIT_CONFIG_NOSYSTEM"] = "1"
     env["GIT_CONFIG_GLOBAL"] = str(home / "no-such-gitconfig")
     env["GIT_TERMINAL_PROMPT"] = "0"
@@ -134,27 +182,70 @@ def _hardened_env(staging: Path) -> dict[str, str]:
     return env
 
 
+def allow_listed_environment(source: Mapping[str, str]) -> dict[str, str]:
+    """The subset of *source* a git child process may inherit."""
+
+    return {
+        key: value
+        for key, value in source.items()
+        if key.upper() in _ENV_ALLOW or key.upper().startswith("LC_")
+    }
+
+
+@lru_cache(maxsize=8)
+def _version_of(command: tuple[str, ...]) -> tuple[int, int, int]:
+    try:
+        proc = subprocess.run(
+            [*command, "--version"],
+            capture_output=True,
+            text=True,
+            stdin=subprocess.DEVNULL,
+            env=allow_listed_environment(os.environ),
+            shell=False,
+            timeout=60,
+        )
+    except (OSError, subprocess.SubprocessError):
+        raise UnsupportedInputError(
+            "git executable not found or not runnable; Git input is "
+            "UNAVAILABLE",
+            code="GIT_UNAVAILABLE",
+        ) from None
+    match = re.search(r"(\d+)\.(\d+)(?:\.(\d+))?", proc.stdout)
+    if proc.returncode != 0 or match is None:
+        raise UnsupportedInputError(
+            "could not determine the git version", code="GIT_UNAVAILABLE"
+        )
+    return int(match.group(1)), int(match.group(2)), int(match.group(3) or 0)
+
+
+def git_version() -> tuple[int, int, int]:
+    """Installed git version as ``(major, minor, patch)`` (cached)."""
+
+    return _version_of(_GIT_COMMAND)
+
+
 def _git(
     args: list[str],
     env: dict[str, str],
     *,
     cwd: Path | None = None,
     what: str = "git",
+    watch: SizeWatch | None = None,
 ) -> subprocess.CompletedProcess[str]:
-    """Run git with a fixed vector: no shell, captured output, hard timeout."""
+    """Run git with a fixed vector: no shell, bounded time and output.
 
-    cmd = ["git", *args]
+    With *watch* the process additionally runs under a size watchdog.
+    """
+
+    cmd = [*_GIT_COMMAND, *args]
     try:
-        proc = subprocess.run(
+        proc = run_process(
             cmd,
-            cwd=str(cwd) if cwd else None,
-            env=env,
-            capture_output=True,
-            text=True,
-            encoding="utf-8",
-            errors="replace",
-            shell=False,
+            cwd,
+            env,
             timeout=_GIT_TIMEOUT_SECONDS,
+            output_cap=_OUTPUT_CAP_BYTES,
+            watch=watch,
         )
     except FileNotFoundError:
         raise UnsupportedInputError(
@@ -278,6 +369,45 @@ def ingest_git(
     else:
         pinned = _rev_parse(dest, env, f"{commit}^{{commit}}", commit)
 
+    return checkout_verify_inventory(
+        dest,
+        pinned,
+        env,
+        no_hooks=no_hooks,
+        origin=source,
+        sink=sink,
+        limits=limits,
+    )
+
+
+def checkout_verify_inventory(
+    dest: Path,
+    pinned: str,
+    env: dict[str, str],
+    *,
+    no_hooks: Path,
+    origin: str,
+    sink: DiagnosticSink,
+    limits: Limits,
+    watch: SizeWatch | None = None,
+) -> IngestionResult:
+    """Safe checkout of *pinned* in repository *dest*, then inventory.
+
+    Shared by the local and the remote path.  The commit object must already
+    be present in *dest*.  Steps: detached byte-preserving checkout, ``HEAD ==
+    pin`` verification, ``ls-tree`` symlink/submodule refusal, ``.git``
+    removal, hashing and inventory.
+    """
+
+    # Bound the tree from its listing *before* any file is written: entry
+    # count, depth, name/path length, blob sizes and path collisions.
+    check_tree_listing(
+        _GIT_COMMAND, dest, pinned, env, limits, timeout=_GIT_TIMEOUT_SECONDS
+    )
+    watch = watch or SizeWatch(
+        dest, limits.max_total_bytes, (".git",), limits.max_entries
+    )
+
     # Byte-preserving checkout: never convert line endings, never create
     # symlinks, never follow file-mode bits from a foreign filesystem.
     checkout_args = [
@@ -299,7 +429,9 @@ def ingest_git(
         pinned,
     ]
     try:
-        _git(checkout_args, env, what="checkout")
+        _git(checkout_args, env, what="checkout", watch=watch)
+    except LimitExceededError:
+        raise
     except IngestionError as exc:
         raise UnsupportedInputError(
             f"could not check out {pinned}: {exc.message}",
@@ -325,6 +457,9 @@ def ingest_git(
     commit_timestamp = _git(
         ["show", "-s", "--format=%cI", pinned], env, cwd=dest, what="show"
     ).stdout.strip()
+    tree_id = _git(
+        ["rev-parse", f"{pinned}^{{tree}}"], env, cwd=dest, what="rev-parse"
+    ).stdout.strip()
 
     # The clone's own metadata carries hooks and packed objects we neither
     # need nor want in the inventory; remove it so the staged tree is source.
@@ -341,13 +476,14 @@ def ingest_git(
 
     result = ingest_directory(
         dest,
-        origin=source,
+        origin=origin,
         kind="git",
         sink=sink,
         limits=limits,
     )
     result.commit = pinned
     result.commit_timestamp = commit_timestamp
+    result.tree_id = tree_id
     result.diagnostics = sink.to_list()
     return result
 

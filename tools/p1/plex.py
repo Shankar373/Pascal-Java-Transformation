@@ -230,6 +230,11 @@ def scan(
     pending_line = 0
     pending_column = 0
     pending_expect_name = False
+    #: Delphi ``Unit in 'path.pas'``: 0 = none, 1 = saw ``in`` (a string must
+    #: follow), 2 = the path string was consumed.
+    pending_in = 0
+    #: A '.' just followed a unit name: the next identifier extends it.
+    pending_dot = False
 
     def advance_to(new_i: int) -> None:
         """Move *i* forward, updating line/column across the skipped span."""
@@ -244,7 +249,7 @@ def scan(
             column += len(segment)
 
     def fail_pending(reason: str, at_line: int, at_col: int) -> None:
-        nonlocal pending_kind
+        nonlocal pending_kind, pending_in, pending_dot
         if pending_kind is None:
             return
         sink.error(
@@ -256,10 +261,12 @@ def scan(
             column=at_col,
         )
         pending_kind = None
+        pending_in = 0
+        pending_dot = False
         pending_items.clear()
 
     def finish_pending() -> None:
-        nonlocal pending_kind
+        nonlocal pending_kind, pending_in, pending_dot
         if pending_kind is None:
             return
         result.uses.append(
@@ -272,6 +279,8 @@ def scan(
             )
         )
         pending_kind = None
+        pending_in = 0
+        pending_dot = False
         pending_items.clear()
 
     while i < n:
@@ -379,7 +388,12 @@ def scan(
             i = j
             prev_text = literal
             if pending_kind is not None:
-                fail_pending("string literal inside clause", start_line, start_col)
+                if pending_in == 1:
+                    pending_in = 2  # `Unit in 'path'`: the path is not a unit
+                else:
+                    fail_pending(
+                        "string literal inside clause", start_line, start_col
+                    )
             continue
 
         if ch == "#":  # character code literal: #13, #$0A
@@ -455,6 +469,15 @@ def scan(
                             UsesItem(word, start_line, start_col, cond_now)
                         )
                         pending_expect_name = False
+                elif pending_dot and pending_items:
+                    last = pending_items[-1]
+                    pending_items[-1] = UsesItem(
+                        f"{last.name}.{word}", last.line, last.column,
+                        last.conditional,
+                    )
+                    pending_dot = False
+                elif low == "in" and pending_items and pending_in == 0:
+                    pending_in = 1
                 else:
                     fail_pending(
                         f"unexpected identifier {word!r} after unit name",
@@ -514,8 +537,15 @@ def scan(
         _emit(result, "symbol", matched, start_line, start_col, cond_now)
 
         if pending_kind is not None:
-            if matched == ",":
+            if matched == "." and pending_items and not pending_expect_name                     and pending_in == 0 and not pending_dot:
+                pending_dot = True
+            elif matched == ",":
                 pending_expect_name = True
+                pending_in = 0
+                pending_dot = False
+            elif matched == ";" and pending_dot:
+                fail_pending("dangling '.' after unit name", start_line,
+                             start_col)
             elif matched == ";":
                 finish_pending()
             else:

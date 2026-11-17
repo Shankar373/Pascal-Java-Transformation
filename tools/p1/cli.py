@@ -3,6 +3,9 @@
     python tools/p1/cli.py ingest <source> --out <dir>
     python tools/p1/cli.py guard  [--root <dir>] [--json]
     python tools/p1/cli.py gate   <source> --out <dir>
+    python tools/p1/cli.py discover <source> --store <dir> [--ref REF]
+    python tools/p1/cli.py checkpoint verify <checkpoint-dir>
+    python tools/p1/cli.py serve [--store <dir>] [--port N]
 
 Exit codes
 ----------
@@ -23,6 +26,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import sys
 from pathlib import Path
 
@@ -78,6 +82,58 @@ def build_parser() -> argparse.ArgumentParser:
     gate.add_argument("--root", default=None, metavar="DIR",
                       help="repository root the gate scans (default: cwd)")
 
+    discover = subparsers.add_parser(
+        "discover",
+        help="Stage 1: ingest, checkpoint and write the application blueprint",
+    )
+    discover.add_argument(
+        "source",
+        help="ZIP archive, Git URL (https/ssh) or local repository, or a "
+             "plain directory",
+    )
+    discover.add_argument("--store", required=True, metavar="DIR",
+                          help="checkpoint/discovery store directory")
+    discover.add_argument("--kind", choices=("zip", "git", "directory"),
+                          default=None, help="override input-kind detection")
+    discover.add_argument("--ref", default=None, metavar="REF",
+                          help="git branch, tag or commit to pin")
+    discover.add_argument("--label", default=None, metavar="NAME",
+                          help="display name; a name, never a path")
+    discover.add_argument("--allow-ssh", action="store_true",
+                          help="permit ssh:// and scp-style remotes (needs "
+                               "P1_GIT_SSH_KEY and P1_GIT_KNOWN_HOSTS)")
+    discover.add_argument("--allow-host", action="append", default=[],
+                          metavar="HOST",
+                          help="operator allow-list entry that bypasses the "
+                               "public-address rule (repeatable)")
+
+    checkpoint = subparsers.add_parser(
+        "checkpoint", help="inspect immutable checkpoints"
+    )
+    checkpoint_sub = checkpoint.add_subparsers(dest="checkpoint_command",
+                                               required=True)
+    verify = checkpoint_sub.add_parser(
+        "verify", help="re-hash a checkpoint and report any tampering"
+    )
+    verify.add_argument("path", help="<store>/checkpoints/<CP-id>")
+
+    serve = subparsers.add_parser(
+        "serve", help="run the local Stage 1 dashboard and API"
+    )
+    serve.add_argument("--store", default=".stage1-store", metavar="DIR")
+    serve.add_argument("--host", default="127.0.0.1")
+    serve.add_argument("--port", type=int, default=8765)
+    serve.add_argument("--allow-local-root", action="append", default=[],
+                       metavar="DIR",
+                       help="enable local-directory ingestion inside DIR "
+                            "(repeatable)")
+    serve.add_argument("--allow-ssh", action="store_true")
+    serve.add_argument("--allow-host", action="append", default=[],
+                       metavar="HOST")
+    serve.add_argument("--allow-remote-bind", action="store_true",
+                       help="permit a non-loopback --host (no authentication "
+                            "exists before Stage 6)")
+
     guard = subparsers.add_parser(
         "guard", help="run the ADR 0005 no-LLM dependency gate only"
     )
@@ -130,12 +186,100 @@ def _command_ingest(args: argparse.Namespace) -> int:
     return EXIT_OK
 
 
+def _network_policy(extra_hosts: list[str]):
+    """Operator allow-list from ``--allow-host`` and ``P1_GIT_ALLOW_HOSTS``."""
+
+    from p1.remotegit import NetworkPolicy
+
+    env_hosts = [h.strip() for h in
+                 os.environ.get("P1_GIT_ALLOW_HOSTS", "").split(",")
+                 if h.strip()]
+    return NetworkPolicy(allow_hosts=tuple(sorted({*env_hosts, *extra_hosts})))
+
+
+def _command_discover(args: argparse.Namespace) -> int:
+    from p1.pipeline import resolve_kind
+    from p1.stage1 import DiscoveryRequest, discover
+
+    kind = resolve_kind(args.source, args.kind)
+    if kind == "directory" and (Path(args.source) / ".git").exists():
+        kind = "git"
+        print("note: the directory is a Git repository; the committed HEAD "
+              "(or --ref) is ingested, not the working tree",
+              file=sys.stderr)
+    request = DiscoveryRequest(
+        kind=kind, source=args.source, ref=args.ref, label=args.label,
+        allow_ssh=args.allow_ssh,
+        network_policy=_network_policy(args.allow_host),
+    )
+    result = discover(
+        request, args.store,
+        progress=lambda step, status, msg: print(
+            f"[{step}] {status}{': ' + msg if msg else ''}"),
+    )
+    blueprint = result.blueprint
+    summary = blueprint["summary"]
+    print(f"checkpoint : {result.checkpoint.checkpoint_id}"
+          f"{' (reused)' if result.reused else ''}")
+    print(f"status     : {blueprint['stage']['status']}")
+    print(f"files      : {summary['total_files']} "
+          f"(directories {summary['directories']})")
+    print(f"projects   : {summary['projects']}")
+    print(f"unresolved : {summary['unresolved_dependencies']}")
+    print(f"blockers   : {summary['blockers']}")
+    for name in sorted(result.outputs):
+        print(f"{name:<12}: {result.outputs[name]}")
+    return EXIT_OK
+
+
+def _command_checkpoint(args: argparse.Namespace) -> int:
+    from p1.checkpoint import verify_checkpoint
+
+    report = verify_checkpoint(Path(args.path))
+    print(f"checkpoint: {'OK' if report.ok else 'TAMPERED OR INVALID'}")
+    for label, items in (("modified", report.modified),
+                         ("missing", report.missing),
+                         ("extra", report.extra), ("errors", report.errors)):
+        for item in items:
+            print(f"  {label}: {item}")
+    return EXIT_OK if report.ok else EXIT_FAIL
+
+
+def _command_serve(args: argparse.Namespace) -> int:
+    from p1 import server
+
+    argv = ["--store", args.store, "--host", args.host,
+            "--port", str(args.port)]
+    for root in args.allow_local_root:
+        argv += ["--allow-local-root", root]
+    if args.allow_ssh:
+        argv.append("--allow-ssh")
+    for host in args.allow_host:
+        argv += ["--allow-host", host]
+    if args.allow_remote_bind:
+        argv.append("--allow-remote-bind")
+    return int(server.main(argv) or 0)
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = build_parser()
     args = parser.parse_args(argv)
 
     if args.command == "guard":
         return _command_guard(args)
+
+    if args.command in ("discover", "checkpoint", "serve"):
+        handler = {"discover": _command_discover,
+                   "checkpoint": _command_checkpoint,
+                   "serve": _command_serve}[args.command]
+        try:
+            return handler(args)
+        except IngestionError as exc:
+            print(f"refused: {exc}", file=sys.stderr)
+            return EXIT_FAIL
+        except OSError as exc:
+            print(f"error: {exc}", file=sys.stderr)
+            return EXIT_FAIL
 
     if args.command == "gate":
         status = _command_guard(argparse.Namespace(root=args.root, json=False))

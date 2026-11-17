@@ -11,13 +11,15 @@ from __future__ import annotations
 
 import os
 import shutil
+import stat
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-from .errors import Diagnostic, DiagnosticSink, IngestionError
+from .errors import Diagnostic, DiagnosticSink, IngestionError, LimitExceededError
 from .hashing import sha256_file
 from .limits import DEFAULT_LIMITS, Limits
+from .treelimits import TreeBudget
 
 if TYPE_CHECKING:  # pragma: no cover - import cycle avoidance only
     from .dialects import SourceAnalysis
@@ -110,6 +112,12 @@ class IngestionResult:
     commit: str | None = None
     #: Git commit time of the pinned commit; never wall-clock.
     commit_timestamp: str = ""
+    #: Requested ref (branch/tag/SHA) for remote Git; ``""`` otherwise.
+    ref: str = ""
+    #: Git tree object id of the pinned commit; ``""`` for non-Git inputs.
+    tree_id: str = ""
+    #: Credential-free display URL of a remote Git source; ``""`` otherwise.
+    remote: str = ""
     entry_count: int = 0
     total_bytes: int = 0
     diagnostics: list[Diagnostic] = field(default_factory=list)
@@ -169,13 +177,52 @@ class AnalysedFile:
         return self.inventory.path
 
 
-def walk_files(root: Path, *, skip: tuple[str, ...] = ()) -> list[tuple[str, Path]]:
+#: Windows reparse tags that redirect to another location (symlink, junction).
+_REDIRECTING_REPARSE_TAGS = frozenset({0xA000000C, 0xA0000003})
+
+
+def is_redirecting_entry(path: Path) -> bool:
+    """True for a symlink or Windows junction/mount point at *path*.
+
+    ``os.walk`` does not follow symlinks but **does** descend Windows
+    junctions, and ``Path.is_file`` follows file symlinks; either would pull
+    bytes from outside the input into the inventory.  Cloud-sync placeholders
+    are reparse points too but are not redirects, so only the symlink and
+    mount-point tags count.  An unreadable entry counts as redirecting: the
+    check fails closed.
+    """
+
+    try:
+        info = os.lstat(path)
+    except OSError:
+        return True
+    if stat.S_ISLNK(info.st_mode):
+        return True
+    return getattr(info, "st_reparse_tag", 0) in _REDIRECTING_REPARSE_TAGS
+
+
+def walk_files(
+    root: Path,
+    *,
+    skip: tuple[str, ...] = (),
+    limits: Limits = DEFAULT_LIMITS,
+) -> list[tuple[str, Path]]:
     """Return ``(posix_relative_path, absolute_path)`` for every file under *root*.
 
     Deterministic: sorted by relative path.  ``skip`` holds path prefixes
     (POSIX, directory names such as ``".git"``) that are not inventoried —
     callers must record why, so the exclusion is explicit rather than silent.
+
+    A symlink, junction or mount point anywhere in the tree is **refused**
+    (``SYMLINK_ENTRY``) rather than followed or skipped, matching the ZIP and
+    Git policies: an input must be self-contained.
+
+    ``limits`` is enforced **while walking** (entry count, depth, name and path
+    length): the walk stops at the first violation instead of listing a
+    hostile tree first.
     """
+
+    budget = TreeBudget(limits)
 
     skip_set = {s.lower() for s in skip}
     out: list[tuple[str, Path]] = []
@@ -183,11 +230,22 @@ def walk_files(root: Path, *, skip: tuple[str, ...] = ()) -> list[tuple[str, Pat
         # Prune skipped directories in-place so os.walk does not descend.
         dirnames[:] = sorted(d for d in dirnames if d.lower() not in skip_set)
         current = Path(dirpath)
+        for name in (*dirnames, *filenames):
+            if is_redirecting_entry(current / name):
+                rel = (current / name).relative_to(root).as_posix()
+                raise IngestionError(
+                    f"symlink or junction entry refused in input tree: {rel}",
+                    code="SYMLINK_ENTRY",
+                    path=rel,
+                )
+        for name in dirnames:
+            budget.add_dir((current / name).relative_to(root).as_posix())
         for filename in sorted(filenames):
             absolute = current / filename
             if not absolute.is_file():
                 continue  # sockets/fifos/etc. are never inventoried
             rel = absolute.relative_to(root).as_posix()
+            budget.add_file(rel)
             out.append((rel, absolute))
     out.sort(key=lambda pair: pair[0])
     return out
@@ -220,7 +278,7 @@ def ingest_directory(
     )
     sink = sink or DiagnosticSink(limits.max_diagnostics)
 
-    files = walk_files(root, skip=skip)
+    files = walk_files(root, skip=skip, limits=limits)
     # Only report an exclusion that actually occurred: announcing that `.git`
     # was skipped when the tree has no `.git` would put a phantom entry in
     # every manifest (and make two identical inputs differ).
@@ -237,6 +295,13 @@ def ingest_directory(
     total = 0
     for rel, absolute in files:
         size = absolute.stat().st_size
+        if size > limits.max_entry_bytes:
+            raise LimitExceededError(
+                f"file size {size} exceeds max_entry_bytes="
+                f"{limits.max_entry_bytes}",
+                code="ENTRY_TOO_LARGE",
+                path=rel,
+            )
         total += size
         if total > limits.max_total_bytes:
             raise IngestionError(

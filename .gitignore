@@ -11,3 +11,6 @@ venv/
 .idea/
 .DS_Store
 Thumbs.db
+
+# Stage 1 checkpoint/discovery store (runtime data, never committed).
+.stage1-store/

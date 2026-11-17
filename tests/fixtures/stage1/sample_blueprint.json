@@ -1,0 +1,4229 @@
+{
+  "blockers": [
+    {
+      "code": "GUI_SHAPE_DETECTED",
+      "detail": "ERPSystem.dpr is a gui_vcl application; GUI conversion is out of scope for the first release"
+    },
+    {
+      "code": "UNRESOLVED_DEPENDENCIES",
+      "detail": "17 unresolved dependencies need attention (3 error, 14 warning)"
+    },
+    {
+      "code": "UNRESOLVED_UNITS",
+      "detail": "14 unit reference(s) could not be resolved inside the ingested input"
+    }
+  ],
+  "capability_states": [
+    {
+      "construct": "identifier `Result` usable in a function body",
+      "evidence": "docs/p0/evidence/probes.txt P01",
+      "mode": "fpc",
+      "platform": "win32",
+      "status": "UNSUPPORTED"
+    },
+    {
+      "construct": "identifier `Result` usable in a function body",
+      "evidence": "docs/p0/evidence/probes.txt P02",
+      "mode": "tp",
+      "platform": "win32",
+      "status": "UNSUPPORTED"
+    },
+    {
+      "construct": "identifier `Result` usable in a function body",
+      "evidence": "docs/p0/evidence/probes.txt P03",
+      "mode": "objfpc",
+      "platform": "win32",
+      "status": "SUPPORTED"
+    },
+    {
+      "construct": "identifier `Result` usable in a function body",
+      "evidence": "docs/p0/evidence/probes.txt P04",
+      "mode": "delphi",
+      "platform": "win32",
+      "status": "SUPPORTED"
+    },
+    {
+      "construct": "bare `AssignFile`/`CloseFile` without `uses ObjPas`",
+      "evidence": "docs/p0/evidence/probes.txt P06, ppu scan",
+      "mode": "fpc",
+      "platform": "win32",
+      "status": "UNSUPPORTED"
+    },
+    {
+      "construct": "bare `AssignFile`/`CloseFile` without `uses ObjPas`",
+      "evidence": "docs/p0/evidence/probes.txt P07, P11",
+      "mode": "objfpc",
+      "platform": "win32",
+      "status": "SUPPORTED"
+    },
+    {
+      "construct": "bare `AssignFile`/`CloseFile` without `uses ObjPas`",
+      "evidence": "docs/p0/evidence/probes.txt P08",
+      "mode": "delphi",
+      "platform": "win32",
+      "status": "SUPPORTED"
+    },
+    {
+      "construct": "compiler mode flag `-Miso` accepted by fpc 3.2.2",
+      "evidence": "docs/p0/evidence/probes.txt P18",
+      "mode": "iso",
+      "platform": "win32",
+      "status": "SUPPORTED"
+    },
+    {
+      "construct": "unit name differing from the file name compiles",
+      "evidence": "docs/p0/evidence/probes.txt P13",
+      "mode": "delphi",
+      "platform": "win32",
+      "status": "UNSUPPORTED"
+    },
+    {
+      "construct": "compiler directive nested inside a brace comment",
+      "evidence": "docs/p0/evidence/probes.txt P16",
+      "mode": "fpc",
+      "platform": "win32",
+      "status": "SUPPORTED"
+    },
+    {
+      "construct": "compiler directive nested inside a brace comment",
+      "evidence": "docs/p0/evidence/probes.txt P17",
+      "mode": "delphi",
+      "platform": "win32",
+      "status": "UNSUPPORTED"
+    },
+    {
+      "construct": "fixture set compiles identically under fpc 3.2.2",
+      "evidence": "docs/p0/evidence/fpc-docker.txt (24 fixtures, MISMATCH=0)",
+      "mode": "any",
+      "platform": "linux",
+      "status": "SUPPORTED"
+    },
+    {
+      "construct": "archive entry path-traversal rejection",
+      "evidence": "tests/security/test_adversarial_archives.py",
+      "mode": "any",
+      "platform": "any",
+      "status": "SUPPORTED"
+    },
+    {
+      "construct": "archive symlink and special-file rejection",
+      "evidence": "tests/security/test_adversarial_archives.py",
+      "mode": "any",
+      "platform": "any",
+      "status": "SUPPORTED"
+    },
+    {
+      "construct": "archive expansion limits (ratio, entry, total, count)",
+      "evidence": "tests/security/test_adversarial_archives.py",
+      "mode": "any",
+      "platform": "any",
+      "status": "SUPPORTED"
+    },
+    {
+      "construct": "ingestion of a local git repository",
+      "evidence": "tests/security/test_git_ingestion.py",
+      "mode": "any",
+      "platform": "any",
+      "status": "SUPPORTED"
+    },
+    {
+      "construct": "ingestion of a network git remote",
+      "evidence": "tools/p1/gitingest.py raises REMOTE_INPUT_UNSUPPORTED",
+      "mode": "any",
+      "platform": "any",
+      "status": "UNSUPPORTED"
+    },
+    {
+      "construct": "Pascal source classification",
+      "evidence": "tests/unit/test_classify.py",
+      "mode": "any",
+      "platform": "any",
+      "status": "SUPPORTED"
+    },
+    {
+      "construct": "encoding and byte-order-mark detection",
+      "evidence": "tests/unit/test_hashing.py",
+      "mode": "any",
+      "platform": "any",
+      "status": "SUPPORTED"
+    },
+    {
+      "construct": "compiler mode table for fpc/objfpc/delphi/tp/iso",
+      "evidence": "docs/p0/evidence/probes.txt P01-P18; tests/unit/test_dialects.py",
+      "mode": "any",
+      "platform": "any",
+      "status": "SUPPORTED"
+    },
+    {
+      "construct": "project root and entry-point discovery",
+      "evidence": "tests/unit/test_projects.py",
+      "mode": "any",
+      "platform": "any",
+      "status": "PARTIAL"
+    },
+    {
+      "construct": "application shape detection (console/GUI/library/package)",
+      "evidence": "tests/unit/test_projects.py",
+      "mode": "any",
+      "platform": "any",
+      "status": "PARTIAL"
+    },
+    {
+      "construct": "dialect and framework detection from source",
+      "evidence": "tests/unit/test_dialects.py",
+      "mode": "any",
+      "platform": "any",
+      "status": "PARTIAL"
+    },
+    {
+      "construct": "compiler profile extraction (defines, paths, checks)",
+      "evidence": "tests/unit/test_projects.py",
+      "mode": "any",
+      "platform": "any",
+      "status": "PARTIAL"
+    },
+    {
+      "construct": "unit dependency graph construction",
+      "evidence": "tests/unit/test_deps.py",
+      "mode": "any",
+      "platform": "any",
+      "status": "PARTIAL"
+    },
+    {
+      "construct": "include (`{$I}`) resolution",
+      "evidence": "tests/unit/test_deps.py",
+      "mode": "any",
+      "platform": "any",
+      "status": "PARTIAL"
+    },
+    {
+      "construct": "database technology detection",
+      "evidence": "tests/integration/test_pipeline.py",
+      "mode": "any",
+      "platform": "any",
+      "status": "PARTIAL"
+    },
+    {
+      "construct": "SQL dialect detection",
+      "evidence": "tests/integration/test_pipeline.py",
+      "mode": "any",
+      "platform": "any",
+      "status": "PARTIAL"
+    },
+    {
+      "construct": "native library reference detection",
+      "evidence": "tests/integration/test_pipeline.py",
+      "mode": "any",
+      "platform": "any",
+      "status": "PARTIAL"
+    },
+    {
+      "construct": "OS dependency detection",
+      "evidence": "tests/integration/test_pipeline.py",
+      "mode": "any",
+      "platform": "any",
+      "status": "PARTIAL"
+    },
+    {
+      "construct": "byte-identical repeatable output",
+      "evidence": "tests/integration/test_determinism.py",
+      "mode": "any",
+      "platform": "any",
+      "status": "SUPPORTED"
+    },
+    {
+      "construct": "no-LLM dependency gate",
+      "evidence": "tests/security/test_no_llm_guard.py",
+      "mode": "any",
+      "platform": "any",
+      "status": "SUPPORTED"
+    },
+    {
+      "construct": "symbol and type resolution across units",
+      "evidence": "docs/p0/P1_TASKS.md \u00a7F (deferred to P2)",
+      "mode": "any",
+      "platform": "any",
+      "status": "UNSUPPORTED"
+    },
+    {
+      "construct": "semantic intermediate representation",
+      "evidence": "docs/p0/P1_TASKS.md \u00a7F (deferred to P2)",
+      "mode": "any",
+      "platform": "any",
+      "status": "UNSUPPORTED"
+    },
+    {
+      "construct": "Java source generation",
+      "evidence": "docs/p1/P1_IMPLEMENTATION_PLAN.md \u00a71 (P1 scope)",
+      "mode": "any",
+      "platform": "any",
+      "status": "UNSUPPORTED"
+    },
+    {
+      "construct": "original-vs-Java differential equivalence",
+      "evidence": "docs/p0/P1_TASKS.md \u00a7F (reachable only in P3)",
+      "mode": "any",
+      "platform": "any",
+      "status": "UNSUPPORTED"
+    },
+    {
+      "construct": "execution of a Delphi compiler",
+      "evidence": "no Delphi installation or licence in this environment",
+      "mode": "any",
+      "platform": "win32",
+      "status": "UNAVAILABLE"
+    },
+    {
+      "construct": "compiler invocation during discovery",
+      "evidence": "discovery is syntactic by design (plan \u00a71)",
+      "mode": "any",
+      "platform": "any",
+      "status": "UNSUPPORTED"
+    },
+    {
+      "construct": "project LICENSE file",
+      "evidence": "owner decision required (P1 blocker A1)",
+      "mode": "any",
+      "platform": "any",
+      "status": "UNAVAILABLE"
+    },
+    {
+      "construct": "compiler identification from the ingested tree",
+      "evidence": "derived from extensions and directives; tests/integration/test_pipeline.py",
+      "mode": "any",
+      "platform": "any",
+      "status": "PARTIAL"
+    }
+  ],
+  "components": [
+    {
+      "count": 1,
+      "evidence": [
+        {
+          "column": 0,
+          "file": "ERPSystem.dpr",
+          "line": 0,
+          "text": "vcl framework unit(s) referenced: Forms"
+        },
+        {
+          "column": 1,
+          "file": "ERPSystem.dpr",
+          "line": 1,
+          "text": "gui_vcl application entry point"
+        }
+      ],
+      "id": "gui_application",
+      "label": "GUI Application",
+      "present": true
+    },
+    {
+      "count": 4,
+      "evidence": [
+        {
+          "column": 1,
+          "file": "sql/schema_oracle.sql",
+          "line": 1,
+          "text": "database artefact file"
+        },
+        {
+          "column": 0,
+          "file": "sql/schema_oracle.sql",
+          "line": 2,
+          "text": "SQL dialect marker 'NUMBER('"
+        },
+        {
+          "column": 0,
+          "file": "sql/schema_oracle.sql",
+          "line": 2,
+          "text": "SQL dialect marker 'SEQUENCE'"
+        },
+        {
+          "column": 36,
+          "file": "src/uDataModule.pas",
+          "line": 6,
+          "text": "`uses` clause names unit FireDAC.Comp.Client"
+        },
+        {
+          "column": 11,
+          "file": "src/uDataModule.pas",
+          "line": 11,
+          "text": "reference to TFDConnection"
+        }
+      ],
+      "id": "database",
+      "label": "Database",
+      "present": true
+    },
+    {
+      "count": 4,
+      "evidence": [
+        {
+          "column": 13,
+          "file": "src/uOffice.pas",
+          "line": 6,
+          "text": "`uses` clause names unit ComObj"
+        },
+        {
+          "column": 13,
+          "file": "src/uOffice.pas",
+          "line": 6,
+          "text": "references unit ComObj"
+        },
+        {
+          "column": 21,
+          "file": "src/uOffice.pas",
+          "line": 6,
+          "text": "`uses` clause names unit ActiveX"
+        },
+        {
+          "column": 21,
+          "file": "src/uOffice.pas",
+          "line": 6,
+          "text": "references unit ActiveX"
+        },
+        {
+          "column": 12,
+          "file": "src/uOffice.pas",
+          "line": 16,
+          "text": "reference to CreateOleObject"
+        }
+      ],
+      "id": "com_activex",
+      "label": "COM/ActiveX",
+      "present": true
+    },
+    {
+      "count": 4,
+      "evidence": [
+        {
+          "column": 22,
+          "file": "src/uReports.pas",
+          "line": 6,
+          "text": "`uses` clause names unit frxClass"
+        },
+        {
+          "column": 22,
+          "file": "src/uReports.pas",
+          "line": 6,
+          "text": "references unit frxClass"
+        },
+        {
+          "column": 32,
+          "file": "src/uReports.pas",
+          "line": 6,
+          "text": "`uses` clause names unit frxDBSet"
+        },
+        {
+          "column": 32,
+          "file": "src/uReports.pas",
+          "line": 6,
+          "text": "references unit frxDBSet"
+        },
+        {
+          "column": 11,
+          "file": "src/uReports.pas",
+          "line": 14,
+          "text": "reference to TfrxReport"
+        }
+      ],
+      "id": "reports",
+      "label": "Reports",
+      "present": true
+    },
+    {
+      "count": 0,
+      "evidence": [],
+      "id": "scheduled_jobs",
+      "label": "Scheduled Jobs",
+      "present": false
+    },
+    {
+      "count": 3,
+      "evidence": [
+        {
+          "column": 39,
+          "file": "src/uTransfer.pas",
+          "line": 6,
+          "text": "`uses` clause names unit SvcMgr"
+        },
+        {
+          "column": 39,
+          "file": "src/uTransfer.pas",
+          "line": 6,
+          "text": "references unit SvcMgr"
+        },
+        {
+          "column": 3,
+          "file": "src/uTransfer.pas",
+          "line": 9,
+          "text": "TTransferService derives from TService"
+        },
+        {
+          "column": 28,
+          "file": "src/uTransfer.pas",
+          "line": 9,
+          "text": "reference to TService"
+        }
+      ],
+      "id": "services",
+      "label": "Services",
+      "present": true
+    },
+    {
+      "count": 3,
+      "evidence": [
+        {
+          "column": 1,
+          "file": ".github/workflows/build.yml",
+          "line": 8,
+          "text": "- run: msbuild ERPSystem.dproj /t:Build"
+        },
+        {
+          "column": 1,
+          "file": "Makefile",
+          "line": 2,
+          "text": "lazbuild ERPSystem.lpi"
+        },
+        {
+          "column": 1,
+          "file": "Makefile",
+          "line": 3,
+          "text": "make -C core"
+        },
+        {
+          "column": 1,
+          "file": "build.bat",
+          "line": 2,
+          "text": "call \"%BDS%\\bin\\rsvars.bat\""
+        },
+        {
+          "column": 1,
+          "file": "build.bat",
+          "line": 3,
+          "text": "msbuild ERPSystem.dproj /t:Build /p:Config=Release"
+        }
+      ],
+      "id": "build_scripts",
+      "label": "Build Scripts",
+      "present": true
+    },
+    {
+      "count": 1,
+      "evidence": [
+        {
+          "column": 1,
+          "file": "docs/README.md",
+          "line": 1,
+          "text": "documentation file"
+        }
+      ],
+      "id": "documentation",
+      "label": "Documentation",
+      "present": true
+    },
+    {
+      "count": 7,
+      "evidence": [
+        {
+          "column": 22,
+          "file": "src/uHttpClient.pas",
+          "line": 6,
+          "text": "`uses` clause names unit IdHTTP"
+        },
+        {
+          "column": 9,
+          "file": "src/uHttpClient.pas",
+          "line": 14,
+          "text": "reference to TIdHTTP"
+        },
+        {
+          "column": 24,
+          "file": "src/uHttpClient.pas",
+          "line": 18,
+          "text": "URL literal https://api.example.com/v1/orders"
+        },
+        {
+          "column": 13,
+          "file": "src/uOffice.pas",
+          "line": 6,
+          "text": "`uses` clause names unit ComObj"
+        },
+        {
+          "column": 21,
+          "file": "src/uOffice.pas",
+          "line": 6,
+          "text": "`uses` clause names unit ActiveX"
+        }
+      ],
+      "id": "integrations",
+      "label": "Integrations",
+      "present": true
+    }
+  ],
+  "dependencies": {
+    "build": {
+      "compiler_configs": [
+        {
+          "confidence": "medium",
+          "defines": [
+            "ERP_BUILD",
+            "RELEASE"
+          ],
+          "evidence": [
+            {
+              "column": 1,
+              "file": "dcc32.cfg",
+              "line": 1,
+              "text": "-$O+"
+            },
+            {
+              "column": 1,
+              "file": "dcc32.cfg",
+              "line": 2,
+              "text": "-$W+"
+            },
+            {
+              "column": 1,
+              "file": "dcc32.cfg",
+              "line": 3,
+              "text": "-Ulib\\jedi;core"
+            },
+            {
+              "column": 1,
+              "file": "dcc32.cfg",
+              "line": 4,
+              "text": "-Isrc"
+            },
+            {
+              "column": 1,
+              "file": "dcc32.cfg",
+              "line": 5,
+              "text": "-Rresources"
+            },
+            {
+              "column": 1,
+              "file": "dcc32.cfg",
+              "line": 6,
+              "text": "-DERP_BUILD;RELEASE"
+            },
+            {
+              "column": 1,
+              "file": "dcc32.cfg",
+              "line": 7,
+              "text": "-Ebin"
+            },
+            {
+              "column": 1,
+              "file": "dcc32.cfg",
+              "line": 8,
+              "text": "-N0dcu"
+            }
+          ],
+          "kind": "dcc-cfg",
+          "path": "dcc32.cfg",
+          "scope": "global",
+          "search_paths": [
+            "core",
+            "lib\\jedi",
+            "resources",
+            "src"
+          ],
+          "status": "PARTIAL",
+          "switches": [
+            [
+              "-$O",
+              "+"
+            ],
+            [
+              "-$W",
+              "+"
+            ],
+            [
+              "-U",
+              "lib\\jedi;core"
+            ],
+            [
+              "-I",
+              "src"
+            ],
+            [
+              "-R",
+              "resources"
+            ],
+            [
+              "-D",
+              "ERP_BUILD;RELEASE"
+            ],
+            [
+              "-E",
+              "bin"
+            ],
+            [
+              "-N0",
+              "dcu"
+            ]
+          ]
+        },
+        {
+          "confidence": "medium",
+          "defines": [
+            "ERP_BUILD"
+          ],
+          "evidence": [
+            {
+              "column": 1,
+              "file": "ERPSystem.dproj",
+              "line": 14,
+              "text": "DCC_UnitSearchPathlib\\jedi;core;$(DCC_UnitSearchPath)"
+            },
+            {
+              "column": 1,
+              "file": "ERPSystem.dproj",
+              "line": 15,
+              "text": "DCC_DefineERP_BUILD;$(DCC_Define)"
+            },
+            {
+              "column": 1,
+              "file": "ERPSystem.dproj",
+              "line": 16,
+              "text": "DCC_NamespaceSystem;Xml;Data;Winapi;$(DCC_Namespace)"
+            }
+          ],
+          "kind": "delphi-project",
+          "path": "ERPSystem.dproj",
+          "scope": "project",
+          "search_paths": [
+            "core",
+            "lib\\jedi"
+          ],
+          "status": "PARTIAL",
+          "switches": [
+            [
+              "DCC_UnitSearchPath",
+              "lib\\jedi;core;$(DCC_UnitSearchPath)"
+            ],
+            [
+              "DCC_Define",
+              "ERP_BUILD;$(DCC_Define)"
+            ],
+            [
+              "DCC_Namespace",
+              "System;Xml;Data;Winapi;$(DCC_Namespace)"
+            ]
+          ]
+        }
+      ],
+      "requirements": {
+        "blockers": [
+          {
+            "code": "GUI_SHAPE_DETECTED",
+            "detail": "ERPSystem.dpr is a gui_vcl application; GUI conversion is out of scope for the first release"
+          },
+          {
+            "code": "UNRESOLVED_UNITS",
+            "detail": "14 unit reference(s) could not be resolved inside the ingested input"
+          }
+        ],
+        "compiler": "delphi",
+        "compiler_evidence": {
+          "delphi": [
+            "ERPSystem.dpr",
+            "ERPSystem.dpr (dialect)",
+            "ERPSystem.dproj",
+            "packages/ErpCore.dpk",
+            "packages/ErpCore.dpk (dialect)",
+            "src/MainForm.dfm"
+          ],
+          "fpc": [],
+          "note": "derived from file extensions, dialects and directives; no compiler was invoked during discovery"
+        },
+        "defines": [
+          "$(DCC_Define)",
+          "ERP_BUILD"
+        ],
+        "flags": [
+          "-Fu$(DCC_UnitSearchPath)",
+          "-Fucore",
+          "-Fulib\\jedi",
+          "-d$(DCC_Define)",
+          "-dERP_BUILD"
+        ],
+        "modes": [],
+        "status": "PARTIAL",
+        "unit_search_paths": [
+          "$(DCC_UnitSearchPath)",
+          "core",
+          "lib\\jedi"
+        ]
+      },
+      "scripts": [
+        {
+          "confidence": "high",
+          "evidence": [
+            {
+              "column": 1,
+              "file": ".github/workflows/build.yml",
+              "line": 8,
+              "text": "- run: msbuild ERPSystem.dproj /t:Build"
+            }
+          ],
+          "kind": "ci-config",
+          "path": ".github/workflows/build.yml",
+          "referenced_projects": [
+            "ERPSystem.dproj"
+          ],
+          "status": "PARTIAL",
+          "tools": [
+            "msbuild"
+          ]
+        },
+        {
+          "confidence": "high",
+          "evidence": [
+            {
+              "column": 1,
+              "file": "Makefile",
+              "line": 2,
+              "text": "lazbuild ERPSystem.lpi"
+            },
+            {
+              "column": 1,
+              "file": "Makefile",
+              "line": 3,
+              "text": "make -C core"
+            }
+          ],
+          "kind": "makefile",
+          "path": "Makefile",
+          "referenced_projects": [],
+          "status": "PARTIAL",
+          "tools": [
+            "lazbuild",
+            "make"
+          ]
+        },
+        {
+          "confidence": "high",
+          "evidence": [
+            {
+              "column": 1,
+              "file": "build.bat",
+              "line": 2,
+              "text": "call \"%BDS%\\bin\\rsvars.bat\""
+            },
+            {
+              "column": 1,
+              "file": "build.bat",
+              "line": 3,
+              "text": "msbuild ERPSystem.dproj /t:Build /p:Config=Release"
+            },
+            {
+              "column": 1,
+              "file": "build.bat",
+              "line": 4,
+              "text": "dcc32 -B ERPSystem.dpr"
+            }
+          ],
+          "kind": "batch",
+          "path": "build.bat",
+          "referenced_projects": [
+            "ERPSystem.dpr",
+            "ERPSystem.dproj"
+          ],
+          "status": "PARTIAL",
+          "tools": [
+            "dcc32",
+            "msbuild",
+            "rsvars"
+          ]
+        }
+      ]
+    },
+    "databases": [
+      {
+        "confidence": "medium",
+        "evidence": [
+          {
+            "column": 36,
+            "file": "src/uDataModule.pas",
+            "line": 6,
+            "text": "`uses` clause names unit FireDAC.Comp.Client"
+          },
+          {
+            "column": 11,
+            "file": "src/uDataModule.pas",
+            "line": 11,
+            "text": "reference to TFDConnection"
+          },
+          {
+            "column": 12,
+            "file": "src/uDataModule.pas",
+            "line": 12,
+            "text": "reference to TFDQuery"
+          }
+        ],
+        "status": "PARTIAL",
+        "technology": "FireDAC"
+      },
+      {
+        "confidence": "medium",
+        "evidence": [
+          {
+            "column": 5,
+            "file": "src/uDataModule.pas",
+            "line": 27,
+            "text": "connection parameter DriverID=Ora;Database=ERPPROD;User_Name=erp_app;Password=<redacted>"
+          }
+        ],
+        "status": "PARTIAL",
+        "technology": "driver Ora"
+      }
+    ],
+    "integrations": [
+      {
+        "category": "com-ole",
+        "confidence": "high",
+        "endpoints": [
+          "Excel.Application"
+        ],
+        "evidence": [
+          {
+            "column": 13,
+            "file": "src/uOffice.pas",
+            "line": 6,
+            "text": "`uses` clause names unit ComObj"
+          },
+          {
+            "column": 21,
+            "file": "src/uOffice.pas",
+            "line": 6,
+            "text": "`uses` clause names unit ActiveX"
+          },
+          {
+            "column": 12,
+            "file": "src/uOffice.pas",
+            "line": 16,
+            "text": "reference to CreateOleObject"
+          },
+          {
+            "column": 28,
+            "file": "src/uOffice.pas",
+            "line": 16,
+            "text": "CreateOleObject('Excel.Application')"
+          }
+        ],
+        "status": "PARTIAL",
+        "technology": "COM/OLE"
+      },
+      {
+        "category": "email",
+        "confidence": "high",
+        "endpoints": [
+          "smtp.corp.example.com"
+        ],
+        "evidence": [
+          {
+            "column": 20,
+            "file": "src/uTransfer.pas",
+            "line": 6,
+            "text": "`uses` clause names unit IdSMTP"
+          },
+          {
+            "column": 28,
+            "file": "src/uTransfer.pas",
+            "line": 6,
+            "text": "`uses` clause names unit IdMessage"
+          },
+          {
+            "column": 9,
+            "file": "src/uTransfer.pas",
+            "line": 19,
+            "text": "reference to TIdSMTP"
+          },
+          {
+            "column": 16,
+            "file": "src/uTransfer.pas",
+            "line": 24,
+            "text": "Host assigned smtp.corp.example.com"
+          }
+        ],
+        "status": "PARTIAL",
+        "technology": "Indy"
+      },
+      {
+        "category": "ftp",
+        "confidence": "high",
+        "endpoints": [
+          "ftp.partner.example.org"
+        ],
+        "evidence": [
+          {
+            "column": 13,
+            "file": "src/uTransfer.pas",
+            "line": 6,
+            "text": "`uses` clause names unit IdFTP"
+          },
+          {
+            "column": 8,
+            "file": "src/uTransfer.pas",
+            "line": 18,
+            "text": "reference to TIdFTP"
+          },
+          {
+            "column": 15,
+            "file": "src/uTransfer.pas",
+            "line": 22,
+            "text": "Host assigned ftp.partner.example.org"
+          }
+        ],
+        "status": "PARTIAL",
+        "technology": "Indy"
+      },
+      {
+        "category": "http-client",
+        "confidence": "high",
+        "endpoints": [
+          "https://api.example.com/v1/orders"
+        ],
+        "evidence": [
+          {
+            "column": 22,
+            "file": "src/uHttpClient.pas",
+            "line": 6,
+            "text": "`uses` clause names unit IdHTTP"
+          },
+          {
+            "column": 9,
+            "file": "src/uHttpClient.pas",
+            "line": 14,
+            "text": "reference to TIdHTTP"
+          },
+          {
+            "column": 24,
+            "file": "src/uHttpClient.pas",
+            "line": 18,
+            "text": "URL literal https://api.example.com/v1/orders"
+          }
+        ],
+        "status": "PARTIAL",
+        "technology": "Indy"
+      },
+      {
+        "category": "reporting",
+        "confidence": "high",
+        "endpoints": [],
+        "evidence": [
+          {
+            "column": 22,
+            "file": "src/uReports.pas",
+            "line": 6,
+            "text": "`uses` clause names unit frxClass"
+          },
+          {
+            "column": 32,
+            "file": "src/uReports.pas",
+            "line": 6,
+            "text": "`uses` clause names unit frxDBSet"
+          },
+          {
+            "column": 11,
+            "file": "src/uReports.pas",
+            "line": 14,
+            "text": "reference to TfrxReport"
+          }
+        ],
+        "status": "PARTIAL",
+        "technology": "FastReport"
+      },
+      {
+        "category": "soap-webservice",
+        "confidence": "high",
+        "endpoints": [
+          "http://billing.corp.example.com:8080/BillingService.asmx"
+        ],
+        "evidence": [
+          {
+            "column": 13,
+            "file": "src/uSoapClient.pas",
+            "line": 6,
+            "text": "`uses` clause names unit InvokeRegistry"
+          },
+          {
+            "column": 29,
+            "file": "src/uSoapClient.pas",
+            "line": 6,
+            "text": "`uses` clause names unit SOAPHTTPClient"
+          },
+          {
+            "column": 45,
+            "file": "src/uSoapClient.pas",
+            "line": 6,
+            "text": "`uses` clause names unit Rio"
+          },
+          {
+            "column": 8,
+            "file": "src/uSoapClient.pas",
+            "line": 14,
+            "text": "reference to THTTPRIO"
+          },
+          {
+            "column": 14,
+            "file": "src/uSoapClient.pas",
+            "line": 17,
+            "text": "URL literal http://billing.corp.example.com:8080/BillingService.asmx"
+          }
+        ],
+        "status": "PARTIAL",
+        "technology": "SOAP"
+      },
+      {
+        "category": "windows-service",
+        "confidence": "high",
+        "endpoints": [],
+        "evidence": [
+          {
+            "column": 39,
+            "file": "src/uTransfer.pas",
+            "line": 6,
+            "text": "`uses` clause names unit SvcMgr"
+          },
+          {
+            "column": 28,
+            "file": "src/uTransfer.pas",
+            "line": 9,
+            "text": "reference to TService"
+          }
+        ],
+        "status": "PARTIAL",
+        "technology": "TService"
+      }
+    ],
+    "key": [
+      {
+        "category": "networking",
+        "evidence": [
+          {
+            "column": 22,
+            "file": "src/uHttpClient.pas",
+            "line": 6,
+            "text": "`uses` clause names unit IdHTTP"
+          },
+          {
+            "column": 30,
+            "file": "src/uHttpClient.pas",
+            "line": 6,
+            "text": "`uses` clause names unit IdSSLOpenSSL"
+          },
+          {
+            "column": 13,
+            "file": "src/uTransfer.pas",
+            "line": 6,
+            "text": "`uses` clause names unit IdFTP"
+          }
+        ],
+        "kind": "library",
+        "name": "Indy",
+        "reason": "recognised third-party library not present in the input",
+        "references": 2,
+        "status": "unresolved"
+      },
+      {
+        "category": "missing-unit",
+        "evidence": [
+          {
+            "column": 3,
+            "file": "packages/ErpCore.dpk",
+            "line": 10,
+            "text": "dbrtl"
+          }
+        ],
+        "kind": "unit",
+        "name": "dbrtl",
+        "reason": "unit is not present in the input",
+        "references": 1,
+        "status": "unresolved"
+      },
+      {
+        "category": "ui-components",
+        "evidence": [
+          {
+            "column": 22,
+            "file": "src/uGrids.pas",
+            "line": 6,
+            "text": "`uses` clause names unit cxGrid"
+          },
+          {
+            "column": 30,
+            "file": "src/uGrids.pas",
+            "line": 6,
+            "text": "`uses` clause names unit cxGridDBTableView"
+          },
+          {
+            "column": 49,
+            "file": "src/uGrids.pas",
+            "line": 6,
+            "text": "`uses` clause names unit dxBarManager"
+          }
+        ],
+        "kind": "library",
+        "name": "DevExpress",
+        "reason": "recognised third-party library not present in the input",
+        "references": 1,
+        "status": "unresolved"
+      },
+      {
+        "category": "reporting",
+        "evidence": [
+          {
+            "column": 22,
+            "file": "src/uReports.pas",
+            "line": 6,
+            "text": "`uses` clause names unit frxClass"
+          },
+          {
+            "column": 32,
+            "file": "src/uReports.pas",
+            "line": 6,
+            "text": "`uses` clause names unit frxDBSet"
+          }
+        ],
+        "kind": "library",
+        "name": "FastReport",
+        "reason": "recognised third-party library not present in the input",
+        "references": 1,
+        "status": "unresolved"
+      },
+      {
+        "category": "missing-unit",
+        "evidence": [
+          {
+            "column": 3,
+            "file": "packages/ErpCore.dpk",
+            "line": 8,
+            "text": "rtl"
+          }
+        ],
+        "kind": "unit",
+        "name": "rtl",
+        "reason": "unit is not present in the input",
+        "references": 1,
+        "status": "unresolved"
+      }
+    ],
+    "libraries": [
+      {
+        "category": "database",
+        "confidence": "high",
+        "evidence": [
+          {
+            "column": 3,
+            "file": "packages/ErpCore.dpk",
+            "line": 10,
+            "text": "`requires` clause names unit dbrtl"
+          },
+          {
+            "column": 3,
+            "file": "src/uDataModule.pas",
+            "line": 7,
+            "text": "`uses` clause names unit Data.DB"
+          }
+        ],
+        "name": "DB (TDataSet)",
+        "origin": "rtl",
+        "referenced_by": [
+          "packages/ErpCore.dpk",
+          "src/uDataModule.pas"
+        ],
+        "resolved": false,
+        "status": "PARTIAL",
+        "units": [
+          "data.db",
+          "dbrtl"
+        ],
+        "vendor": ""
+      },
+      {
+        "category": "database",
+        "confidence": "high",
+        "evidence": [
+          {
+            "column": 36,
+            "file": "src/uDataModule.pas",
+            "line": 6,
+            "text": "`uses` clause names unit FireDAC.Comp.Client"
+          },
+          {
+            "column": 57,
+            "file": "src/uDataModule.pas",
+            "line": 6,
+            "text": "`uses` clause names unit FireDAC.Phys.Ora"
+          }
+        ],
+        "name": "FireDAC",
+        "origin": "rtl",
+        "referenced_by": [
+          "src/uDataModule.pas"
+        ],
+        "resolved": false,
+        "status": "PARTIAL",
+        "units": [
+          "firedac.comp.client",
+          "firedac.phys.ora"
+        ],
+        "vendor": "Embarcadero"
+      },
+      {
+        "category": "framework",
+        "confidence": "high",
+        "evidence": [
+          {
+            "column": 3,
+            "file": "ERPSystem.dpr",
+            "line": 4,
+            "text": "`uses` clause names unit Forms"
+          },
+          {
+            "column": 22,
+            "file": "lib/jedi/JvEdit.pas",
+            "line": 6,
+            "text": "`uses` clause names unit StdCtrls"
+          },
+          {
+            "column": 3,
+            "file": "packages/ErpCore.dpk",
+            "line": 9,
+            "text": "`requires` clause names unit vcl"
+          },
+          {
+            "column": 41,
+            "file": "src/MainForm.pas",
+            "line": 6,
+            "text": "`uses` clause names unit Graphics"
+          },
+          {
+            "column": 51,
+            "file": "src/MainForm.pas",
+            "line": 6,
+            "text": "`uses` clause names unit Controls"
+          },
+          {
+            "column": 61,
+            "file": "src/MainForm.pas",
+            "line": 6,
+            "text": "`uses` clause names unit Forms"
+          },
+          {
+            "column": 68,
+            "file": "src/MainForm.pas",
+            "line": 6,
+            "text": "`uses` clause names unit Dialogs"
+          },
+          {
+            "column": 3,
+            "file": "src/MainForm.pas",
+            "line": 7,
+            "text": "`uses` clause names unit StdCtrls"
+          },
+          {
+            "column": 47,
+            "file": "src/uTransfer.pas",
+            "line": 6,
+            "text": "`uses` clause names unit ExtCtrls"
+          }
+        ],
+        "name": "VCL",
+        "origin": "framework",
+        "referenced_by": [
+          "ERPSystem.dpr",
+          "lib/jedi/JvEdit.pas",
+          "packages/ErpCore.dpk",
+          "src/MainForm.pas",
+          "src/uTransfer.pas"
+        ],
+        "resolved": false,
+        "status": "PARTIAL",
+        "units": [
+          "controls",
+          "dialogs",
+          "extctrls",
+          "forms",
+          "graphics",
+          "stdctrls",
+          "vcl"
+        ],
+        "vendor": ""
+      },
+      {
+        "category": "networking",
+        "confidence": "high",
+        "evidence": [
+          {
+            "column": 13,
+            "file": "src/uSoapClient.pas",
+            "line": 6,
+            "text": "`uses` clause names unit InvokeRegistry"
+          },
+          {
+            "column": 29,
+            "file": "src/uSoapClient.pas",
+            "line": 6,
+            "text": "`uses` clause names unit SOAPHTTPClient"
+          },
+          {
+            "column": 45,
+            "file": "src/uSoapClient.pas",
+            "line": 6,
+            "text": "`uses` clause names unit Rio"
+          }
+        ],
+        "name": "SOAP (RTL)",
+        "origin": "rtl",
+        "referenced_by": [
+          "src/uSoapClient.pas"
+        ],
+        "resolved": false,
+        "status": "PARTIAL",
+        "units": [
+          "invokeregistry",
+          "rio",
+          "soaphttpclient"
+        ],
+        "vendor": ""
+      },
+      {
+        "category": "networking",
+        "confidence": "medium",
+        "evidence": [
+          {
+            "column": 22,
+            "file": "src/uHttpClient.pas",
+            "line": 6,
+            "text": "`uses` clause names unit IdHTTP"
+          },
+          {
+            "column": 30,
+            "file": "src/uHttpClient.pas",
+            "line": 6,
+            "text": "`uses` clause names unit IdSSLOpenSSL"
+          },
+          {
+            "column": 13,
+            "file": "src/uTransfer.pas",
+            "line": 6,
+            "text": "`uses` clause names unit IdFTP"
+          },
+          {
+            "column": 20,
+            "file": "src/uTransfer.pas",
+            "line": 6,
+            "text": "`uses` clause names unit IdSMTP"
+          },
+          {
+            "column": 28,
+            "file": "src/uTransfer.pas",
+            "line": 6,
+            "text": "`uses` clause names unit IdMessage"
+          }
+        ],
+        "name": "Indy",
+        "origin": "external",
+        "referenced_by": [
+          "src/uHttpClient.pas",
+          "src/uTransfer.pas"
+        ],
+        "resolved": false,
+        "status": "PARTIAL",
+        "units": [
+          "idftp",
+          "idhttp",
+          "idmessage",
+          "idsmtp",
+          "idsslopenssl"
+        ],
+        "vendor": "Indy Pit Crew"
+      },
+      {
+        "category": "other",
+        "confidence": "low",
+        "evidence": [
+          {
+            "column": 3,
+            "file": "ERPSystem.dpr",
+            "line": 15,
+            "text": "`uses` clause names unit uMissingVendor"
+          }
+        ],
+        "name": "uMissingVendor",
+        "origin": "unresolved",
+        "referenced_by": [
+          "ERPSystem.dpr"
+        ],
+        "resolved": false,
+        "status": "PARTIAL",
+        "units": [
+          "umissingvendor"
+        ],
+        "vendor": ""
+      },
+      {
+        "category": "other",
+        "confidence": "low",
+        "evidence": [
+          {
+            "column": 3,
+            "file": "packages/ErpCore.dpk",
+            "line": 11,
+            "text": "`requires` clause names unit vendorui"
+          }
+        ],
+        "name": "vendorui",
+        "origin": "unresolved",
+        "referenced_by": [
+          "packages/ErpCore.dpk"
+        ],
+        "resolved": false,
+        "status": "PARTIAL",
+        "units": [
+          "vendorui"
+        ],
+        "vendor": ""
+      },
+      {
+        "category": "reporting",
+        "confidence": "medium",
+        "evidence": [
+          {
+            "column": 22,
+            "file": "src/uReports.pas",
+            "line": 6,
+            "text": "`uses` clause names unit frxClass"
+          },
+          {
+            "column": 32,
+            "file": "src/uReports.pas",
+            "line": 6,
+            "text": "`uses` clause names unit frxDBSet"
+          }
+        ],
+        "name": "FastReport",
+        "origin": "external",
+        "referenced_by": [
+          "src/uReports.pas"
+        ],
+        "resolved": false,
+        "status": "PARTIAL",
+        "units": [
+          "frxclass",
+          "frxdbset"
+        ],
+        "vendor": "Fast Reports"
+      },
+      {
+        "category": "rtl",
+        "confidence": "high",
+        "evidence": [
+          {
+            "column": 3,
+            "file": "core/CoreUtils.pas",
+            "line": 6,
+            "text": "`uses` clause names unit SysUtils"
+          },
+          {
+            "column": 13,
+            "file": "core/CoreUtils.pas",
+            "line": 6,
+            "text": "`uses` clause names unit Classes"
+          },
+          {
+            "column": 3,
+            "file": "lib/jedi/JvEdit.pas",
+            "line": 6,
+            "text": "`uses` clause names unit SysUtils"
+          },
+          {
+            "column": 13,
+            "file": "lib/jedi/JvEdit.pas",
+            "line": 6,
+            "text": "`uses` clause names unit Classes"
+          },
+          {
+            "column": 3,
+            "file": "packages/ErpCore.dpk",
+            "line": 8,
+            "text": "`requires` clause names unit rtl"
+          },
+          {
+            "column": 22,
+            "file": "src/MainForm.pas",
+            "line": 6,
+            "text": "`uses` clause names unit SysUtils"
+          },
+          {
+            "column": 32,
+            "file": "src/MainForm.pas",
+            "line": 6,
+            "text": "`uses` clause names unit Classes"
+          },
+          {
+            "column": 3,
+            "file": "src/uConfig.pas",
+            "line": 6,
+            "text": "`uses` clause names unit SysUtils"
+          },
+          {
+            "column": 13,
+            "file": "src/uConfig.pas",
+            "line": 6,
+            "text": "`uses` clause names unit IniFiles"
+          },
+          {
+            "column": 23,
+            "file": "src/uConfig.pas",
+            "line": 6,
+            "text": "`uses` clause names unit Registry"
+          },
+          {
+            "column": 3,
+            "file": "src/uGrids.pas",
+            "line": 6,
+            "text": "`uses` clause names unit SysUtils"
+          },
+          {
+            "column": 13,
+            "file": "src/uGrids.pas",
+            "line": 6,
+            "text": "`uses` clause names unit Classes"
+          },
+          {
+            "column": 3,
+            "file": "src/uHttpClient.pas",
+            "line": 6,
+            "text": "`uses` clause names unit SysUtils"
+          },
+          {
+            "column": 13,
+            "file": "src/uHttpClient.pas",
+            "line": 6,
+            "text": "`uses` clause names unit Classes"
+          },
+          {
+            "column": 3,
+            "file": "src/uOffice.pas",
+            "line": 6,
+            "text": "`uses` clause names unit SysUtils"
+          },
+          {
+            "column": 30,
+            "file": "src/uOffice.pas",
+            "line": 6,
+            "text": "`uses` clause names unit Variants"
+          },
+          {
+            "column": 3,
+            "file": "src/uReports.pas",
+            "line": 6,
+            "text": "`uses` clause names unit SysUtils"
+          },
+          {
+            "column": 13,
+            "file": "src/uReports.pas",
+            "line": 6,
+            "text": "`uses` clause names unit Classes"
+          },
+          {
+            "column": 3,
+            "file": "src/uSoapClient.pas",
+            "line": 6,
+            "text": "`uses` clause names unit SysUtils"
+          },
+          {
+            "column": 3,
+            "file": "src/uTransfer.pas",
+            "line": 6,
+            "text": "`uses` clause names unit SysUtils"
+          }
+        ],
+        "name": "RTL",
+        "origin": "rtl",
+        "referenced_by": [
+          "core/CoreUtils.pas",
+          "lib/jedi/JvEdit.pas",
+          "packages/ErpCore.dpk",
+          "src/MainForm.pas",
+          "src/uConfig.pas",
+          "src/uGrids.pas",
+          "src/uHttpClient.pas",
+          "src/uOffice.pas",
+          "src/uReports.pas",
+          "src/uSoapClient.pas",
+          "src/uTransfer.pas"
+        ],
+        "resolved": false,
+        "status": "PARTIAL",
+        "units": [
+          "classes",
+          "inifiles",
+          "registry",
+          "rtl",
+          "sysutils",
+          "variants"
+        ],
+        "vendor": ""
+      },
+      {
+        "category": "rtl",
+        "confidence": "high",
+        "evidence": [
+          {
+            "column": 3,
+            "file": "src/MainForm.pas",
+            "line": 6,
+            "text": "`uses` clause names unit Windows"
+          },
+          {
+            "column": 12,
+            "file": "src/MainForm.pas",
+            "line": 6,
+            "text": "`uses` clause names unit Messages"
+          },
+          {
+            "column": 33,
+            "file": "src/uConfig.pas",
+            "line": 6,
+            "text": "`uses` clause names unit Windows"
+          },
+          {
+            "column": 13,
+            "file": "src/uOffice.pas",
+            "line": 6,
+            "text": "`uses` clause names unit ComObj"
+          },
+          {
+            "column": 21,
+            "file": "src/uOffice.pas",
+            "line": 6,
+            "text": "`uses` clause names unit ActiveX"
+          },
+          {
+            "column": 39,
+            "file": "src/uTransfer.pas",
+            "line": 6,
+            "text": "`uses` clause names unit SvcMgr"
+          }
+        ],
+        "name": "Windows platform units",
+        "origin": "rtl",
+        "referenced_by": [
+          "src/MainForm.pas",
+          "src/uConfig.pas",
+          "src/uOffice.pas",
+          "src/uTransfer.pas"
+        ],
+        "resolved": false,
+        "status": "PARTIAL",
+        "units": [
+          "activex",
+          "comobj",
+          "messages",
+          "svcmgr",
+          "windows"
+        ],
+        "vendor": ""
+      },
+      {
+        "category": "rtl",
+        "confidence": "high",
+        "evidence": [
+          {
+            "column": 3,
+            "file": "src/uDataModule.pas",
+            "line": 6,
+            "text": "`uses` clause names unit System.SysUtils"
+          },
+          {
+            "column": 20,
+            "file": "src/uDataModule.pas",
+            "line": 6,
+            "text": "`uses` clause names unit System.Classes"
+          }
+        ],
+        "name": "Delphi RTL",
+        "origin": "rtl",
+        "referenced_by": [
+          "src/uDataModule.pas"
+        ],
+        "resolved": false,
+        "status": "PARTIAL",
+        "units": [
+          "system.classes",
+          "system.sysutils"
+        ],
+        "vendor": ""
+      },
+      {
+        "category": "ui-components",
+        "confidence": "high",
+        "evidence": [
+          {
+            "column": 63,
+            "file": "src/uGrids.pas",
+            "line": 6,
+            "text": "`uses` clause names unit JvEdit"
+          }
+        ],
+        "name": "JEDI",
+        "origin": "bundled",
+        "referenced_by": [
+          "src/uGrids.pas"
+        ],
+        "resolved": true,
+        "status": "PARTIAL",
+        "units": [
+          "jvedit"
+        ],
+        "vendor": "Project JEDI"
+      },
+      {
+        "category": "ui-components",
+        "confidence": "medium",
+        "evidence": [
+          {
+            "column": 22,
+            "file": "src/uGrids.pas",
+            "line": 6,
+            "text": "`uses` clause names unit cxGrid"
+          },
+          {
+            "column": 30,
+            "file": "src/uGrids.pas",
+            "line": 6,
+            "text": "`uses` clause names unit cxGridDBTableView"
+          },
+          {
+            "column": 49,
+            "file": "src/uGrids.pas",
+            "line": 6,
+            "text": "`uses` clause names unit dxBarManager"
+          }
+        ],
+        "name": "DevExpress",
+        "origin": "external",
+        "referenced_by": [
+          "src/uGrids.pas"
+        ],
+        "resolved": false,
+        "status": "PARTIAL",
+        "units": [
+          "cxgrid",
+          "cxgriddbtableview",
+          "dxbarmanager"
+        ],
+        "vendor": "Developer Express"
+      }
+    ],
+    "native_libraries": [
+      {
+        "evidence": [
+          {
+            "column": 0,
+            "file": "lib/legacy.dll",
+            "line": 0,
+            "text": "binary present in the ingested input"
+          },
+          {
+            "column": 22,
+            "file": "src/uLegacy.pas",
+            "line": 12,
+            "text": "external-clause reference legacy.dll"
+          }
+        ],
+        "kind": "dll",
+        "name": "legacy.dll",
+        "resolved_in_input": true,
+        "status": "PARTIAL"
+      },
+      {
+        "evidence": [
+          {
+            "column": 22,
+            "file": "src/uLegacy.pas",
+            "line": 13,
+            "text": "external-clause reference vendor.dll"
+          }
+        ],
+        "kind": "dll",
+        "name": "vendor.dll",
+        "resolved_in_input": false,
+        "status": "PARTIAL"
+      }
+    ],
+    "runtime": [
+      {
+        "confidence": "high",
+        "evidence": [
+          {
+            "column": 22,
+            "file": "src/uLegacy.pas",
+            "line": 12,
+            "text": "external-clause reference legacy.dll"
+          }
+        ],
+        "kind": "dll",
+        "name": "legacy.dll",
+        "required_by": [
+          "src/uLegacy.pas"
+        ],
+        "resolved_in_input": true,
+        "status": "PARTIAL"
+      },
+      {
+        "confidence": "high",
+        "evidence": [
+          {
+            "column": 22,
+            "file": "src/uLegacy.pas",
+            "line": 13,
+            "text": "external-clause reference vendor.dll"
+          }
+        ],
+        "kind": "dll",
+        "name": "vendor.dll",
+        "required_by": [
+          "src/uLegacy.pas"
+        ],
+        "resolved_in_input": false,
+        "status": "PARTIAL"
+      },
+      {
+        "confidence": "high",
+        "evidence": [
+          {
+            "column": 26,
+            "file": "src/uConfig.pas",
+            "line": 17,
+            "text": "TIniFile names erp.ini"
+          }
+        ],
+        "kind": "configuration-file",
+        "name": "erp.ini",
+        "required_by": [
+          "src/uConfig.pas"
+        ],
+        "resolved_in_input": true,
+        "status": "PARTIAL"
+      },
+      {
+        "confidence": "high",
+        "evidence": [
+          {
+            "column": 28,
+            "file": "src/uOffice.pas",
+            "line": 16,
+            "text": "CreateOleObject creates Excel.Application"
+          }
+        ],
+        "kind": "com-component",
+        "name": "Excel.Application",
+        "required_by": [
+          "src/uOffice.pas"
+        ],
+        "resolved_in_input": false,
+        "status": "PARTIAL"
+      },
+      {
+        "confidence": "high",
+        "evidence": [
+          {
+            "column": 3,
+            "file": "packages/ErpCore.dpk",
+            "line": 11,
+            "text": "`requires` clause names package vendorui"
+          }
+        ],
+        "kind": "bpl-package",
+        "name": "vendorui",
+        "required_by": [
+          "packages/ErpCore.dpk"
+        ],
+        "resolved_in_input": false,
+        "status": "PARTIAL"
+      },
+      {
+        "confidence": "high",
+        "evidence": [
+          {
+            "column": 3,
+            "file": "src/uTransfer.pas",
+            "line": 9,
+            "text": "TTransferService derives from TService"
+          }
+        ],
+        "kind": "service",
+        "name": "TTransferService",
+        "required_by": [
+          "src/uTransfer.pas"
+        ],
+        "resolved_in_input": false,
+        "status": "PARTIAL"
+      },
+      {
+        "confidence": "low",
+        "evidence": [
+          {
+            "column": 30,
+            "file": "src/uHttpClient.pas",
+            "line": 6,
+            "text": "`uses` clause names unit IdSSLOpenSSL"
+          }
+        ],
+        "kind": "runtime-library",
+        "name": "OpenSSL (libeay32.dll, ssleay32.dll)",
+        "required_by": [
+          "src/uHttpClient.pas"
+        ],
+        "resolved_in_input": false,
+        "status": "PARTIAL"
+      },
+      {
+        "confidence": "low",
+        "evidence": [
+          {
+            "column": 57,
+            "file": "src/uDataModule.pas",
+            "line": 6,
+            "text": "unit FireDAC.Phys.Ora implies client library oci.dll"
+          },
+          {
+            "column": 5,
+            "file": "src/uDataModule.pas",
+            "line": 27,
+            "text": "connection parameter DriverID=Ora implies oci.dll"
+          }
+        ],
+        "kind": "database-client",
+        "name": "oci.dll",
+        "required_by": [
+          "src/uDataModule.pas"
+        ],
+        "resolved_in_input": false,
+        "status": "PARTIAL"
+      },
+      {
+        "confidence": "medium",
+        "evidence": [
+          {
+            "column": 1,
+            "file": "config/erp.ini",
+            "line": 6,
+            "text": "hard-coded path C:\\ERP\\data\\import"
+          },
+          {
+            "column": 50,
+            "file": "src/uConfig.pas",
+            "line": 20,
+            "text": "hard-coded path C:\\ERP\\data\\import"
+          }
+        ],
+        "kind": "hardcoded-path",
+        "name": "C:\\ERP\\data\\import",
+        "required_by": [
+          "config/erp.ini",
+          "src/uConfig.pas"
+        ],
+        "resolved_in_input": false,
+        "status": "PARTIAL"
+      },
+      {
+        "confidence": "medium",
+        "evidence": [
+          {
+            "column": 15,
+            "file": "src/uConfig.pas",
+            "line": 19,
+            "text": "OpenKey opens Software\\Contoso\\ERP"
+          }
+        ],
+        "kind": "registry-key",
+        "name": "Software\\Contoso\\ERP",
+        "required_by": [
+          "src/uConfig.pas"
+        ],
+        "resolved_in_input": false,
+        "status": "PARTIAL"
+      },
+      {
+        "confidence": "medium",
+        "evidence": [
+          {
+            "column": 36,
+            "file": "src/uConfig.pas",
+            "line": 20,
+            "text": "GetEnvironmentVariable reads ERP_HOME"
+          }
+        ],
+        "kind": "environment-variable",
+        "name": "ERP_HOME",
+        "required_by": [
+          "src/uConfig.pas"
+        ],
+        "resolved_in_input": false,
+        "status": "PARTIAL"
+      }
+    ],
+    "sql_files": [
+      {
+        "confidence": "medium",
+        "dialect": "oracle",
+        "evidence": [
+          {
+            "column": 0,
+            "file": "sql/schema_oracle.sql",
+            "line": 2,
+            "text": "SQL dialect marker 'NUMBER('"
+          },
+          {
+            "column": 0,
+            "file": "sql/schema_oracle.sql",
+            "line": 2,
+            "text": "SQL dialect marker 'SEQUENCE'"
+          }
+        ],
+        "path": "sql/schema_oracle.sql",
+        "status": "PARTIAL"
+      }
+    ]
+  },
+  "diagnostics": [
+    {
+      "code": "INCLUDE_NOT_FOUND",
+      "column": 1,
+      "file": "src/uLegacy.pas",
+      "line": 2,
+      "message": "included file 'gone.inc' is not in the ingested input",
+      "severity": "warning"
+    },
+    {
+      "code": "UNRESOLVED_UNIT_REFERENCES",
+      "message": "14 unit reference(s) not present in the input: cxgrid, cxgriddbtableview, dbrtl, dxbarmanager, frxclass, frxdbset, idftp, idmessage, idsmtp, idsslopenssl, rtl, umissingvendor ...",
+      "severity": "warning"
+    }
+  ],
+  "dialect": {
+    "by_dialect": {
+      "delphi": 2,
+      "unknown": 13
+    },
+    "compiler": {
+      "evidence": [
+        {
+          "column": 0,
+          "file": "ERPSystem.dpr",
+          "line": 0,
+          "text": "compiler signal: dialect"
+        },
+        {
+          "column": 0,
+          "file": "ERPSystem.dpr",
+          "line": 0,
+          "text": "compiler signal: file extension or project metadata"
+        },
+        {
+          "column": 0,
+          "file": "ERPSystem.dproj",
+          "line": 0,
+          "text": "compiler signal: file extension or project metadata"
+        },
+        {
+          "column": 0,
+          "file": "packages/ErpCore.dpk",
+          "line": 0,
+          "text": "compiler signal: dialect"
+        },
+        {
+          "column": 0,
+          "file": "packages/ErpCore.dpk",
+          "line": 0,
+          "text": "compiler signal: file extension or project metadata"
+        },
+        {
+          "column": 0,
+          "file": "src/MainForm.dfm",
+          "line": 0,
+          "text": "compiler signal: file extension or project metadata"
+        }
+      ],
+      "name": "Embarcadero Delphi",
+      "status": "PARTIAL"
+    },
+    "confidence": "high",
+    "evidence": [
+      {
+        "column": 0,
+        "file": "ERPSystem.dpr",
+        "line": 0,
+        "text": "file extension .dpr"
+      },
+      {
+        "column": 1,
+        "file": "ERPSystem.dproj",
+        "line": 1,
+        "text": ".dproj file typical of Delphi / Object Pascal"
+      },
+      {
+        "column": 0,
+        "file": "packages/ErpCore.dpk",
+        "line": 0,
+        "text": "file extension .dpk"
+      },
+      {
+        "column": 1,
+        "file": "src/MainForm.dfm",
+        "line": 1,
+        "text": ".dfm file typical of Delphi / Object Pascal"
+      }
+    ],
+    "label": "Delphi / Object Pascal",
+    "primary": "delphi",
+    "status": "PARTIAL",
+    "version": {
+      "source": "ERPSystem.dproj (ProjectVersion=19.2)",
+      "status": "PARTIAL",
+      "value": "ProjectVersion 19.2"
+    }
+  },
+  "file_distribution": {
+    "by_class": {
+      "binary": 1,
+      "build_script": 3,
+      "configuration": 2,
+      "documentation": 1,
+      "pascal_include": 1,
+      "pascal_package": 1,
+      "pascal_program": 1,
+      "pascal_project": 1,
+      "pascal_unit": 12,
+      "resource": 1,
+      "sql": 1,
+      "ui_definition": 1,
+      "unknown": 1,
+      "version_control": 1
+    },
+    "by_extension": {
+      "(none)": 3,
+      ".bat": 1,
+      ".cfg": 1,
+      ".dfm": 1,
+      ".dll": 1,
+      ".dpk": 1,
+      ".dpr": 1,
+      ".dproj": 1,
+      ".inc": 1,
+      ".ini": 1,
+      ".md": 1,
+      ".pas": 12,
+      ".res": 1,
+      ".sql": 1,
+      ".yml": 1
+    },
+    "groups": [
+      {
+        "count": 13,
+        "id": "pascal_source",
+        "label": "Pascal Source (.pas, .pp)",
+        "percent": 46.4
+      },
+      {
+        "count": 3,
+        "id": "project_package",
+        "label": "Project/Package (.dpr, .dpk)",
+        "percent": 10.7
+      },
+      {
+        "count": 1,
+        "id": "form_ui",
+        "label": "Form/UI (.dfm, .xfm)",
+        "percent": 3.6
+      },
+      {
+        "count": 6,
+        "id": "config_build",
+        "label": "Config/Build Scripts",
+        "percent": 21.4
+      },
+      {
+        "count": 5,
+        "id": "other",
+        "label": "Other (Docs, Binaries, etc.)",
+        "percent": 17.9
+      }
+    ],
+    "total": 28
+  },
+  "generator": {
+    "llm_assisted": false,
+    "stage": 1,
+    "tool": "tools/p1"
+  },
+  "graphs": {
+    "libraries": [
+      {
+        "library": "DB (TDataSet)",
+        "used_by": [
+          "ERPSystem.dpr",
+          "packages/ErpCore.dpk"
+        ]
+      },
+      {
+        "library": "Delphi RTL",
+        "used_by": [
+          "ERPSystem.dpr"
+        ]
+      },
+      {
+        "library": "DevExpress",
+        "used_by": [
+          "ERPSystem.dpr"
+        ]
+      },
+      {
+        "library": "FastReport",
+        "used_by": [
+          "ERPSystem.dpr"
+        ]
+      },
+      {
+        "library": "FireDAC",
+        "used_by": [
+          "ERPSystem.dpr"
+        ]
+      },
+      {
+        "library": "Indy",
+        "used_by": [
+          "ERPSystem.dpr"
+        ]
+      },
+      {
+        "library": "JEDI",
+        "used_by": [
+          "ERPSystem.dpr"
+        ]
+      },
+      {
+        "library": "RTL",
+        "used_by": [
+          "ERPSystem.dpr",
+          "packages/ErpCore.dpk"
+        ]
+      },
+      {
+        "library": "SOAP (RTL)",
+        "used_by": [
+          "ERPSystem.dpr"
+        ]
+      },
+      {
+        "library": "VCL",
+        "used_by": [
+          "ERPSystem.dpr",
+          "packages/ErpCore.dpk"
+        ]
+      },
+      {
+        "library": "Windows platform units",
+        "used_by": [
+          "ERPSystem.dpr"
+        ]
+      },
+      {
+        "library": "uMissingVendor",
+        "used_by": [
+          "ERPSystem.dpr"
+        ]
+      },
+      {
+        "library": "vendorui",
+        "used_by": [
+          "packages/ErpCore.dpk"
+        ]
+      }
+    ],
+    "packages": [
+      {
+        "package": "packages/ErpCore.dpk",
+        "requires": [
+          "dbrtl",
+          "rtl",
+          "vcl",
+          "vendorui"
+        ]
+      }
+    ],
+    "projects": [
+      {
+        "externals": [
+          "include:gone.inc",
+          "library:devexpress",
+          "library:fastreport",
+          "library:indy",
+          "native-library:vendor.dll",
+          "unit:cxgrid",
+          "unit:cxgriddbtableview",
+          "unit:dxbarmanager",
+          "unit:frxclass",
+          "unit:frxdbset",
+          "unit:idftp",
+          "unit:idhttp",
+          "unit:idmessage",
+          "unit:idsmtp",
+          "unit:idsslopenssl",
+          "unit:umissingvendor"
+        ],
+        "libraries": [
+          "DB (TDataSet)",
+          "Delphi RTL",
+          "DevExpress",
+          "FastReport",
+          "FireDAC",
+          "Indy",
+          "JEDI",
+          "RTL",
+          "SOAP (RTL)",
+          "VCL",
+          "Windows platform units",
+          "uMissingVendor"
+        ],
+        "packages": [],
+        "project": "ERPSystem.dpr",
+        "uses": [
+          "lib/jedi/JvEdit.pas",
+          "src/MainForm.pas",
+          "src/uConfig.pas",
+          "src/uDataModule.pas",
+          "src/uGrids.pas",
+          "src/uHttpClient.pas",
+          "src/uLegacy.pas",
+          "src/uOffice.pas",
+          "src/uReports.pas",
+          "src/uSoapClient.pas",
+          "src/uTransfer.pas"
+        ]
+      },
+      {
+        "externals": [
+          "unit:vendorui"
+        ],
+        "libraries": [
+          "DB (TDataSet)",
+          "RTL",
+          "VCL",
+          "vendorui"
+        ],
+        "packages": [
+          "dbrtl",
+          "rtl",
+          "vcl",
+          "vendorui"
+        ],
+        "project": "packages/ErpCore.dpk",
+        "uses": []
+      }
+    ],
+    "unit": {
+      "edges": 74,
+      "nodes": 58,
+      "ref": "dependency-graph.json",
+      "resolved": 15,
+      "unresolved": 59
+    }
+  },
+  "inventory": {
+    "directories": [
+      {
+        "depth": 1,
+        "empty": false,
+        "file_count": 0,
+        "path": ".github",
+        "total_bytes": 157,
+        "total_file_count": 1
+      },
+      {
+        "depth": 2,
+        "empty": false,
+        "file_count": 1,
+        "path": ".github/workflows",
+        "total_bytes": 157,
+        "total_file_count": 1
+      },
+      {
+        "depth": 1,
+        "empty": false,
+        "file_count": 1,
+        "path": "config",
+        "total_bytes": 71,
+        "total_file_count": 1
+      },
+      {
+        "depth": 1,
+        "empty": false,
+        "file_count": 1,
+        "path": "core",
+        "total_bytes": 192,
+        "total_file_count": 1
+      },
+      {
+        "depth": 1,
+        "empty": false,
+        "file_count": 1,
+        "path": "docs",
+        "total_bytes": 85,
+        "total_file_count": 1
+      },
+      {
+        "depth": 1,
+        "empty": false,
+        "file_count": 1,
+        "path": "empty_dir_marker",
+        "total_bytes": 0,
+        "total_file_count": 1
+      },
+      {
+        "depth": 1,
+        "empty": false,
+        "file_count": 1,
+        "path": "lib",
+        "total_bytes": 201,
+        "total_file_count": 2
+      },
+      {
+        "depth": 2,
+        "empty": false,
+        "file_count": 1,
+        "path": "lib/jedi",
+        "total_bytes": 121,
+        "total_file_count": 1
+      },
+      {
+        "depth": 1,
+        "empty": false,
+        "file_count": 1,
+        "path": "packages",
+        "total_bytes": 178,
+        "total_file_count": 1
+      },
+      {
+        "depth": 1,
+        "empty": false,
+        "file_count": 1,
+        "path": "reports",
+        "total_bytes": 0,
+        "total_file_count": 1
+      },
+      {
+        "depth": 1,
+        "empty": false,
+        "file_count": 1,
+        "path": "sql",
+        "total_bytes": 205,
+        "total_file_count": 1
+      },
+      {
+        "depth": 1,
+        "empty": false,
+        "file_count": 11,
+        "path": "src",
+        "total_bytes": 3539,
+        "total_file_count": 11
+      }
+    ],
+    "file_count": 28,
+    "files_ref": "inventory.csv"
+  },
+  "limitations": [
+    "Discovery is syntactic: no symbol table and no cross-unit type resolution (Stage 2).",
+    "No semantic intermediate representation is built (Stage 2).",
+    "Binary files (.exe, .dll, .bpl, .dcu, .ocx ...) are inventoried and hashed but never decompiled or executed.",
+    "No compiler is invoked and no build is attempted; the compiler named is inferred from file extensions, directives and project metadata.",
+    "Databases are never connected to; database technologies and SQL dialects are detected from source and SQL files only.",
+    "Dependency resolution is limited to the ingested input: a unit or library that is absent is reported as unresolved, not searched for.",
+    "Library, integration and runtime-dependency detection is heuristic (PARTIAL); a finding is evidence of a reference, not proof that the dependency is exercised at run time.",
+    "Evidence lists are capped at 25 entries per item and the structure tree at 50 files per group; the full file list is in inventory.csv.",
+    "Delphi ProjectVersion values are reported as stated; they are not mapped to a product release name.",
+    "GUI forms are detected and counted, not converted; GUI conversion is out of scope for the first release.",
+    "Nothing in this blueprint is VERIFIED: equivalence with a Java translation is only measurable from Stage 5."
+  ],
+  "project": {
+    "checkpoint": {
+      "directory_count": 12,
+      "file_count": 28,
+      "id": "CP-dd38b7112162",
+      "source_digest": "12163e6e6c512e9deaa842ea968550ec5da24a3162a684892c7d265624cfc7d6",
+      "tree_id": ""
+    },
+    "ingestion_source": {
+      "commit": "",
+      "commit_timestamp": "",
+      "kind": "directory",
+      "origin": "legacy-pascal-erp",
+      "ref": ""
+    },
+    "name": "legacy-pascal-erp"
+  },
+  "projects": [
+    {
+      "entry_point": {
+        "column": 9,
+        "file": "ERPSystem.dpr",
+        "line": 1
+      },
+      "evidence": [
+        {
+          "column": 0,
+          "file": "ERPSystem.dpr",
+          "line": 0,
+          "text": "entry-point file (.dpr)"
+        },
+        {
+          "column": 0,
+          "file": "ERPSystem.dpr",
+          "line": 0,
+          "text": "vcl framework unit(s) referenced: Forms"
+        },
+        {
+          "column": 9,
+          "file": "ERPSystem.dpr",
+          "line": 1,
+          "text": "declares `program ERPSystem`"
+        },
+        {
+          "column": 0,
+          "file": "ERPSystem.dproj",
+          "line": 0,
+          "text": "app_type=application"
+        },
+        {
+          "column": 0,
+          "file": "ERPSystem.dproj",
+          "line": 0,
+          "text": "defines=ERP_BUILD;$(DCC_Define)"
+        },
+        {
+          "column": 0,
+          "file": "ERPSystem.dproj",
+          "line": 0,
+          "text": "framework_type=vcl"
+        },
+        {
+          "column": 0,
+          "file": "ERPSystem.dproj",
+          "line": 0,
+          "text": "main_source=ERPSystem.dpr"
+        },
+        {
+          "column": 0,
+          "file": "ERPSystem.dproj",
+          "line": 0,
+          "text": "main_source=MainSource"
+        },
+        {
+          "column": 0,
+          "file": "ERPSystem.dproj",
+          "line": 0,
+          "text": "platform=Win32"
+        },
+        {
+          "column": 0,
+          "file": "ERPSystem.dproj",
+          "line": 0,
+          "text": "project metadata .dproj"
+        },
+        {
+          "column": 0,
+          "file": "ERPSystem.dproj",
+          "line": 0,
+          "text": "project_version=19.2"
+        },
+        {
+          "column": 0,
+          "file": "ERPSystem.dproj",
+          "line": 0,
+          "text": "unit_search_paths=lib\\jedi;core;$(DCC_UnitSearchPath)"
+        }
+      ],
+      "form_count": 1,
+      "kind": "program",
+      "meta_files": [
+        "ERPSystem.dproj"
+      ],
+      "package_count": 0,
+      "path": "ERPSystem.dpr",
+      "primary": true,
+      "profile": {
+        "app_type": "application",
+        "defines": [
+          "$(DCC_Define)",
+          "ERP_BUILD"
+        ],
+        "mode": "not-specified",
+        "output_kind": "executable",
+        "overflow_check": "not-specified",
+        "platform": "Win32",
+        "range_check": "not-specified",
+        "sources": [
+          "ERPSystem.dpr",
+          "ERPSystem.dproj"
+        ],
+        "string_model": "not-specified",
+        "unit_search_paths": [
+          "$(DCC_UnitSearchPath)",
+          "core",
+          "lib\\jedi"
+        ]
+      },
+      "shape": "gui_vcl",
+      "status": "SUPPORTED",
+      "unit_count": 11
+    },
+    {
+      "entry_point": {
+        "column": 9,
+        "file": "packages/ErpCore.dpk",
+        "line": 1
+      },
+      "evidence": [
+        {
+          "column": 0,
+          "file": "packages/ErpCore.dpk",
+          "line": 0,
+          "text": "entry-point file (.dpk)"
+        },
+        {
+          "column": 0,
+          "file": "packages/ErpCore.dpk",
+          "line": 0,
+          "text": "source declares `package`"
+        },
+        {
+          "column": 9,
+          "file": "packages/ErpCore.dpk",
+          "line": 1,
+          "text": "declares `package ErpCore`"
+        }
+      ],
+      "form_count": 0,
+      "kind": "package",
+      "meta_files": [],
+      "package_count": 4,
+      "path": "packages/ErpCore.dpk",
+      "primary": false,
+      "profile": {
+        "app_type": "not-specified",
+        "defines": [],
+        "mode": "not-specified",
+        "output_kind": "package",
+        "overflow_check": "not-specified",
+        "platform": "not-specified",
+        "range_check": "not-specified",
+        "sources": [
+          "packages/ErpCore.dpk"
+        ],
+        "string_model": "not-specified",
+        "unit_search_paths": []
+      },
+      "shape": "package",
+      "status": "SUPPORTED",
+      "unit_count": 0
+    }
+  ],
+  "schema_version": "stage1.application-blueprint/1.0",
+  "stage": {
+    "id": 1,
+    "name": "Ingestion and Discovery",
+    "status": "COMPLETED_WITH_BLOCKERS",
+    "steps": [
+      {
+        "id": "ingestion",
+        "name": "Ingestion",
+        "status": "COMPLETED"
+      },
+      {
+        "id": "checkpoint",
+        "name": "Checkpoint",
+        "status": "COMPLETED"
+      },
+      {
+        "id": "scanning_inventory",
+        "name": "Scanning & Inventory",
+        "status": "COMPLETED"
+      },
+      {
+        "id": "dependency_analysis",
+        "name": "Dependency Analysis",
+        "status": "COMPLETED_WITH_WARNINGS"
+      },
+      {
+        "id": "blueprint",
+        "name": "Application Blueprint",
+        "status": "COMPLETED_WITH_WARNINGS"
+      }
+    ]
+  },
+  "structure": {
+    "children": [
+      {
+        "children": [
+          {
+            "children": [
+              {
+                "children": [],
+                "counts": {
+                  "bytes": 192
+                },
+                "kind": "file",
+                "name": "CoreUtils.pas",
+                "path": "core/CoreUtils.pas",
+                "truncated": false
+              },
+              {
+                "children": [],
+                "counts": {
+                  "bytes": 121
+                },
+                "kind": "file",
+                "name": "JvEdit.pas",
+                "path": "lib/jedi/JvEdit.pas",
+                "truncated": false
+              },
+              {
+                "children": [],
+                "counts": {
+                  "bytes": 385
+                },
+                "kind": "file",
+                "name": "MainForm.pas",
+                "path": "src/MainForm.pas",
+                "truncated": false
+              },
+              {
+                "children": [],
+                "counts": {
+                  "bytes": 414
+                },
+                "kind": "file",
+                "name": "uConfig.pas",
+                "path": "src/uConfig.pas",
+                "truncated": false
+              },
+              {
+                "children": [],
+                "counts": {
+                  "bytes": 534
+                },
+                "kind": "file",
+                "name": "uDataModule.pas",
+                "path": "src/uDataModule.pas",
+                "truncated": false
+              },
+              {
+                "children": [],
+                "counts": {
+                  "bytes": 122
+                },
+                "kind": "file",
+                "name": "uGrids.pas",
+                "path": "src/uGrids.pas",
+                "truncated": false
+              },
+              {
+                "children": [],
+                "counts": {
+                  "bytes": 324
+                },
+                "kind": "file",
+                "name": "uHttpClient.pas",
+                "path": "src/uHttpClient.pas",
+                "truncated": false
+              },
+              {
+                "children": [],
+                "counts": {
+                  "bytes": 288
+                },
+                "kind": "file",
+                "name": "uLegacy.pas",
+                "path": "src/uLegacy.pas",
+                "truncated": false
+              },
+              {
+                "children": [],
+                "counts": {
+                  "bytes": 252
+                },
+                "kind": "file",
+                "name": "uOffice.pas",
+                "path": "src/uOffice.pas",
+                "truncated": false
+              },
+              {
+                "children": [],
+                "counts": {
+                  "bytes": 303
+                },
+                "kind": "file",
+                "name": "uReports.pas",
+                "path": "src/uReports.pas",
+                "truncated": false
+              },
+              {
+                "children": [],
+                "counts": {
+                  "bytes": 320
+                },
+                "kind": "file",
+                "name": "uSoapClient.pas",
+                "path": "src/uSoapClient.pas",
+                "truncated": false
+              },
+              {
+                "children": [],
+                "counts": {
+                  "bytes": 409
+                },
+                "kind": "file",
+                "name": "uTransfer.pas",
+                "path": "src/uTransfer.pas",
+                "truncated": false
+              }
+            ],
+            "counts": {
+              "files": 12
+            },
+            "kind": "group",
+            "name": "Units",
+            "path": "",
+            "truncated": false
+          },
+          {
+            "children": [
+              {
+                "children": [],
+                "counts": {
+                  "bytes": 188
+                },
+                "kind": "file",
+                "name": "MainForm.dfm",
+                "path": "src/MainForm.dfm",
+                "truncated": false
+              }
+            ],
+            "counts": {
+              "files": 1
+            },
+            "kind": "group",
+            "name": "Forms",
+            "path": "",
+            "truncated": false
+          },
+          {
+            "children": [],
+            "counts": {
+              "files": 0
+            },
+            "kind": "group",
+            "name": "Packages",
+            "path": "",
+            "truncated": false
+          },
+          {
+            "children": [
+              {
+                "children": [],
+                "counts": {
+                  "bytes": 80
+                },
+                "kind": "file",
+                "name": "legacy.dll",
+                "path": "lib/legacy.dll",
+                "truncated": false
+              }
+            ],
+            "counts": {
+              "files": 1
+            },
+            "kind": "group",
+            "name": "Libraries",
+            "path": "",
+            "truncated": false
+          },
+          {
+            "children": [
+              {
+                "children": [],
+                "counts": {
+                  "bytes": 48
+                },
+                "kind": "file",
+                "name": "ERPSystem.res",
+                "path": "ERPSystem.res",
+                "truncated": false
+              },
+              {
+                "children": [],
+                "counts": {
+                  "bytes": 205
+                },
+                "kind": "file",
+                "name": "schema_oracle.sql",
+                "path": "sql/schema_oracle.sql",
+                "truncated": false
+              }
+            ],
+            "counts": {
+              "files": 2
+            },
+            "kind": "group",
+            "name": "Resources",
+            "path": "",
+            "truncated": false
+          },
+          {
+            "children": [
+              {
+                "children": [],
+                "counts": {
+                  "bytes": 1004
+                },
+                "kind": "file",
+                "name": "ERPSystem.dproj",
+                "path": "ERPSystem.dproj",
+                "truncated": false
+              },
+              {
+                "children": [],
+                "counts": {
+                  "bytes": 71
+                },
+                "kind": "file",
+                "name": "erp.ini",
+                "path": "config/erp.ini",
+                "truncated": false
+              },
+              {
+                "children": [],
+                "counts": {
+                  "bytes": 87
+                },
+                "kind": "file",
+                "name": "dcc32.cfg",
+                "path": "dcc32.cfg",
+                "truncated": false
+              }
+            ],
+            "counts": {
+              "files": 3
+            },
+            "kind": "group",
+            "name": "Config",
+            "path": "",
+            "truncated": false
+          },
+          {
+            "children": [
+              {
+                "children": [],
+                "counts": {
+                  "bytes": 157
+                },
+                "kind": "file",
+                "name": "build.yml",
+                "path": ".github/workflows/build.yml",
+                "truncated": false
+              },
+              {
+                "children": [],
+                "counts": {
+                  "bytes": 43
+                },
+                "kind": "file",
+                "name": "Makefile",
+                "path": "Makefile",
+                "truncated": false
+              },
+              {
+                "children": [],
+                "counts": {
+                  "bytes": 112
+                },
+                "kind": "file",
+                "name": "build.bat",
+                "path": "build.bat",
+                "truncated": false
+              }
+            ],
+            "counts": {
+              "files": 3
+            },
+            "kind": "group",
+            "name": "Scripts",
+            "path": "",
+            "truncated": false
+          },
+          {
+            "children": [
+              {
+                "children": [],
+                "counts": {
+                  "bytes": 85
+                },
+                "kind": "file",
+                "name": "README.md",
+                "path": "docs/README.md",
+                "truncated": false
+              }
+            ],
+            "counts": {
+              "files": 1
+            },
+            "kind": "group",
+            "name": "Docs",
+            "path": "",
+            "truncated": false
+          },
+          {
+            "children": [
+              {
+                "children": [],
+                "counts": {
+                  "bytes": 547
+                },
+                "kind": "file",
+                "name": "ERPSystem.dpr",
+                "path": "ERPSystem.dpr",
+                "truncated": false
+              },
+              {
+                "children": [],
+                "counts": {
+                  "bytes": 58
+                },
+                "kind": "file",
+                "name": "common.inc",
+                "path": "common.inc",
+                "truncated": false
+              },
+              {
+                "children": [],
+                "counts": {
+                  "bytes": 0
+                },
+                "kind": "file",
+                "name": ".gitkeep",
+                "path": "empty_dir_marker/.gitkeep",
+                "truncated": false
+              },
+              {
+                "children": [],
+                "counts": {
+                  "bytes": 0
+                },
+                "kind": "file",
+                "name": ".keep",
+                "path": "reports/.keep",
+                "truncated": false
+              }
+            ],
+            "counts": {
+              "files": 4
+            },
+            "kind": "group",
+            "name": "Other",
+            "path": "",
+            "truncated": false
+          }
+        ],
+        "counts": {
+          "config": 3,
+          "docs": 1,
+          "files": 27,
+          "forms": 1,
+          "includes": 1,
+          "libraries": 1,
+          "other": 4,
+          "packages": 0,
+          "programs": 1,
+          "resources": 2,
+          "scripts": 3,
+          "units": 12
+        },
+        "kind": "project",
+        "name": "ERPSystem.dpr",
+        "path": "ERPSystem.dpr",
+        "primary": true,
+        "truncated": false
+      },
+      {
+        "children": [
+          {
+            "children": [],
+            "counts": {
+              "files": 0
+            },
+            "kind": "group",
+            "name": "Units",
+            "path": "",
+            "truncated": false
+          },
+          {
+            "children": [],
+            "counts": {
+              "files": 0
+            },
+            "kind": "group",
+            "name": "Forms",
+            "path": "",
+            "truncated": false
+          },
+          {
+            "children": [
+              {
+                "children": [],
+                "counts": {
+                  "bytes": 178
+                },
+                "kind": "file",
+                "name": "ErpCore.dpk",
+                "path": "packages/ErpCore.dpk",
+                "truncated": false
+              }
+            ],
+            "counts": {
+              "files": 1
+            },
+            "kind": "group",
+            "name": "Packages",
+            "path": "",
+            "truncated": false
+          },
+          {
+            "children": [],
+            "counts": {
+              "files": 0
+            },
+            "kind": "group",
+            "name": "Libraries",
+            "path": "",
+            "truncated": false
+          },
+          {
+            "children": [],
+            "counts": {
+              "files": 0
+            },
+            "kind": "group",
+            "name": "Resources",
+            "path": "",
+            "truncated": false
+          },
+          {
+            "children": [],
+            "counts": {
+              "files": 0
+            },
+            "kind": "group",
+            "name": "Config",
+            "path": "",
+            "truncated": false
+          },
+          {
+            "children": [],
+            "counts": {
+              "files": 0
+            },
+            "kind": "group",
+            "name": "Scripts",
+            "path": "",
+            "truncated": false
+          },
+          {
+            "children": [],
+            "counts": {
+              "files": 0
+            },
+            "kind": "group",
+            "name": "Docs",
+            "path": "",
+            "truncated": false
+          },
+          {
+            "children": [],
+            "counts": {
+              "files": 0
+            },
+            "kind": "group",
+            "name": "Other",
+            "path": "",
+            "truncated": false
+          }
+        ],
+        "counts": {
+          "config": 0,
+          "docs": 0,
+          "files": 1,
+          "forms": 0,
+          "includes": 0,
+          "libraries": 0,
+          "other": 0,
+          "packages": 1,
+          "programs": 0,
+          "resources": 0,
+          "scripts": 0,
+          "units": 0
+        },
+        "kind": "project",
+        "name": "ErpCore.dpk",
+        "path": "packages/ErpCore.dpk",
+        "primary": false,
+        "truncated": false
+      }
+    ],
+    "counts": {
+      "directories": 12,
+      "files": 28,
+      "projects": 2
+    },
+    "kind": "application",
+    "name": "legacy-pascal-erp",
+    "path": "",
+    "truncated": false
+  },
+  "summary": {
+    "blockers": 3,
+    "database_artifacts": 3,
+    "diagnostics": {
+      "error": 0,
+      "info": 0,
+      "warning": 2
+    },
+    "directories": 12,
+    "external_dependencies": 10,
+    "forms": 1,
+    "packages": 1,
+    "pascal_sources": 13,
+    "projects": 2,
+    "total_bytes": 6527,
+    "total_files": 28,
+    "unresolved_dependencies": 17
+  },
+  "unresolved": [
+    {
+      "id": "include:gone.inc",
+      "kind": "include",
+      "name": "gone.inc",
+      "reason": "include-missing",
+      "referenced_by": [
+        {
+          "column": 1,
+          "file": "src/uLegacy.pas",
+          "line": 2
+        }
+      ],
+      "remediation": "Add the missing include file to the input or correct the include path in the directive.",
+      "severity": "error"
+    },
+    {
+      "id": "library:devexpress",
+      "kind": "library",
+      "name": "DevExpress",
+      "reason": "external-library",
+      "referenced_by": [
+        {
+          "column": 22,
+          "file": "src/uGrids.pas",
+          "line": 6
+        },
+        {
+          "column": 30,
+          "file": "src/uGrids.pas",
+          "line": 6
+        },
+        {
+          "column": 49,
+          "file": "src/uGrids.pas",
+          "line": 6
+        }
+      ],
+      "remediation": "Supply the third-party library (source or binary) with the input, or record it as an externally managed dependency.",
+      "severity": "warning"
+    },
+    {
+      "id": "library:fastreport",
+      "kind": "library",
+      "name": "FastReport",
+      "reason": "external-library",
+      "referenced_by": [
+        {
+          "column": 22,
+          "file": "src/uReports.pas",
+          "line": 6
+        },
+        {
+          "column": 32,
+          "file": "src/uReports.pas",
+          "line": 6
+        }
+      ],
+      "remediation": "Supply the third-party library (source or binary) with the input, or record it as an externally managed dependency.",
+      "severity": "warning"
+    },
+    {
+      "id": "library:indy",
+      "kind": "library",
+      "name": "Indy",
+      "reason": "external-library",
+      "referenced_by": [
+        {
+          "column": 22,
+          "file": "src/uHttpClient.pas",
+          "line": 6
+        },
+        {
+          "column": 30,
+          "file": "src/uHttpClient.pas",
+          "line": 6
+        },
+        {
+          "column": 13,
+          "file": "src/uTransfer.pas",
+          "line": 6
+        },
+        {
+          "column": 20,
+          "file": "src/uTransfer.pas",
+          "line": 6
+        },
+        {
+          "column": 28,
+          "file": "src/uTransfer.pas",
+          "line": 6
+        }
+      ],
+      "remediation": "Supply the third-party library (source or binary) with the input, or record it as an externally managed dependency.",
+      "severity": "warning"
+    },
+    {
+      "id": "native-library:legacy.dll",
+      "kind": "native-library",
+      "name": "legacy.dll",
+      "reason": "external-library",
+      "referenced_by": [
+        {
+          "column": 22,
+          "file": "src/uLegacy.pas",
+          "line": 12
+        }
+      ],
+      "remediation": "The library file is present in the input; confirm it is the version the application was built against. Found at lib/legacy.dll.",
+      "severity": "info"
+    },
+    {
+      "id": "native-library:vendor.dll",
+      "kind": "native-library",
+      "name": "vendor.dll",
+      "reason": "external-library",
+      "referenced_by": [
+        {
+          "column": 22,
+          "file": "src/uLegacy.pas",
+          "line": 13
+        }
+      ],
+      "remediation": "Supply the native library with the input, or plan a replacement for it on the target platform. Also reported as runtime dll vendor.dll.",
+      "severity": "warning"
+    },
+    {
+      "id": "runtime:com-component:excel.application",
+      "kind": "runtime",
+      "name": "Excel.Application",
+      "reason": "com-component not present in the input",
+      "referenced_by": [
+        {
+          "column": 28,
+          "file": "src/uOffice.pas",
+          "line": 16
+        }
+      ],
+      "remediation": "Provided by the host environment; record it as an environment requirement of the deployment.",
+      "severity": "info"
+    },
+    {
+      "id": "runtime:database-client:oci.dll",
+      "kind": "runtime",
+      "name": "oci.dll",
+      "reason": "database-client not present in the input",
+      "referenced_by": [
+        {
+          "column": 57,
+          "file": "src/uDataModule.pas",
+          "line": 6
+        },
+        {
+          "column": 5,
+          "file": "src/uDataModule.pas",
+          "line": 27
+        }
+      ],
+      "remediation": "Provided by the host environment; record it as an environment requirement of the deployment.",
+      "severity": "info"
+    },
+    {
+      "id": "runtime:environment-variable:erp_home",
+      "kind": "runtime",
+      "name": "ERP_HOME",
+      "reason": "environment-variable not present in the input",
+      "referenced_by": [
+        {
+          "column": 36,
+          "file": "src/uConfig.pas",
+          "line": 20
+        }
+      ],
+      "remediation": "Provided by the host environment; record it as an environment requirement of the deployment.",
+      "severity": "info"
+    },
+    {
+      "id": "runtime:hardcoded-path:c:\\erp\\data\\import",
+      "kind": "runtime",
+      "name": "C:\\ERP\\data\\import",
+      "reason": "hardcoded-path not present in the input",
+      "referenced_by": [
+        {
+          "column": 1,
+          "file": "config/erp.ini",
+          "line": 6
+        },
+        {
+          "column": 50,
+          "file": "src/uConfig.pas",
+          "line": 20
+        }
+      ],
+      "remediation": "Provided by the host environment; record it as an environment requirement of the deployment.",
+      "severity": "info"
+    },
+    {
+      "id": "runtime:registry-key:software\\contoso\\erp",
+      "kind": "runtime",
+      "name": "Software\\Contoso\\ERP",
+      "reason": "registry-key not present in the input",
+      "referenced_by": [
+        {
+          "column": 15,
+          "file": "src/uConfig.pas",
+          "line": 19
+        }
+      ],
+      "remediation": "Provided by the host environment; record it as an environment requirement of the deployment.",
+      "severity": "info"
+    },
+    {
+      "id": "runtime:runtime-library:openssl (libeay32.dll, ssleay32.dll)",
+      "kind": "runtime",
+      "name": "OpenSSL (libeay32.dll, ssleay32.dll)",
+      "reason": "runtime-library not present in the input",
+      "referenced_by": [
+        {
+          "column": 30,
+          "file": "src/uHttpClient.pas",
+          "line": 6
+        }
+      ],
+      "remediation": "Provided by the host environment; record it as an environment requirement of the deployment.",
+      "severity": "info"
+    },
+    {
+      "id": "runtime:service:ttransferservice",
+      "kind": "runtime",
+      "name": "TTransferService",
+      "reason": "service not present in the input",
+      "referenced_by": [
+        {
+          "column": 3,
+          "file": "src/uTransfer.pas",
+          "line": 9
+        }
+      ],
+      "remediation": "Provided by the host environment; record it as an environment requirement of the deployment.",
+      "severity": "info"
+    },
+    {
+      "id": "unit:activex",
+      "kind": "unit",
+      "name": "activex",
+      "reason": "platform-unit",
+      "referenced_by": [
+        {
+          "column": 21,
+          "file": "src/uOffice.pas",
+          "line": 6
+        }
+      ],
+      "remediation": "None required for discovery: operating-system specific unit provided by the platform.",
+      "severity": "info"
+    },
+    {
+      "id": "unit:classes",
+      "kind": "unit",
+      "name": "classes",
+      "reason": "rtl-unit",
+      "referenced_by": [
+        {
+          "column": 13,
+          "file": "core/CoreUtils.pas",
+          "line": 6
+        },
+        {
+          "column": 13,
+          "file": "lib/jedi/JvEdit.pas",
+          "line": 6
+        },
+        {
+          "column": 32,
+          "file": "src/MainForm.pas",
+          "line": 6
+        },
+        {
+          "column": 13,
+          "file": "src/uGrids.pas",
+          "line": 6
+        },
+        {
+          "column": 13,
+          "file": "src/uHttpClient.pas",
+          "line": 6
+        },
+        {
+          "column": 13,
+          "file": "src/uReports.pas",
+          "line": 6
+        }
+      ],
+      "remediation": "None required: standard runtime library unit provided by the compiler distribution.",
+      "severity": "info"
+    },
+    {
+      "id": "unit:comobj",
+      "kind": "unit",
+      "name": "comobj",
+      "reason": "platform-unit",
+      "referenced_by": [
+        {
+          "column": 13,
+          "file": "src/uOffice.pas",
+          "line": 6
+        }
+      ],
+      "remediation": "None required for discovery: operating-system specific unit provided by the platform.",
+      "severity": "info"
+    },
+    {
+      "id": "unit:controls",
+      "kind": "unit",
+      "name": "controls",
+      "reason": "framework-unit",
+      "referenced_by": [
+        {
+          "column": 51,
+          "file": "src/MainForm.pas",
+          "line": 6
+        }
+      ],
+      "remediation": "None required for discovery: UI framework unit provided by the toolchain.",
+      "severity": "info"
+    },
+    {
+      "id": "unit:cxgrid",
+      "kind": "unit",
+      "name": "cxgrid",
+      "reason": "missing-unit",
+      "referenced_by": [
+        {
+          "column": 22,
+          "file": "src/uGrids.pas",
+          "line": 6
+        }
+      ],
+      "remediation": "Supply the third-party library (source or binary) with the input, or record it as an externally managed dependency.",
+      "severity": "warning"
+    },
+    {
+      "id": "unit:cxgriddbtableview",
+      "kind": "unit",
+      "name": "cxgriddbtableview",
+      "reason": "missing-unit",
+      "referenced_by": [
+        {
+          "column": 30,
+          "file": "src/uGrids.pas",
+          "line": 6
+        }
+      ],
+      "remediation": "Supply the third-party library (source or binary) with the input, or record it as an externally managed dependency.",
+      "severity": "warning"
+    },
+    {
+      "id": "unit:data.db",
+      "kind": "unit",
+      "name": "data.db",
+      "reason": "database-unit",
+      "referenced_by": [
+        {
+          "column": 3,
+          "file": "src/uDataModule.pas",
+          "line": 7
+        }
+      ],
+      "remediation": "None required for discovery: data-access unit provided by the toolchain.",
+      "severity": "info"
+    },
+    {
+      "id": "unit:dbrtl",
+      "kind": "unit",
+      "name": "dbrtl",
+      "reason": "missing-unit",
+      "referenced_by": [
+        {
+          "column": 3,
+          "file": "packages/ErpCore.dpk",
+          "line": 10
+        }
+      ],
+      "remediation": "None required: standard run-time package of the compiler distribution.",
+      "severity": "info"
+    },
+    {
+      "id": "unit:dialogs",
+      "kind": "unit",
+      "name": "dialogs",
+      "reason": "framework-unit",
+      "referenced_by": [
+        {
+          "column": 68,
+          "file": "src/MainForm.pas",
+          "line": 6
+        }
+      ],
+      "remediation": "None required for discovery: UI framework unit provided by the toolchain.",
+      "severity": "info"
+    },
+    {
+      "id": "unit:dxbarmanager",
+      "kind": "unit",
+      "name": "dxbarmanager",
+      "reason": "missing-unit",
+      "referenced_by": [
+        {
+          "column": 49,
+          "file": "src/uGrids.pas",
+          "line": 6
+        }
+      ],
+      "remediation": "Supply the third-party library (source or binary) with the input, or record it as an externally managed dependency.",
+      "severity": "warning"
+    },
+    {
+      "id": "unit:extctrls",
+      "kind": "unit",
+      "name": "extctrls",
+      "reason": "framework-unit",
+      "referenced_by": [
+        {
+          "column": 47,
+          "file": "src/uTransfer.pas",
+          "line": 6
+        }
+      ],
+      "remediation": "None required for discovery: UI framework unit provided by the toolchain.",
+      "severity": "info"
+    },
+    {
+      "id": "unit:firedac.comp.client",
+      "kind": "unit",
+      "name": "firedac.comp.client",
+      "reason": "database-unit",
+      "referenced_by": [
+        {
+          "column": 36,
+          "file": "src/uDataModule.pas",
+          "line": 6
+        }
+      ],
+      "remediation": "None required for discovery: data-access unit provided by the toolchain.",
+      "severity": "info"
+    },
+    {
+      "id": "unit:firedac.phys.ora",
+      "kind": "unit",
+      "name": "firedac.phys.ora",
+      "reason": "rtl-unit",
+      "referenced_by": [
+        {
+          "column": 57,
+          "file": "src/uDataModule.pas",
+          "line": 6
+        }
+      ],
+      "remediation": "None required: standard runtime library unit provided by the compiler distribution.",
+      "severity": "info"
+    },
+    {
+      "id": "unit:forms",
+      "kind": "unit",
+      "name": "forms",
+      "reason": "framework-unit",
+      "referenced_by": [
+        {
+          "column": 3,
+          "file": "ERPSystem.dpr",
+          "line": 4
+        },
+        {
+          "column": 61,
+          "file": "src/MainForm.pas",
+          "line": 6
+        }
+      ],
+      "remediation": "None required for discovery: UI framework unit provided by the toolchain.",
+      "severity": "info"
+    },
+    {
+      "id": "unit:frxclass",
+      "kind": "unit",
+      "name": "frxclass",
+      "reason": "missing-unit",
+      "referenced_by": [
+        {
+          "column": 22,
+          "file": "src/uReports.pas",
+          "line": 6
+        }
+      ],
+      "remediation": "Supply the third-party library (source or binary) with the input, or record it as an externally managed dependency.",
+      "severity": "warning"
+    },
+    {
+      "id": "unit:frxdbset",
+      "kind": "unit",
+      "name": "frxdbset",
+      "reason": "missing-unit",
+      "referenced_by": [
+        {
+          "column": 32,
+          "file": "src/uReports.pas",
+          "line": 6
+        }
+      ],
+      "remediation": "Supply the third-party library (source or binary) with the input, or record it as an externally managed dependency.",
+      "severity": "warning"
+    },
+    {
+      "id": "unit:graphics",
+      "kind": "unit",
+      "name": "graphics",
+      "reason": "framework-unit",
+      "referenced_by": [
+        {
+          "column": 41,
+          "file": "src/MainForm.pas",
+          "line": 6
+        }
+      ],
+      "remediation": "None required for discovery: UI framework unit provided by the toolchain.",
+      "severity": "info"
+    },
+    {
+      "id": "unit:idftp",
+      "kind": "unit",
+      "name": "idftp",
+      "reason": "missing-unit",
+      "referenced_by": [
+        {
+          "column": 13,
+          "file": "src/uTransfer.pas",
+          "line": 6
+        }
+      ],
+      "remediation": "Supply the third-party library (source or binary) with the input, or record it as an externally managed dependency.",
+      "severity": "warning"
+    },
+    {
+      "id": "unit:idhttp",
+      "kind": "unit",
+      "name": "idhttp",
+      "reason": "external-library",
+      "referenced_by": [
+        {
+          "column": 22,
+          "file": "src/uHttpClient.pas",
+          "line": 6
+        }
+      ],
+      "remediation": "Supply the third-party library (source or binary) with the input, or record it as an externally managed dependency.",
+      "severity": "warning"
+    },
+    {
+      "id": "unit:idmessage",
+      "kind": "unit",
+      "name": "idmessage",
+      "reason": "missing-unit",
+      "referenced_by": [
+        {
+          "column": 28,
+          "file": "src/uTransfer.pas",
+          "line": 6
+        }
+      ],
+      "remediation": "Supply the third-party library (source or binary) with the input, or record it as an externally managed dependency.",
+      "severity": "warning"
+    },
+    {
+      "id": "unit:idsmtp",
+      "kind": "unit",
+      "name": "idsmtp",
+      "reason": "missing-unit",
+      "referenced_by": [
+        {
+          "column": 20,
+          "file": "src/uTransfer.pas",
+          "line": 6
+        }
+      ],
+      "remediation": "Supply the third-party library (source or binary) with the input, or record it as an externally managed dependency.",
+      "severity": "warning"
+    },
+    {
+      "id": "unit:idsslopenssl",
+      "kind": "unit",
+      "name": "idsslopenssl",
+      "reason": "missing-unit",
+      "referenced_by": [
+        {
+          "column": 30,
+          "file": "src/uHttpClient.pas",
+          "line": 6
+        }
+      ],
+      "remediation": "Supply the third-party library (source or binary) with the input, or record it as an externally managed dependency.",
+      "severity": "warning"
+    },
+    {
+      "id": "unit:inifiles",
+      "kind": "unit",
+      "name": "inifiles",
+      "reason": "rtl-unit",
+      "referenced_by": [
+        {
+          "column": 13,
+          "file": "src/uConfig.pas",
+          "line": 6
+        }
+      ],
+      "remediation": "None required: standard runtime library unit provided by the compiler distribution.",
+      "severity": "info"
+    },
+    {
+      "id": "unit:invokeregistry",
+      "kind": "unit",
+      "name": "invokeregistry",
+      "reason": "rtl-unit",
+      "referenced_by": [
+        {
+          "column": 13,
+          "file": "src/uSoapClient.pas",
+          "line": 6
+        }
+      ],
+      "remediation": "None required: standard runtime library unit provided by the compiler distribution.",
+      "severity": "info"
+    },
+    {
+      "id": "unit:messages",
+      "kind": "unit",
+      "name": "messages",
+      "reason": "platform-unit",
+      "referenced_by": [
+        {
+          "column": 12,
+          "file": "src/MainForm.pas",
+          "line": 6
+        }
+      ],
+      "remediation": "None required for discovery: operating-system specific unit provided by the platform.",
+      "severity": "info"
+    },
+    {
+      "id": "unit:registry",
+      "kind": "unit",
+      "name": "registry",
+      "reason": "rtl-unit",
+      "referenced_by": [
+        {
+          "column": 23,
+          "file": "src/uConfig.pas",
+          "line": 6
+        }
+      ],
+      "remediation": "None required: standard runtime library unit provided by the compiler distribution.",
+      "severity": "info"
+    },
+    {
+      "id": "unit:rio",
+      "kind": "unit",
+      "name": "rio",
+      "reason": "rtl-unit",
+      "referenced_by": [
+        {
+          "column": 45,
+          "file": "src/uSoapClient.pas",
+          "line": 6
+        }
+      ],
+      "remediation": "None required: standard runtime library unit provided by the compiler distribution.",
+      "severity": "info"
+    },
+    {
+      "id": "unit:rtl",
+      "kind": "unit",
+      "name": "rtl",
+      "reason": "missing-unit",
+      "referenced_by": [
+        {
+          "column": 3,
+          "file": "packages/ErpCore.dpk",
+          "line": 8
+        }
+      ],
+      "remediation": "None required: standard run-time package of the compiler distribution.",
+      "severity": "info"
+    },
+    {
+      "id": "unit:soaphttpclient",
+      "kind": "unit",
+      "name": "soaphttpclient",
+      "reason": "rtl-unit",
+      "referenced_by": [
+        {
+          "column": 29,
+          "file": "src/uSoapClient.pas",
+          "line": 6
+        }
+      ],
+      "remediation": "None required: standard runtime library unit provided by the compiler distribution.",
+      "severity": "info"
+    },
+    {
+      "id": "unit:stdctrls",
+      "kind": "unit",
+      "name": "stdctrls",
+      "reason": "framework-unit",
+      "referenced_by": [
+        {
+          "column": 22,
+          "file": "lib/jedi/JvEdit.pas",
+          "line": 6
+        },
+        {
+          "column": 3,
+          "file": "src/MainForm.pas",
+          "line": 7
+        }
+      ],
+      "remediation": "None required for discovery: UI framework unit provided by the toolchain.",
+      "severity": "info"
+    },
+    {
+      "id": "unit:svcmgr",
+      "kind": "unit",
+      "name": "svcmgr",
+      "reason": "platform-unit",
+      "referenced_by": [
+        {
+          "column": 39,
+          "file": "src/uTransfer.pas",
+          "line": 6
+        }
+      ],
+      "remediation": "None required for discovery: operating-system specific unit provided by the platform.",
+      "severity": "info"
+    },
+    {
+      "id": "unit:system.classes",
+      "kind": "unit",
+      "name": "system.classes",
+      "reason": "rtl-unit",
+      "referenced_by": [
+        {
+          "column": 20,
+          "file": "src/uDataModule.pas",
+          "line": 6
+        }
+      ],
+      "remediation": "None required: standard runtime library unit provided by the compiler distribution.",
+      "severity": "info"
+    },
+    {
+      "id": "unit:system.sysutils",
+      "kind": "unit",
+      "name": "system.sysutils",
+      "reason": "rtl-unit",
+      "referenced_by": [
+        {
+          "column": 3,
+          "file": "src/uDataModule.pas",
+          "line": 6
+        }
+      ],
+      "remediation": "None required: standard runtime library unit provided by the compiler distribution.",
+      "severity": "info"
+    },
+    {
+      "id": "unit:sysutils",
+      "kind": "unit",
+      "name": "sysutils",
+      "reason": "rtl-unit",
+      "referenced_by": [
+        {
+          "column": 3,
+          "file": "core/CoreUtils.pas",
+          "line": 6
+        },
+        {
+          "column": 3,
+          "file": "lib/jedi/JvEdit.pas",
+          "line": 6
+        },
+        {
+          "column": 22,
+          "file": "src/MainForm.pas",
+          "line": 6
+        },
+        {
+          "column": 3,
+          "file": "src/uConfig.pas",
+          "line": 6
+        },
+        {
+          "column": 3,
+          "file": "src/uGrids.pas",
+          "line": 6
+        },
+        {
+          "column": 3,
+          "file": "src/uHttpClient.pas",
+          "line": 6
+        },
+        {
+          "column": 3,
+          "file": "src/uOffice.pas",
+          "line": 6
+        },
+        {
+          "column": 3,
+          "file": "src/uReports.pas",
+          "line": 6
+        },
+        {
+          "column": 3,
+          "file": "src/uSoapClient.pas",
+          "line": 6
+        },
+        {
+          "column": 3,
+          "file": "src/uTransfer.pas",
+          "line": 6
+        }
+      ],
+      "remediation": "None required: standard runtime library unit provided by the compiler distribution.",
+      "severity": "info"
+    },
+    {
+      "id": "unit:umissingvendor",
+      "kind": "unit",
+      "name": "umissingvendor",
+      "reason": "missing-unit",
+      "referenced_by": [
+        {
+          "column": 3,
+          "file": "ERPSystem.dpr",
+          "line": 15
+        }
+      ],
+      "remediation": "Add the unit source (.pas) or compiled unit (.dcu/.ppu) to the input, or add the package that provides it to the search path. Also reported as library uMissingVendor.",
+      "severity": "error"
+    },
+    {
+      "id": "unit:variants",
+      "kind": "unit",
+      "name": "variants",
+      "reason": "rtl-unit",
+      "referenced_by": [
+        {
+          "column": 30,
+          "file": "src/uOffice.pas",
+          "line": 6
+        }
+      ],
+      "remediation": "None required: standard runtime library unit provided by the compiler distribution.",
+      "severity": "info"
+    },
+    {
+      "id": "unit:vcl",
+      "kind": "unit",
+      "name": "vcl",
+      "reason": "missing-unit",
+      "referenced_by": [
+        {
+          "column": 3,
+          "file": "packages/ErpCore.dpk",
+          "line": 9
+        }
+      ],
+      "remediation": "None required: standard run-time package of the compiler distribution.",
+      "severity": "info"
+    },
+    {
+      "id": "unit:vendorui",
+      "kind": "unit",
+      "name": "vendorui",
+      "reason": "missing-unit",
+      "referenced_by": [
+        {
+          "column": 3,
+          "file": "packages/ErpCore.dpk",
+          "line": 11
+        }
+      ],
+      "remediation": "Add the unit source (.pas) or compiled unit (.dcu/.ppu) to the input, or add the package that provides it to the search path. Also reported as library vendorui. Also reported as runtime bpl-package vendorui.",
+      "severity": "error"
+    },
+    {
+      "id": "unit:windows",
+      "kind": "unit",
+      "name": "windows",
+      "reason": "platform-unit",
+      "referenced_by": [
+        {
+          "column": 3,
+          "file": "src/MainForm.pas",
+          "line": 6
+        },
+        {
+          "column": 33,
+          "file": "src/uConfig.pas",
+          "line": 6
+        }
+      ],
+      "remediation": "None required for discovery: operating-system specific unit provided by the platform.",
+      "severity": "info"
+    }
+  ]
+}
