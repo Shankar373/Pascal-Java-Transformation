@@ -14,17 +14,17 @@ A discovery-first enterprise platform that analyzes legacy Pascal estates, conve
 
 ## Project maturity and status
 
-**This repository is at the initialization stage. No implementation has been committed yet** — the working tree contains only `.git` (zero commits): no source code, no build manifest, no tests, no CI workflows, no `docs/` tree, no environment templates. Every platform capability described below is **PLANNED**. The architecture itself is approved in external reference documents (Final architecture v3.0, research snapshot 12 November 2026) held outside this repository — see [References](#references). Next step: roadmap phase P0 (feasibility and tool bake-off).
+**Roadmap phases P0 and P1 are implemented; P2+ has not started.** P0 (feasibility, golden corpus, parser/tool bake-off) is committed locally as `fbf59d2`. P1 (secure ZIP/Git ingestion and deterministic Pascal application discovery) is implemented and tested in the working tree and has **not been committed or pushed** — it is awaiting explicit approval. The architecture contract is approved in external reference documents (Final architecture v3.0, research snapshot 12 November 2026) held outside this repository — see [References](#references).
 
 | Area | Status | Evidence |
 |---|---|---|
-| Repository contents | Initialization only | Repository has zero commits; no implementation present |
-| Ingestion & discovery | PLANNED | Repository has zero commits; no implementation present |
-| Parser frontends & Semantic IR | PLANNED | Repository has zero commits; no implementation present |
-| Transformation & Java generation | PLANNED | Repository has zero commits; no implementation present |
-| Oracle execution & certification | PLANNED | Repository has zero commits; no implementation present |
-| Security & sandboxing | PLANNED | Repository has zero commits; no implementation present |
-| Architecture contract | Approved (external) | Defined in external reference documents; not yet reflected in code |
+| Repository contents | P0 committed; P1 implemented, uncommitted | `tools/p1/` (21 modules), `tests/` (612 tests), `docs/p1/` |
+| Ingestion & discovery | **IMPLEMENTED AND TESTED** | `tests/security/test_adversarial_archives.py`, `tests/security/test_git_ingestion.py`, `tests/integration/test_pipeline.py` |
+| Parser frontends & Semantic IR | PLANNED (phase P2) | `tools/p1/plex.py` is a scanner (tokens/directives/includes), not a parser frontend |
+| Transformation & Java generation | PLANNED (phase P5) | deliberately out of scope for P0/P1 — no Java is generated |
+| Oracle execution & certification | **BLOCKED** | FPC 3.2.2 present; no licensed Delphi toolchain, so `ORACLE_UNAVAILABLE` |
+| Security & sandboxing | **PARTIAL** | ingestion hardening implemented and adversarially tested; worker isolation, tenancy and audit controls are phase P7 |
+| Architecture contract | Approved (external) | the P1 slice is reflected in `docs/p1/P1_IMPLEMENTATION_PLAN.md` |
 
 ## Overview
 
@@ -51,70 +51,76 @@ Enterprise Pascal estates (Delphi/Object Pascal, Free Pascal/Lazarus, Turbo/Borl
 
 ## Key capabilities and feature status
 
-Allowed statuses: `IMPLEMENTED AND TESTED` · `IMPLEMENTED, NOT VERIFIED` · `PARTIAL` · `PLANNED` · `UNSUPPORTED` · `BLOCKED`. Given the empty repository, **every capability below is `PLANNED`**: no implementation committed (repository has zero commits). No row qualifies for `IMPLEMENTED AND TESTED`, `IMPLEMENTED, NOT VERIFIED`, `PARTIAL` or `UNSUPPORTED` — there is no code against which those statuses could be assigned. (The Delphi oracle lane additionally requires a customer-licensed toolchain, and full certification additionally requires an oracle and differential tests — prerequisites that do not exist yet.)
+Allowed statuses: `IMPLEMENTED AND TESTED` · `IMPLEMENTED, NOT VERIFIED` · `PARTIAL` · `PLANNED` · `UNSUPPORTED` · `BLOCKED`.
+
+**Phase P0 and P1 deliver the discovery half of this table only.** Everything from parser frontends onward is phase P2+ and is still `PLANNED`; no row claims a capability the code does not have. `IMPLEMENTED AND TESTED` means the behaviour is implemented *and* covered by the test suite in `tests/`; `IMPLEMENTED, NOT VERIFIED` means the code exists but its end-to-end claim has not been demonstrated in this environment.
 
 | Capability | Status |
 |---|---|
-| Ingestion (ZIP/Git) | PLANNED |
-| Source discovery & file classification | PLANNED |
-| Dialect/compiler detection | PLANNED |
-| Project type / application-shape detection | PLANNED |
-| Dependency discovery (units, packages, native, integrations) | PLANNED |
+| Ingestion (ZIP/Git) | IMPLEMENTED AND TESTED |
+| Source discovery & file classification | IMPLEMENTED AND TESTED |
+| Dialect/compiler detection | PARTIAL — evidence-based (`{$MODE}`, project settings, file extension); falls back to `unknown`, and no Delphi compiler exists here to confirm a Delphi profile |
+| Project type / application-shape detection | IMPLEMENTED AND TESTED |
+| Dependency discovery (units, packages, native, integrations) | IMPLEMENTED AND TESTED |
+| Dependency knowledge graph with source references | IMPLEMENTED AND TESTED |
+| Structured discovery report (JSON + Markdown, evidence, confidence, unresolved edges) | IMPLEMENTED AND TESTED |
+| Capability states (`SUPPORTED`/`PARTIAL`/`UNSUPPORTED`/`UNAVAILABLE`/`UNKNOWN`) | IMPLEMENTED AND TESTED |
+| Fixture-corpus regression gate (host + pinned container) | IMPLEMENTED AND TESTED locally; CI workflow written, **not yet executed** |
 | Parser frontends (dialect adapters) | PLANNED |
-| AST with source spans | PLANNED |
-| Symbol/type resolution across units | PLANNED |
+| AST with source spans | PLANNED — `tools/p1/plex.py` emits tokens, directives and includes with spans, not an AST |
+| Symbol/type resolution across units | PLANNED — *unit/include* resolution is implemented above; symbol and type resolution is P2 |
 | Pascal Semantic IR | PLANNED |
 | Control-flow analysis | PLANNED |
-| Database discovery (read-only metadata) | PLANNED |
-| Capability analysis / support registry | PLANNED |
+| Database discovery (read-only metadata) | PARTIAL — detects DB technologies, SQL files and connection evidence in source; never connects to a database |
+| Capability analysis / support registry | PARTIAL — states are emitted for discovery findings; the versioned construct registry is P2+ |
 | Deterministic transformation planning | PLANNED |
 | Plain Java generation | PLANNED |
 | Spring Boot generation | PLANNED |
 | Compatibility adapters (Pascal runtime semantics) | PLANNED |
-| Original Pascal execution (FPC and Delphi oracle lanes) | PLANNED |
+| Original Pascal execution (FPC and Delphi oracle lanes) | BLOCKED — FPC 3.2.2 compiles the corpus in CI-gate form, but the P3 oracle harness does not exist and the Delphi lane is unlicensed |
 | Generated Java execution (candidate lane) | PLANNED |
 | Differential testing | PLANNED |
 | Behavioral equivalence reports | PLANNED |
 | Evidence-based certification | PLANNED |
-| Security / sandboxing controls | PLANNED |
+| Security / sandboxing controls | PARTIAL — archive/Git hardening implemented and adversarially tested; isolation, tenancy, audit and SBOM controls are P7 |
 
 ## Pascal dialect and application coverage matrix
 
-Discovery scope means *detect and inventory*, not *convert*; **every cell is `PLANNED`**. Detecting a dialect or application shape is not a promise that it can be converted. Initial conversion focus, once implemented, is Delphi/Object Pascal and Free Pascal-compatible subsets tested as distinct compiler profiles; all other families are detected and inventoried first.
+Discovery scope means *detect and inventory*, not *convert*. **Phase P1 implements the two left-hand columns only** — project/app discovery and dialect detection — and both are covered by `tests/unit/test_dialects.py`, `tests/unit/test_projects.py` and `tests/integration/test_pipeline.py`. The four right-hand columns are phase P2+ and remain `PLANNED`. Detecting a dialect or application shape is not a promise that it can be converted: dialect detection is evidence-based (`{$MODE}`, project settings, file extension, framework units) and reports `unknown` when it has no signal rather than guessing. Initial conversion focus, once implemented, is Delphi/Object Pascal and Free Pascal-compatible subsets tested as distinct compiler profiles; all other families are detected and inventoried first.
 
 | Dialect / family | Project discovery | Dialect detection | Syntax parsing | Semantic analysis | Java generation | Runtime equivalence proof |
 |---|---|---|---|---|---|---|
-| ISO 7185 Standard Pascal | PLANNED | PLANNED | PLANNED | PLANNED | PLANNED | PLANNED |
-| ISO 10206 Extended Pascal | PLANNED | PLANNED | PLANNED | PLANNED | PLANNED | PLANNED |
-| Turbo Pascal | PLANNED | PLANNED | PLANNED | PLANNED | PLANNED | PLANNED |
-| Borland Pascal | PLANNED | PLANNED | PLANNED | PLANNED | PLANNED | PLANNED |
-| Delphi / Object Pascal | PLANNED | PLANNED | PLANNED | PLANNED | PLANNED | PLANNED |
-| Free Pascal / Object Pascal (modes FPC, OBJFPC, TP, DELPHI, DELPHIUNICODE, MACPAS, ISO, ExtendedPascal) | PLANNED | PLANNED | PLANNED | PLANNED | PLANNED | PLANNED |
-| Lazarus / FPC-compatible | PLANNED | PLANNED | PLANNED | PLANNED | PLANNED | PLANNED |
-| GNU Pascal / vendor dialects (inventory-first) | PLANNED | PLANNED | PLANNED | PLANNED | PLANNED | PLANNED |
-| **Application shapes (discovery scope):** Console / CLI / batch | PLANNED | PLANNED | PLANNED | PLANNED | PLANNED | PLANNED |
-| Windows desktop | PLANNED | PLANNED | PLANNED | PLANNED | PLANNED | PLANNED |
-| Delphi VCL | PLANNED | PLANNED | PLANNED | PLANNED | PLANNED | PLANNED |
-| Delphi FireMonkey | PLANNED | PLANNED | PLANNED | PLANNED | PLANNED | PLANNED |
-| Lazarus LCL | PLANNED | PLANNED | PLANNED | PLANNED | PLANNED | PLANNED |
-| Services / daemons | PLANNED | PLANNED | PLANNED | PLANNED | PLANNED | PLANNED |
-| Libraries / packages | PLANNED | PLANNED | PLANNED | PLANNED | PLANNED | PLANNED |
-| DLL / shared-library dependencies | PLANNED | PLANNED | PLANNED | PLANNED | PLANNED | PLANNED |
-| Database-backed | PLANNED | PLANNED | PLANNED | PLANNED | PLANNED | PLANNED |
-| Client-server | PLANNED | PLANNED | PLANNED | PLANNED | PLANNED | PLANNED |
-| Multi-tier | PLANNED | PLANNED | PLANNED | PLANNED | PLANNED | PLANNED |
-| Batch / scheduled | PLANNED | PLANNED | PLANNED | PLANNED | PLANNED | PLANNED |
-| Embedded / hardware-connected | PLANNED | PLANNED | PLANNED | PLANNED | PLANNED | PLANNED |
+| ISO 7185 Standard Pascal | IMPLEMENTED AND TESTED | PARTIAL — `{$MODE iso}` only | PLANNED | PLANNED | PLANNED | PLANNED |
+| ISO 10206 Extended Pascal | IMPLEMENTED AND TESTED | PLANNED — no signal, reports `unknown` | PLANNED | PLANNED | PLANNED | PLANNED |
+| Turbo Pascal | IMPLEMENTED AND TESTED | PARTIAL — `{$MODE tp}` only | PLANNED | PLANNED | PLANNED | PLANNED |
+| Borland Pascal | IMPLEMENTED AND TESTED | PLANNED — no signal, reports `unknown` | PLANNED | PLANNED | PLANNED | PLANNED |
+| Delphi / Object Pascal | IMPLEMENTED AND TESTED | IMPLEMENTED AND TESTED — `{$MODE delphi*}`, `.dpr`/`.dproj`/`.dpk`/`.dfm` | PLANNED | PLANNED | PLANNED | PLANNED |
+| Free Pascal / Object Pascal (modes FPC, OBJFPC, TP, DELPHI, DELPHIUNICODE, MACPAS, ISO, ExtendedPascal) | IMPLEMENTED AND TESTED | IMPLEMENTED AND TESTED — `{$MODE ...}` and `.pp`/`.lpr`/`.lpi`/`.lpk`/`.lfm` | PLANNED | PLANNED | PLANNED | PLANNED |
+| Lazarus / FPC-compatible | IMPLEMENTED AND TESTED | PARTIAL — LCL framework units and Lazarus project files; dialect reported as `fpc` | PLANNED | PLANNED | PLANNED | PLANNED |
+| GNU Pascal / vendor dialects (inventory-first) | IMPLEMENTED AND TESTED | PLANNED — no signal, reports `unknown` | PLANNED | PLANNED | PLANNED | PLANNED |
+| **Application shapes (discovery scope):** Console / CLI / batch | IMPLEMENTED AND TESTED | — (shape, not dialect) | PLANNED | PLANNED | PLANNED | PLANNED |
+| Windows desktop | IMPLEMENTED AND TESTED | — (shape, not dialect) | PLANNED | PLANNED | PLANNED | PLANNED |
+| Delphi VCL | IMPLEMENTED AND TESTED | — (shape, not dialect) | PLANNED | PLANNED | PLANNED | PLANNED |
+| Delphi FireMonkey | IMPLEMENTED AND TESTED | — (shape, not dialect) | PLANNED | PLANNED | PLANNED | PLANNED |
+| Lazarus LCL | IMPLEMENTED AND TESTED | — (shape, not dialect) | PLANNED | PLANNED | PLANNED | PLANNED |
+| Services / daemons | IMPLEMENTED AND TESTED | — (shape, not dialect) | PLANNED | PLANNED | PLANNED | PLANNED |
+| Libraries / packages | IMPLEMENTED AND TESTED | — (shape, not dialect) | PLANNED | PLANNED | PLANNED | PLANNED |
+| DLL / shared-library dependencies | IMPLEMENTED AND TESTED | — (inventory only) | PLANNED | PLANNED | PLANNED | PLANNED |
+| Database-backed | IMPLEMENTED AND TESTED | — (inventory only) | PLANNED | PLANNED | PLANNED | PLANNED |
+| Client-server | IMPLEMENTED AND TESTED | — (inventory only) | PLANNED | PLANNED | PLANNED | PLANNED |
+| Multi-tier | IMPLEMENTED AND TESTED | — (inventory only) | PLANNED | PLANNED | PLANNED | PLANNED |
+| Batch / scheduled | IMPLEMENTED AND TESTED | — (inventory only) | PLANNED | PLANNED | PLANNED | PLANNED |
+| Embedded / hardware-connected | IMPLEMENTED AND TESTED | — (inventory only) | PLANNED | PLANNED | PLANNED | PLANNED |
 
 **Important:** detecting a shape (e.g. VCL) does **not** imply GUI conversion capability. GUI conversion is out of scope for early releases without dedicated UI discovery and human-approved redesign.
 
 ## Architecture at a glance
 
-**Target Architecture — planned components are not yet necessarily implemented.** No repository modules exist yet, so the diagram below shows the approved v3.0 target pipeline only; every node is marked as planned.
+**Target Architecture.** P0/P1 materialised the first four nodes (input, inventory, profiling, dependency/database analysis) as `tools/p1/`; everything from the parser frontend onward is still planned. The diagram below shows the approved v3.0 target pipeline; unplanned nodes are marked as planned.
 
 ```mermaid
 flowchart LR
-    subgraph pipeline["Target Architecture — planned components are not yet necessarily implemented"]
+    subgraph pipeline["Target Architecture — green nodes implemented by P0/P1, dashed nodes planned"]
         direction LR
         IN[Pascal project input<br/>ZIP / Git] --> DIS[Inventory and discovery] --> PROF[Dialect / compiler /<br/>application detection] --> DEP[Dependency and<br/>database analysis]
         DEP --> PAR[Parser frontend] --> AST[AST and semantic resolution] --> IR[Pascal Semantic IR]
@@ -124,21 +130,23 @@ flowchart LR
         VER --> CMP[Original-vs-generated<br/>differential comparison] --> CERT[Evidence-based<br/>certification]
     end
     classDef planned stroke-dasharray: 6 4,stroke:#b06000,fill:#fff6e8,color:#5a3200
-    class IN,DIS,PROF,DEP,PAR,AST,IR,CAP,PLAN,GEN,PJ,SB,VER,CMP,CERT planned
+    classDef done stroke-dasharray: 0,stroke:#1a7f37,fill:#eaf6ee,color:#0d5326
+    class PAR,AST,IR,CAP,PLAN,GEN,PJ,SB,VER,CMP,CERT planned
+    class IN,DIS,PROF,DEP done
 ```
 
 Structural intent (not yet materialised): a modular-monolith control plane with isolated oracle and candidate worker processes for different operating systems, licences and security boundaries.
 
 ## End-to-end modernization workflow
 
-The approved 14-step workflow; every step is `PLANNED` — none is implemented:
+The approved 14-step workflow. **Steps 1–4 are `IMPLEMENTED AND TESTED`** (P0/P1); steps 5–14 are `PLANNED` and must not be claimed:
 
 | # | Step and success condition |
 |---|---|
-| 1 | **Receive** — accept ZIP/Git; validate paths, symlinks, size, entry count → immutable snapshot + SHA-256 manifest |
-| 2 | **Inventory** — classify source, project, compiler, binary, UI, DB, config, integration and unknown files |
-| 3 | **Profile** — resolve dialect/compiler/version/mode/target and project kind from evidence → CONFIRMED / AMBIGUOUS / UNKNOWN fields |
-| 4 | **Map dependencies** — units, includes, packages, libraries, APIs, data sources, jobs, endpoints → knowledge graph with unresolved edges |
+| 1 | **Receive** — accept ZIP/Git; validate paths, symlinks, size, entry count → immutable snapshot + SHA-256 manifest · **implemented (P1)** |
+| 2 | **Inventory** — classify source, project, compiler, binary, UI, DB, config, integration and unknown files · **implemented (P1)** |
+| 3 | **Profile** — resolve dialect/compiler/version/mode/target and project kind from evidence → CONFIRMED / AMBIGUOUS / UNKNOWN fields · **implemented (P1)** |
+| 4 | **Map dependencies** — units, includes, packages, libraries, APIs, data sources, jobs, endpoints → knowledge graph with unresolved edges · **implemented (P1)** |
 | 5 | **Establish oracle** — build/run the original app in its exact toolchain, or declare `ORACLE_UNAVAILABLE` |
 | 6 | **Parse / resolve** — dialect parser, effective build variant, project-wide symbol/type resolution, no silent AST loss |
 | 7 | **Assess capabilities** — check every feature against the versioned registry → capability matrix |
@@ -194,7 +202,7 @@ Both profiles are `PLANNED` and must consume one shared target-neutral Java IR a
 
 ## Technology stack
 
-Versions are the approved targets from architecture v3 (research snapshot 12 November 2026), not installed software. No manifest of any kind (Maven, npm, container, CI) is committed, so every "actual" cell below is unconfigured.
+Approved targets below are from architecture v3 (research snapshot 12 November 2026), not installed software. The Java/Spring/React/PostgreSQL layers are still unconfigured — no `pom.xml`, `package.json` or database schema is committed. **What P1 actually runs on** is listed in the second table.
 
 | Layer | Technology | Actual version/configuration | Role | Status |
 |---|---|---|---|---|
@@ -203,8 +211,19 @@ Versions are the approved targets from architecture v3 (research snapshot 12 Nov
 | Platform metadata DB | PostgreSQL | Not configured (no manifest committed) | Platform metadata only — never a forced customer target DB | PLANNED / target |
 | Customer DB access & SQL analysis | JDBC (`java.sql.DatabaseMetaData`) / JSqlParser | Not configured (no manifest committed) | Read-only metadata discovery; embedded SQL AST for tested subset | PLANNED / target |
 | Pascal parsing | Tree-sitter Pascal / DelphiAST | Not configured (no manifest committed) | Parser candidates behind a parser SPI | PLANNED / target |
-| Oracle toolchains | Free Pascal / customer-licensed Delphi | Not configured (no manifest committed) | Original execution lanes | PLANNED / target |
+| Oracle toolchains | Free Pascal / customer-licensed Delphi | FPC 3.2.2 installed and used by the corpus gate; **no Delphi licence** | Original execution lanes | FPC PARTIAL (compile gate only) / Delphi BLOCKED |
 | Execution, testing, observability | OCI containers / JUnit 5 / Testcontainers / jqwik / Playwright / OpenTelemetry | Not configured (no manifest committed) | Isolated workers, CI gates, traces and metrics | PLANNED / target |
+
+**Toolchain actually in use for P0/P1 (installed and exercised in this repository):**
+
+| Layer | Technology | Version | Role | Status |
+|---|---|---|---|---|
+| Implementation language | Python (stdlib only) | 3.11.9 | `tools/p1/` ingestion, discovery, reporting | IMPLEMENTED AND TESTED |
+| Test runner | pytest | 9.0.3 | 612 unit / integration / security tests | IMPLEMENTED AND TESTED |
+| Host compiler gate | Free Pascal `fpc` | 3.2.2 (`C:\FPC\3.2.2\bin\i386-Win32\fpc.exe`) | scores `corpus/` against `corpus/expectations.txt` | IMPLEMENTED AND TESTED |
+| Container compiler gate | `freepascal/fpc:3.2.2-bookworm-full` | digest-pinned `sha256:6c951541…ed3872` | same sweep on pinned Linux | IMPLEMENTED AND TESTED |
+| VCS ingestion | `git` | 2.55.0 | local-path / `file://` clone only; network clone refused | IMPLEMENTED AND TESTED |
+| CI | GitHub Actions | `.github/workflows/p1-gates.yml` | pytest + guard + both sweeps | IMPLEMENTED, NOT VERIFIED — written, never executed here |
 
 **Approved targets (Final architecture v3 — approved targets, not installed dependencies):**
 
@@ -232,7 +251,7 @@ These are point-in-time approved targets, to be pinned (patch versions, SBOMs, c
 |---|---|---|---|
 | Tree-sitter Pascal | Syntax inventory, incremental parsing, parser cross-check | MIT | candidate, not integrated |
 | DelphiAST | Delphi parser adapter / differential parser (one unit at a time, no symbol table) | MPL-2.0 | candidate, not integrated; MPL obligations to review |
-| Free Pascal 3.2.2 | Pinned original compiler/oracle for FPC-supported profiles only | GPL v2 compiler, modified LGPL RTL | candidate, not integrated; redistribution review required |
+| Free Pascal 3.2.2 | Pinned compiler for the P0/P1 corpus regression gate; future oracle lane | GPL v2 compiler, modified LGPL RTL | **in use — compile gate only**; not an oracle lane; redistribution review required |
 | SchemaCrawler | Optional read-only schema inspection | Multiple licences, pending review | candidate, licence review pending |
 | JDBC + DatabaseMetaData | Baseline customer-DB metadata discovery and connectivity | Java SE platform | candidate, not integrated |
 | JSqlParser | SQL AST for validated embedded SQL syntax | Dual LGPL-2.1 / Apache-2.0, choice pending | candidate, licence choice pending |
@@ -241,11 +260,30 @@ These are point-in-time approved targets, to be pinned (patch versions, SBOMs, c
 | Pas2JS / FPC JVM backend test | Research ideas only (wrong output target; not an enterprise converter) | — | research-only |
 | PAS2J | Commercial evaluation only | Commercial (not open source) | commercial-eval-only — vendor claims are not parity proof |
 
-Custom core the platform must own (all `PLANNED`, none implemented): cross-unit symbol/type resolution, versioned Pascal Semantic IR, type/runtime compatibility analysis, dependency knowledge graph, capability registry, deterministic transformation recipes, Plain Java and Spring Boot generators, compatibility adapters, differential equivalence validation, and certification evidence. No identified open-source project replaces this core.
+Custom core the platform must own: cross-unit symbol/type resolution, versioned Pascal Semantic IR, type/runtime compatibility analysis, dependency knowledge graph, capability registry, deterministic transformation recipes, Plain Java and Spring Boot generators, compatibility adapters, differential equivalence validation, and certification evidence. **Implemented so far:** the dependency knowledge graph (`tools/p1/deps.py`, `graph.py`) and the capability states emitted with the discovery report (`tools/p1/statuses.py`); everything else in that list is `PLANNED`. No identified open-source project replaces this core.
 
 ## Repository structure
 
-**Actual state:** the working tree contains only `.git` — zero commits and no directories or files. The approved **target layout below is planned, not existing**; it is a logical layout for a modular monolith plus isolated workers, not a requirement to split every folder into a deployable service.
+**Actual state — P0 committed, P1 implemented in the working tree (not yet committed):**
+
+```text
+corpus/                 golden Pascal fixtures + README.md + expectations.txt (the E5 contract)
+docs/
+  p0/                   feasibility report, dialect/compiler matrix, parser evaluation,
+                        licence review, P1_TASKS.md, evidence/ (recorded P0 runs)
+  p1/                   P1_IMPLEMENTATION_PLAN.md, P1_VERIFICATION_REPORT.md, evidence/
+tools/
+  p0/                   probes and parser/compiler sweeps: sweep-fpc.ps1, sweep-fpc-docker.sh
+  p1/                   the P1 pipeline: zipingest · gitingest · pathsafe · classify ·
+                        plex · dialects · projects · metadata · deps · graph · statuses ·
+                        emit · pipeline · cli · guard · limits · hashing · model · errors
+                        plus sweep.py (corpus gate) and run_gates.ps1
+tests/                  unit/ · integration/ · security/ · conftest.py · fixtures/p1/
+scripts/                reserved, currently empty
+.github/workflows/      p1-gates.yml — pytest + no-LLM guard + host and container corpus sweeps
+```
+
+**Approved target layout (planned, later phases)** — a logical layout for a modular monolith plus isolated workers, not a requirement to split every folder into a deployable service:
 
 ```text
 apps/        web-workbench (React UI) · control-api (Spring Boot control plane)
@@ -259,59 +297,122 @@ docs/        architecture · decisions · support-matrix (planned documentation 
 
 ## Prerequisites
 
-None — there is no build, so cloning the repository requires nothing but `git`. Planned future prerequisites (apply only once P0+ code exists): JDK 25 LTS, Apache Maven 3.10.0 with wrapper, Node.js 26 LTS, an OCI container runtime (Docker/Podman) for isolated workers, PostgreSQL 18 for platform metadata, and — for Delphi profiles — a customer-licensed RAD Studio/Delphi toolchain on Windows.
+**To run the P0/P1 gates:** `git`, Python 3.11+ (stdlib only — no third-party runtime dependency), and, for the compiler sweeps, Free Pascal 3.2.2 on the host. Docker (or another OCI runtime) is required for the pinned-container sweep; without it the container gate must be skipped explicitly with `-SkipContainer`, and it is then reported as `SKIP`, never as `PASS`.
+
+Planned future prerequisites (phases P2+): JDK 25 LTS, Apache Maven 3.10.0 with wrapper, Node.js 26 LTS, an OCI container runtime for isolated workers, PostgreSQL 18 for platform metadata, and — for Delphi profiles — a customer-licensed RAD Studio/Delphi toolchain on Windows.
 
 ## Installation and quick start
 
 ```bash
 git clone https://github.com/Shankar373/Pascal-Java-Transformation.git
 cd Pascal-Java-Transformation
+python -m pytest tests -q
 ```
 
-That is the complete quick start. **No build, test or run commands exist yet because no code is committed.** Blocked until implementation lands: no build manifest (Maven/npm), no application entry points, no database schema, no workers, no test suite, no CI. The next required step is roadmap phase P0 (repository/toolchain feasibility, golden corpus, parser bake-off) before any other command can honestly be documented.
+No build step, no manifest and no network access are required for the test suite. See [Development commands](#development-commands) for the complete gate list (tests, no-LLM guard, host sweep, container sweep).
 
 ## Configuration
 
-No `.env.example`, configuration file, environment variable, port or credential exists yet — there is nothing to configure, and this README invents none. When the platform exists, credentials will be configured through approved secure mechanisms (never committed to source, logs or reports). Planned configuration categories, deliberately unnamed until implemented: OIDC/OAuth2 identity provider, external secret manager (Vault/KMS), PostgreSQL 18.7 platform metadata connection, worker isolation/sandbox settings, and customer database connection profiles with secret redaction.
+**P1 has no runtime configuration:** no `.env`, no config file, no environment variable, no port and no credential. Its only tunables are compile-time constants in `tools/p1/limits.py` (archive size, entry count, compression-ratio and per-file limits) and command-line flags on `tools/p1/cli.py`; nothing is read from the environment, which is part of why runs are reproducible. This README invents no settings that do not exist.
+
+When the platform exists, credentials will be configured through approved secure mechanisms (never committed to source, logs or reports). Planned configuration categories, deliberately unnamed until implemented: OIDC/OAuth2 identity provider, external secret manager (Vault/KMS), PostgreSQL 18.7 platform metadata connection, worker isolation/sandbox settings, and customer database connection profiles with secret redaction.
 
 ## Development commands
 
-| Command | Availability |
-|---|---|
-| `git clone https://github.com/Shankar373/Pascal-Java-Transformation.git` | Available (verified) |
-| Build | **None exist** — no `pom.xml`, `package.json` or other build manifest is committed |
-| Test | **None exist** — no test harness is committed |
-| Lint / format | **None exist** — no linter configuration is committed |
-| Run / dev server | **None exist** — no application entry point is committed |
+| Command | What it does | Availability |
+|---|---|---|
+| `python -m pytest tests -q` | unit + integration + security suite (612 tests) | Available (verified) |
+| `python tools/p1/cli.py guard --root .` | ADR 0005 no-LLM guard; exits non-zero on a forbidden construct | Available (verified) |
+| `python tools/p1/cli.py ingest <zip\|dir\|git> --out <dir>` | run the P1 discovery pipeline and write manifest + graph + report | Available (verified) |
+| `python tools/p1/cli.py gate <source> --out <dir>` | no-LLM guard first, then ingest | Available (verified) |
+| `python tools/p1/sweep.py --host` | host FPC sweep scored against `corpus/expectations.txt` | Available (verified; needs FPC 3.2.2) |
+| `python tools/p1/sweep.py --docker` | same sweep inside the digest-pinned container | Available (verified; needs Docker) |
+| `powershell -NoProfile -ExecutionPolicy Bypass -File tools\p1\run_gates.ps1` | all four gates in order; exits non-zero if any fails | Available (verified) |
+| `powershell -File tools\p0\sweep-fpc.ps1 [-Baseline <file>]` | raw host compiler sweep; `-Baseline` archives the run (A4) | Available (verified) |
+| `bash tools/p0/sweep-fpc-docker.sh [--baseline <file>]` | raw container compiler sweep; exits 1 on any MISMATCH | Available (verified) |
+| Build · lint · format · dev server | **None exist** — no `pom.xml`, `package.json` or linter configuration is committed | Not available |
+
+Exit codes worth knowing: `sweep.py` returns `0` when every expectation matched, `1` on at least one `MISMATCH`, and `2` when the sweep could not run (missing compiler, container or expectations); `run_gates.ps1` returns `1` if any gate failed.
 
 No `mvn` or `npm` command appears here because none exists in this repository.
 
 ## Testing and verification
 
-No test harness exists in the repository. The planned strategy (architecture v3 / implementation prompt), all `PLANNED`: golden Pascal corpus per dialect/compiler profile (ISO, Turbo, Delphi, FPC) including invalid and ambiguous projects; parser differential plus fuzz/adversarial tests (Tree-sitter vs DelphiAST bake-off); property-based tests for numeric bounds, precision/rounding, arrays, strings, records and file semantics; oracle-vs-candidate differential tests for every capability reported `VERIFIED`; source-mutation, deterministic rebuild/hash and no-silent-node-drop negative tests; security tests for archives, worker isolation, secrets, tenant boundaries and blocked network egress; licence, SBOM and vulnerability scan gates; UI end-to-end tests for discovery, plans and evidence export; and a **no-LLM CI gate** that fails the build if model SDKs, embedding or vector-store packages, AI endpoints, model-weight files or inference configuration appear in product dependencies or deployment manifests.
+## Testing and verification
+
+**Implemented — 612 tests, all passing (`python -m pytest tests -q`):**
+
+| Suite | Count | Covers |
+|---|---|---|
+| `tests/unit/` | 438 | path safety, ZIP/Git ingestion limits, file classification, token/directive scanning, dialect and mode detection, project/profile/shape detection, dependency graph, capability states, report emission, encoding/hash handling, the corpus gate |
+| `tests/integration/` | 32 | end-to-end pipeline on console, ambiguous and GUI fixtures; byte-identical reruns |
+| `tests/security/` | 142 | hostile archives (path traversal, symlink, zip bomb, duplicate entries, oversize), Git attack surface, no-silent-drop guarantees, the no-LLM guard |
+
+Determinism is asserted directly: the same input must produce byte-identical manifest and graph JSON.
+
+**Two gates run outside pytest and also fail the build:**
+
+- **No-LLM guard** — `python tools/p1/cli.py guard --root .` (`tools/p1/guard.py`, tested by `tests/security/test_no_llm_guard.py`). It fails if model SDKs, LLM framework packages, AI endpoints, model-weight files or inference configuration appear under `tools/`, `tests/`, `scripts/` or `.github/`.
+- **Fixture-corpus regression gate** — `python tools/p1/sweep.py --host` and `--docker` score every fixture in `corpus/` against `corpus/expectations.txt`. A new `MISMATCH`, a fixture with no expectation, or an expectation whose fixture has disappeared all exit non-zero. Recorded runs: `docs/p1/evidence/fpc-host-p1.txt`, `docs/p1/evidence/fpc-container-p1.txt` (24/24 `MATCH` each).
+
+`tools/p1/run_gates.ps1` runs pytest, the guard and both sweeps in order.
+
+**Planned (phase P2+), not yet implemented:** golden parser corpus, parser differential (Tree-sitter vs DelphiAST bake-off), property-based tests for numeric bounds, precision/rounding, arrays, strings, records and file semantics, oracle-vs-candidate differential tests for every capability reported `VERIFIED`, licence/SBOM/vulnerability scan gates, UI end-to-end tests, and worker-isolation / secret / tenant-boundary security tests.
 
 ## Security
 
-No security controls are implemented yet — none may be claimed. Planned controls (architecture v3 §16): archive validation against path traversal, symlink escape, zip-bomb and oversize/entry-count attacks; non-root, ephemeral, isolated workers with CPU/memory/time limits and **no network egress** by default; tenant isolation, OIDC/OAuth2 with RBAC, append-only audit trail, encryption in transit and at rest; secrets scanning and redaction with no credentials in source bundles, logs, reports or fixtures; immutable SHA-256 manifests, signed attestations, SBOM, licence inventory and vulnerability scanning; reproducible builds with pinned toolchains and rule packs; on-prem and controlled-egress deployment. The **no-LLM product rule is a hard requirement** enforced at CI and release gates.
+## Security
+
+### Implemented and tested (P1)
+
+| Control | How | Tested by |
+|---|---|---|
+| ZIP path traversal, absolute paths, `..` and backslash escapes | resolved and refused before extraction | `tests/security/test_adversarial_archives.py` |
+| Symlink / hardlink escape, special files (device, FIFO, socket), submodule entries | refused with `SYMLINK_ENTRY`, `SPECIAL_FILE_ENTRY`, `SUBMODULE_ENTRY` | same |
+| Zip bomb and oversize input | per-entry, total and compression-ratio limits; entry-count cap | same |
+| Duplicate entries, non-ZIP input, unreadable input | `DUPLICATE_ENTRY`, `NOT_A_ZIP`, `INPUT_UNREADABLE` — never a silent accept | same |
+| Git ingestion abuse | local path / `file://` only — **network clone is refused** (`REMOTE_INPUT_UNSUPPORTED`); `--no-checkout`, `--no-recurse-submodules`, `--no-local`, a hookless template and a scrubbed environment; commit pins must be 40-hex (`INVALID_COMMIT_PIN`) | `tests/security/test_git_ingestion.py` |
+| Execution of untrusted code | never: no uploaded binary, script or project file is executed by the pipeline | pipeline contract, `tests/security/test_no_silent_drop.py` |
+| Silent data loss | every exclusion, truncation and unsupported construct is announced as a diagnostic | `tests/security/test_no_silent_drop.py` |
+| Model / AI constructs in the product | ADR 0005 guard over `tools/`, `tests/`, `scripts/`, `.github/` | `tests/security/test_no_llm_guard.py` |
+| Source preservation | original bytes are never modified; SHA-256 is taken over exactly what was ingested | `tests/unit/test_hashing.py` |
+
+Ambiguous or unsupported input **fails closed**: blockers and diagnostics are written to the report instead of a best-effort answer.
+
+### Planned (architecture v3 §16) — not implemented, not claimed
+
+Non-root, ephemeral, isolated workers with CPU/memory/time limits and **no network egress** by default; tenant isolation, OIDC/OAuth2 with RBAC, append-only audit trail, encryption in transit and at rest; secrets scanning and redaction in source bundles, logs, reports and fixtures; immutable signed attestations, SBOM, licence inventory and vulnerability scanning; reproducible builds with pinned toolchains and rule packs; on-prem and controlled-egress deployment.
+
+The **no-LLM product rule is a hard requirement**, enforced at CI and release gates by the guard above.
 
 ## Current limitations
 
-- The repository is empty apart from `.git`: no implementation, no tests, no CI, no support matrix, no evidence artifacts.
-- No original execution oracle exists; the Delphi oracle lane requires a customer-licensed toolchain, and full-scope certification is unavailable until an oracle and differential tests exist.
-- No dialect, application shape or DBMS is supported or certified — every capability is `PLANNED`.
+**Open blockers (require an owner decision; P1 continued around both):**
+
+- **A1 — no `LICENSE` file exists.** A licence cannot be invented, so no license may be claimed for this project and third-party notices remain as recorded in `docs/p0/LICENCE_REVIEW.md`. This blocks any distribution or release.
+- **A2 — the DelphiAST helper-recursion bug under FPC is not reported upstream.** Notifying an external project is an owner action; the default recorded in-repo is to maintain the local patch until the owner decides otherwise (`docs/p0/PARSER_EVALUATION.md`, `docs/p0/fixture-fixes.md`).
+
+**Capability limitations:**
+
+- P1 is implemented but **not committed or pushed**; phases P2–P8 have not started. No parser frontend, AST, Semantic IR, transformation planner or Java generator exists, and **no Java is generated**.
+- **Dialect detection is evidence-based only** — `{$MODE}` directives, project settings and file extension, in that order of strength. With no signal it reports `unknown` rather than guessing; Turbo Pascal and ISO 7185 are recognised only through `{$MODE tp}` / `{$MODE iso}`.
+- **LCL/VCL unit-name collision:** the two frameworks share unit names (`Forms`, `Controls`, `Graphics`, …), so a single unit's framework label can be wrong — the GUI fixture's `lcl/uMainForm.pas` is reported as `framework: vcl`. Application-shape detection still resolves to `gui_lcl` because it counts references across the whole tree, but per-file framework labelling is unreliable when a tree mixes both.
+- **Build-requirement inference is deliberately conservative:** it returns `PARTIAL` or `UNKNOWN`, never `SUPPORTED`, and emits `COMPILER_SIGNAL_CONFLICT` when a project file and the sources disagree.
+- **No original execution oracle exists.** The Delphi lane is unlicensed (`ORACLE_UNAVAILABLE`), so no Delphi-equivalence or `VERIFIED` claim is possible in this phase; full-scope certification needs an oracle and differential tests (P3/P6).
+- **The CI workflow is written but has never been executed** — `.github/workflows/p1-gates.yml` cannot run until the work is pushed, so it is recorded `IMPLEMENTED, NOT VERIFIED`. Its individual commands were all run locally.
 - GUI conversion (VCL, FireMonkey, LCL) is an explicit non-goal for the first release; detecting a GUI application does not mean it can be converted.
 - Binary-only components (`.dcu`, `.ppu`, `.bpl`, `.exe`, DLL/OCX without source) are classified, never decompiled; missing source blocks the dependent conversion scope.
-- The Delphi toolchain is proprietary and customer-licensed; FPC is not a universal Delphi substitute; oracle-unavailable estates receive restricted certification only. Database support is unproven — an inventory list is not a driver, adapter or test claim.
-- Architecture references are held outside the repository (a follow-up could add them under `docs/`); no LICENSE file exists, so no license may be claimed for this project. This README documents an approved architecture, not working software.
+- FPC is not a universal Delphi substitute; oracle-unavailable estates receive restricted certification only. Database support is unproven — an inventory list is not a driver, adapter or test claim.
+- Architecture references are held outside the repository (a follow-up could add them under `docs/`). This README documents an approved architecture plus the implemented P0/P1 slice, not a finished product.
 
 ## Roadmap
 
-Phases P0–P8 from architecture v3. **None has started** (repository has zero commits); each phase must leave behind a durable test corpus, capability matrix and evidence artifact, and new features cannot bypass previous regression gates.
+Phases P0–P8 from architecture v3. **P0 and P1 are complete; P2+ has not started.** Each phase must leave behind a durable test corpus, capability matrix and evidence artifact, and new features cannot bypass previous regression gates.
 
 | Phase | Scope | Exit gate / artifacts | Status |
 |---|---|---|---|
-| P0 — Feasibility and tool bake-off | ISO/Turbo/Delphi/FPC samples; Tree-sitter vs DelphiAST comparison; oracle access; legal review | Dialect fixture corpus; parser benchmark; compiler matrix; licence review; tool decision record | not started |
-| P1 — Secure ingestion and discovery | ZIP/Git intake, file inventory, project detection, build profiles, dependency discovery, unknown-artifact reporting | Input manifest; file classifier tests; Application Profile schema; first Application Knowledge Graph | not started |
+| P0 — Feasibility and tool bake-off | ISO/Turbo/Delphi/FPC samples; Tree-sitter vs DelphiAST comparison; oracle access; legal review | Dialect fixture corpus; parser benchmark; compiler matrix; licence review; tool decision record | **complete** — committed as `fbf59d2` (66 files, 4 995 insertions) |
+| P1 — Secure ingestion and discovery | ZIP/Git intake, file inventory, project detection, build profiles, dependency discovery, unknown-artifact reporting | Input manifest; file classifier tests; Application Profile schema; first Application Knowledge Graph | **complete** — implemented and tested (612 tests); awaiting commit approval |
 | P2 — Frontends and Semantic IR | Dialect adapters, directive/preprocessor model, unit graph, symbol/type resolution, control-flow/effects, IR versioning | Golden parser corpus; no silent node loss; IR schema/invariants; negative tests for unknown features | not started |
 | P3 — Original runtime harness | Pinned FPC oracle lane; licensed Delphi runner; resettable state; integration capture | Reproducible original builds/runs; runtime manifests; failure classification; oracle-unavailable path | not started |
 | P4 — Database preserve-first + compatibility library | JDBC metadata, preserved DB adapters, exact numeric/string/array/file semantics, transactions, exceptions | Same DBMS/schema used by the Java candidate in a clone; row-level and transaction parity tests | not started |
@@ -322,10 +423,19 @@ Phases P0–P8 from architecture v3. **None has started** (repository has zero c
 
 ## References
 
-Approved source documents, referenced by name (neither is committed to this repository; no relative links are provided because no `docs/` tree exists yet):
+### External — approved source documents, referenced by name (neither is committed to this repository):
 
 1. **Pascal_to_Java_Enterprise_Modernization_Final_Architecture_v3.pdf** — Final architecture v3.0, research snapshot 12 November 2026. The authoritative architecture contract; section numbers cited above refer to this document.
 2. **OpenCode_Pascal_to_Java_Deterministic_Modernization_Implementation_Prompt.md** — companion implementation prompt containing the module layout, implementation phases, technology table and non-negotiable engineering rules.
+
+### In this repository
+
+- `docs/p0/P1_TASKS.md` — the authoritative P1 acceptance contract (A1–A5, B1–B5, C1–C3, D1–D4, E1–E5)
+- `docs/p0/` — P0 feasibility report, dialect & compiler matrix, parser evaluation, licence review, recorded `evidence/`
+- `docs/p1/P1_IMPLEMENTATION_PLAN.md` — P1 design: output schemas, ingestion limits, test matrix, execution order
+- `docs/p1/P1_VERIFICATION_REPORT.md` — P1 completion report: verification results, changed files, security findings, remaining limitations, recommended next phase
+- `docs/p1/evidence/` — recorded host and pinned-container corpus sweeps (24/24 `MATCH` each)
+- `corpus/README.md` + `corpus/expectations.txt` — golden fixtures and their expected compiler verdicts
 
 Repository: https://github.com/Shankar373/Pascal-Java-Transformation
 

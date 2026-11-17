@@ -1,0 +1,80 @@
+# P1 gates (task E5): every check must pass for the build to be green.
+#
+#   job "tests"          - the Python test suite and the no-LLM guard.
+#   job "fixture-sweep"  - sweeps the Pascal fixture corpus twice: once with
+#                          the runner's own Free Pascal ("host") and once
+#                          inside the digest-pinned container image, scoring
+#                          both against corpus/expectations.txt.
+#
+# A new MISMATCH, a fixture with no expectation, or an expectation whose
+# fixture has gone missing fails the sweep job, so corpus/ and
+# corpus/expectations.txt cannot drift apart unnoticed.
+#
+# NOTE ON PROVENANCE: this workflow was written and its individual commands
+# were run locally on Windows (pytest, guard, host sweep, container sweep),
+# but the workflow itself has not been executed on GitHub Actions.  It is
+# recorded as UNVERIFIED in README.md until a run exists.
+
+name: p1-gates
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  tests:
+    name: tests + no-LLM guard
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Check out
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Unit, integration and security tests
+        run: python -m pytest tests -q
+
+      - name: No-LLM guard
+        run: python tools/p1/cli.py guard --root .
+
+  fixture-sweep:
+    name: fixture-corpus regression gate
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Check out
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      # The host half of the gate: the same tools/p0/sweep-fpc.ps1 the
+      # Windows host runs, executed under pwsh (preinstalled on the runner)
+      # with the runner's Free Pascal.  The resolved compiler and its version
+      # are recorded in the report header.
+      - name: Install the host Free Pascal
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends fpc
+          fpc -iV
+
+      - name: Host sweep vs corpus/expectations.txt
+        run: python tools/p1/sweep.py --host --fpc "$(command -v fpc)"
+
+      # The container half: the digest-pinned image, mounted read-only.
+      - name: Pull the pinned container image
+        run: >-
+          docker pull
+          freepascal/fpc:3.2.2-bookworm-full@sha256:6c951541251e24e67d358ec7a5b2dfb3121069cdf73fd0252226868dbecd3872
+
+      - name: Container sweep vs corpus/expectations.txt
+        run: python tools/p1/sweep.py --docker
