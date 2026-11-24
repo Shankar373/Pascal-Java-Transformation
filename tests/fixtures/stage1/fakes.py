@@ -53,6 +53,10 @@ def write_artifacts(outdir: Path, blueprint: dict[str, Any]) -> None:
         json.dumps({"schema_version": "stage1.diagnostics/1.0",
                     "counts": blueprint["summary"]["diagnostics"], "items": blueprint["diagnostics"]}),
         encoding="utf-8")
+    for name, schema in (("checkpoint-manifest.json", "stage1.checkpoint-manifest/1.0"),
+                         ("project-inventory.json", "stage1.project-inventory/1.0"),
+                         ("architecture-report.json", "stage1.architecture-report/1.0")):
+        (outdir / name).write_text(json.dumps({"schema_version": schema}), encoding="utf-8")
     (outdir / "inventory.csv").write_text(
         "path,class,extension,size,sha256,encoding,analysis_blocker\n", encoding="utf-8")
 

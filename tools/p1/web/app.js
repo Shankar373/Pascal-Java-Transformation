@@ -480,6 +480,11 @@
     const menu = byId("download-menu");
     menu.replaceChildren();
     [["Blueprint (JSON)", "/api/discoveries/" + id + "/blueprint"],
+      ["Checkpoint manifest (JSON)", "/api/discoveries/" + id + "/artifacts/checkpoint-manifest.json"],
+      ["Project inventory (JSON)", "/api/discoveries/" + id + "/artifacts/project-inventory.json"],
+      ["Architecture report (JSON)", "/api/discoveries/" + id + "/artifacts/architecture-report.json"],
+      ["Dependency graph (JSON)", "/api/discoveries/" + id + "/artifacts/dependency-graph.json"],
+      ["Application manifest (JSON)", "/api/discoveries/" + id + "/artifacts/application-manifest.json"],
       ["Unresolved dependencies (JSON)", "/api/discoveries/" + id + "/artifacts/unresolved-dependencies.json"],
       ["Diagnostics (JSON)", "/api/discoveries/" + id + "/artifacts/diagnostics.json"],
       ["Inventory (CSV)", "/api/discoveries/" + id + "/artifacts/inventory.csv"]].forEach((item) => {

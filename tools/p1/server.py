@@ -43,6 +43,13 @@ from p1.server_uploads import (
     sweep_uploads,
     upload_deadline,
 )
+from p1.tenancy import (
+    DEFAULT_TENANT,
+    MAX_TENANTS,
+    list_tenants,
+    tenant_root,
+    validate_tenant,
+)
 from p1.server_security import (
     ARTIFACT_NAMES,
     ID_PATTERN,
@@ -150,13 +157,19 @@ class App:
         self.store = Path(store).resolve()
         self.uploads = self.store / "uploads"
         self.uploads.mkdir(parents=True, exist_ok=True)
-        sweep_uploads(self.uploads)
         self.roots = tuple(Path(r).resolve() for r in allow_local_roots)
         self.allow_ssh = allow_ssh
         self.max_upload_bytes = max_upload_bytes or DEFAULT_LIMITS.max_total_bytes
         self.upload_gate = UploadGate(max_concurrent_uploads)
         self.jobs = JobManager(self.store, discover_fn=discover_fn, max_queue=max_queue,
                                allowed_roots=self.roots)
+        self._discover_fn = discover_fn
+        self._max_queue = max_queue
+        self._managers: dict[str, JobManager] = {DEFAULT_TENANT: self.jobs}
+        self._managers_lock = threading.Lock()
+        for tenant in list_tenants(self.store):
+            self._manager_for(tenant)
+        self.sweep_all_uploads()
         handler = type("P1Handler", (_Handler,), {"app": self})
         self._httpd = _Server((host, port), handler, ipv6=":" in host,
                               max_connections=max_connections)
@@ -167,9 +180,46 @@ class App:
     def server_address(self) -> tuple[str, int]:
         return self._httpd.server_address[:2]  # type: ignore[return-value]
 
+    # -------------------------------------------------------- tenancy
+
+    def _manager_for(self, tenant: str) -> JobManager:
+        """The job manager of *tenant*, created on first use."""
+
+        with self._managers_lock:
+            manager = self._managers.get(tenant)
+            if manager is None:
+                if len(self._managers) >= MAX_TENANTS:
+                    raise RequestRejected(429, "TOO_MANY_TENANTS", "tenant limit reached")
+                manager = JobManager(
+                    self.store, discover_fn=self._discover_fn,
+                    max_queue=self._max_queue, allowed_roots=self.roots,
+                    tenant=tenant)
+                self._managers[tenant] = manager
+            return manager
+
+    def jobs_for(self, tenant: str) -> JobManager:
+        """Job manager scoped to *tenant* (validated before any path use)."""
+
+        return self._manager_for(validate_tenant(tenant))
+
+    def uploads_for(self, tenant: str) -> Path:
+        """Upload directory of *tenant*, created on first use."""
+
+        path = tenant_root(self.store, validate_tenant(tenant)) / "uploads"
+        path.mkdir(parents=True, exist_ok=True)
+        return path
+
+    def sweep_all_uploads(self) -> None:
+        """Discard abandoned uploads in every tenant directory."""
+
+        sweep_uploads(self.uploads)
+        for tenant in list_tenants(self.store):
+            sweep_uploads(tenant_root(self.store, tenant) / "uploads")
+
     def config(self) -> dict[str, Any]:
         return {"local_directory_enabled": bool(self.roots), "ssh_enabled": self.allow_ssh,
-                "max_upload_bytes": self.max_upload_bytes, "stage": 1}
+                "max_upload_bytes": self.max_upload_bytes, "stage": 1,
+                "tenancy": True}
 
     def serve_forever(self) -> None:
         self._serving.set()
@@ -179,7 +229,10 @@ class App:
         if self._serving.is_set():
             self._httpd.shutdown()
         self._httpd.server_close()
-        self.jobs.shutdown()
+        with self._managers_lock:
+            managers = list(self._managers.values())
+        for manager in managers:
+            manager.shutdown()
 
 
 def create_app(
@@ -204,6 +257,7 @@ class _Handler(BaseHTTPRequestHandler):
     protocol_version = "HTTP/1.0"
     _unread: int | None = None
     _rfile_dead = False
+    _tenant_id: str | None = None
 
     # ------------------------------------------------------------ plumbing
 
@@ -274,6 +328,20 @@ class _Handler(BaseHTTPRequestHandler):
             return
 
     # ------------------------------------------------------------ dispatch
+
+    def _tenant(self) -> str:
+        """Validated tenant of this request (``X-P1-Tenant``, else default).
+
+        The identifier is validated before it is used to select a job
+        manager or an upload directory, so a hostile header can never reach
+        the filesystem.  An invalid tenant fails the request closed.
+        """
+
+        if self._tenant_id is None:
+            raw = self.headers.get("X-P1-Tenant")
+            self._tenant_id = (DEFAULT_TENANT if raw is None
+                               else validate_tenant(raw.strip()))
+        return self._tenant_id
 
     def _dispatch(self) -> None:
         post = self.command == "POST"
@@ -369,10 +437,11 @@ class _Handler(BaseHTTPRequestHandler):
         self._send(200, body, ctype, {"Cache-Control": "no-cache"})
 
     def _collection(self, method: str) -> None:
+        manager = self.app.jobs_for(self._tenant())
         if method in ("GET", "HEAD"):
-            return self._json(200, {"items": self.app.jobs.list()})
+            return self._json(200, {"items": manager.list()})
         if method == "POST":
-            return self._create()
+            return self._create(manager)
         self._method_not_allowed()
 
     def _read_json_body(self) -> dict[str, Any]:
@@ -401,7 +470,7 @@ class _Handler(BaseHTTPRequestHandler):
         self._unread = int(raw)
         return self._unread
 
-    def _create(self) -> None:
+    def _create(self, manager: JobManager) -> None:
         data = self._read_json_body()
         kind = data.get("kind")
         if kind == "git":
@@ -412,10 +481,11 @@ class _Handler(BaseHTTPRequestHandler):
             request = JobRequest(kind="directory", source=str(path), label=path.name)
         else:
             raise RequestRejected(400, "INVALID_KIND", "kind must be 'git' or 'directory'")
-        job_id = self.app.jobs.submit(request)
-        self._json(202, {"id": job_id, "status": "queued"})
+        job_id = manager.submit(request)
+        self._json(202, {"id": job_id, "status": "queued", "tenant": manager.tenant})
 
     def _upload(self, query: str) -> None:
+        tenant = self._tenant()
         names = parse_qs(query, max_num_fields=8).get("name") or [None]
         name = safe_upload_name(names[0])
         ctype = (self.headers.get("Content-Type") or "").split(";")[0].strip().lower()
@@ -431,17 +501,17 @@ class _Handler(BaseHTTPRequestHandler):
         if not self.app.upload_gate.try_acquire():
             raise RequestRejected(429, "BUSY", "too many uploads in progress; try again shortly")
         try:
-            self._accept_upload(name, length)
+            self._accept_upload(tenant, name, length)
         finally:
             self.app.upload_gate.release()
 
-    def _accept_upload(self, name: str, length: int) -> None:
+    def _accept_upload(self, tenant: str, name: str, length: int) -> None:
         """Reserve queue capacity, then stream the body; both undone on any failure."""
 
-        jobs = self.app.jobs
+        jobs = self.app.jobs_for(tenant)
         jobs.reserve_slot()  # QUEUE_FULL here costs no disk and no body read
         try:
-            target = self._stream_to_file(length)
+            target = self._stream_to_file(self.app.uploads_for(tenant), length)
         except BaseException:
             jobs.release_slot()
             raise
@@ -451,7 +521,7 @@ class _Handler(BaseHTTPRequestHandler):
         except BaseException:
             target.unlink(missing_ok=True)
             raise
-        self._json(202, {"id": job_id, "status": "queued"})
+        self._json(202, {"id": job_id, "status": "queued", "tenant": tenant})
 
     def _read_within(self, size: int, deadline: float) -> bytes:
         """One body read that cannot outlive the upload's wall-clock *deadline*."""
@@ -473,10 +543,10 @@ class _Handler(BaseHTTPRequestHandler):
 
         self.close_connection = True
 
-    def _stream_to_file(self, length: int) -> Path:
+    def _stream_to_file(self, uploads: Path, length: int) -> Path:
         """Write the body to ``uploads/<random>.zip``; remove it on any failure."""
 
-        final = self.app.uploads / f"{secrets.token_hex(8)}.zip"
+        final = uploads / f"{secrets.token_hex(8)}.zip"
         partial = final.with_suffix(".zip.part")
         deadline = time.monotonic() + upload_deadline(
             length, UPLOAD_BASE_DEADLINE, UPLOAD_MIN_BYTES_PER_SECOND)
@@ -499,27 +569,28 @@ class _Handler(BaseHTTPRequestHandler):
         return final
 
     def _item(self, rest: list[str]) -> None:
+        manager = self.app.jobs_for(self._tenant())
         job_id = rest[0]
         if not ID_PATTERN.match(job_id):
             raise RequestRejected(400, "INVALID_ID", "invalid discovery id")
         if len(rest) == 1:
-            view = self.app.jobs.get(job_id)
+            view = manager.get(job_id)
             if view is None:
                 raise RequestRejected(404, "NOT_FOUND", "discovery not found")
             return self._json(200, view)
         if rest[1] in ("blueprint", "report") and len(rest) == 2:
             name = BLUEPRINT_NAME if rest[1] == "blueprint" else "discovery-report.md"
-            return self._artifact(job_id, name)
+            return self._artifact(manager, job_id, name)
         if rest[1] == "artifacts" and len(rest) == 3:
             if rest[2] not in ARTIFACT_NAMES:
                 raise RequestRejected(404, "NOT_FOUND", "artifact not found")
-            return self._artifact(job_id, rest[2])
+            return self._artifact(manager, job_id, rest[2])
         raise RequestRejected(404, "NOT_FOUND", "not found")
 
-    def _artifact(self, job_id: str, name: str) -> None:
-        if self.app.jobs.status(job_id) is None:
+    def _artifact(self, manager: JobManager, job_id: str, name: str) -> None:
+        if manager.status(job_id) is None:
             raise RequestRejected(404, "NOT_FOUND", "discovery not found")
-        directory = self.app.jobs.blueprint_path(job_id)
+        directory = manager.blueprint_path(job_id)
         if directory is None:
             raise RequestRejected(409, "NOT_COMPLETED", "the discovery has not completed")
         ctype, attachment = ARTIFACT_NAMES[name]

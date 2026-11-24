@@ -38,6 +38,7 @@ from p1.server_security import (
     resolve_local_directory,
     scrub_message,
 )
+from p1.tenancy import DEFAULT_TENANT, tenant_root, validate_tenant
 
 __all__ = [
     "JobManager",
@@ -97,8 +98,12 @@ class JobManager:
         max_queue: int = 8,
         allowed_roots: Iterable[Path] = (),
         max_finished: int = MAX_FINISHED,
+        tenant: str = DEFAULT_TENANT,
     ) -> None:
-        self._store = Path(store)
+        self.tenant = validate_tenant(tenant)
+        #: Tenant-scoped storage root: the default tenant keeps the store
+        #: root, every other tenant is isolated under ``tenants/<id>/``.
+        self._store = tenant_root(store, self.tenant)
         self._roots = tuple(Path(r).resolve() for r in allowed_roots)
         self._max_finished = max(1, int(max_finished))
         self._max_queue = max_queue
@@ -210,6 +215,7 @@ class JobManager:
         label = request.label or (redact_url(request.source) if request.kind == "git" else "")
         return {
             "id": job_id,
+            "tenant": self.tenant,
             "status": "queued",
             "kind": request.kind,
             "label": scrub_message(label, 120) if label else None,
@@ -230,6 +236,7 @@ class JobManager:
         with self._lock:
             return {
                 "id": job["id"],
+                "tenant": job.get("tenant", DEFAULT_TENANT),
                 "status": job["status"],
                 "kind": job.get("kind"),
                 "label": job.get("label"),
@@ -250,6 +257,7 @@ class JobManager:
         loaded = self._read_job_file(self._jobs_dir / job_id / "job.json")
         if loaded is None or loaded.get("id") != job_id:
             return None
+        loaded.setdefault("tenant", self.tenant)
         return self._interrupt_if_stale(loaded)
 
     def _persist(self, job: dict[str, Any]) -> None:
@@ -294,6 +302,7 @@ class JobManager:
                 continue
             job = self._read_job_file(path)
             if job and job.get("id") == path.parent.name:
+                job.setdefault("tenant", self.tenant)
                 entries.append(job)
         entries.sort(key=lambda j: (str(j.get("created_at")), j["id"]), reverse=True)
         for job in entries:

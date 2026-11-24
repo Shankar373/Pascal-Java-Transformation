@@ -106,6 +106,9 @@ def build_parser() -> argparse.ArgumentParser:
                           metavar="HOST",
                           help="operator allow-list entry that bypasses the "
                                "public-address rule (repeatable)")
+    discover.add_argument("--tenant", default=None, metavar="ID",
+                          help="tenant whose isolated store subtree is used "
+                               "(default tenant writes to the store root)")
 
     checkpoint = subparsers.add_parser(
         "checkpoint", help="inspect immutable checkpoints"
@@ -133,6 +136,15 @@ def build_parser() -> argparse.ArgumentParser:
     serve.add_argument("--allow-remote-bind", action="store_true",
                        help="permit a non-loopback --host (no authentication "
                             "exists before Stage 6)")
+
+    api = subparsers.add_parser(
+        "api", help="run the FastAPI service and React workbench",
+        add_help=False)
+    api.add_argument("rest", nargs=argparse.REMAINDER)
+    tenant_token = subparsers.add_parser(
+        "tenant-token", help="issue a bearer token bound to one tenant",
+        add_help=False)
+    tenant_token.add_argument("rest", nargs=argparse.REMAINDER)
 
     guard = subparsers.add_parser(
         "guard", help="run the ADR 0005 no-LLM dependency gate only"
@@ -200,6 +212,7 @@ def _network_policy(extra_hosts: list[str]):
 def _command_discover(args: argparse.Namespace) -> int:
     from p1.pipeline import resolve_kind
     from p1.stage1 import DiscoveryRequest, discover
+    from p1.tenancy import tenant_root
 
     kind = resolve_kind(args.source, args.kind)
     if kind == "directory" and (Path(args.source) / ".git").exists():
@@ -212,8 +225,9 @@ def _command_discover(args: argparse.Namespace) -> int:
         allow_ssh=args.allow_ssh,
         network_policy=_network_policy(args.allow_host),
     )
+    store = tenant_root(args.store, args.tenant or "default")
     result = discover(
-        request, args.store,
+        request, store,
         progress=lambda step, status, msg: print(
             f"[{step}] {status}{': ' + msg if msg else ''}"),
     )
@@ -262,8 +276,15 @@ def _command_serve(args: argparse.Namespace) -> int:
 
 
 def main(argv: list[str] | None = None) -> int:
+    raw = list(sys.argv[1:] if argv is None else argv)
+    if raw[:1] == ["api"]:  # own option set; argparse REMAINDER cannot lead with a flag
+        from p1 import api_main
+        return api_main.main(raw[1:])
+    if raw[:1] == ["tenant-token"]:
+        from p1 import api_main
+        return api_main.issue_main(raw[1:])
     parser = build_parser()
-    args = parser.parse_args(argv)
+    args = parser.parse_args(raw)
 
     if args.command == "guard":
         return _command_guard(args)
