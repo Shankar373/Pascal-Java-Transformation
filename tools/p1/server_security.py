@@ -55,8 +55,8 @@ __all__ = [
     "scrub_message",
 ]
 
-ID_PATTERN = re.compile(r"^[0-9a-f]{16}$")
-CHECKPOINT_PATTERN = re.compile(r"^CP-[0-9a-f]{12}$")
+ID_PATTERN = re.compile(r"^[0-9a-f]{16}\Z")
+CHECKPOINT_PATTERN = re.compile(r"^CP-[0-9a-f]{12}\Z")
 
 #: artifact name -> (content type, served as attachment)
 ARTIFACT_NAMES: dict[str, tuple[str, bool]] = {
@@ -65,6 +65,9 @@ ARTIFACT_NAMES: dict[str, tuple[str, bool]] = {
     "dependency-graph.json": ("application/json", True),
     "unresolved-dependencies.json": ("application/json", True),
     "diagnostics.json": ("application/json", True),
+    "checkpoint-manifest.json": ("application/json", True),
+    "project-inventory.json": ("application/json", True),
+    "architecture-report.json": ("application/json", True),
     "inventory.csv": ("text/csv; charset=utf-8", True),
     "discovery-report.md": ("text/plain; charset=utf-8", False),
 }

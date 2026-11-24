@@ -60,6 +60,7 @@ from .pipeline import (
     build_roots,
 )
 from .remotegit import NetworkPolicy, ingest_remote_git
+from .reports import write_derived_reports
 from .runtimedeps import detect_runtime_dependencies
 from .zipingest import ingest_zip
 
@@ -371,7 +372,33 @@ def _publish(discovery: Discovery, info: CheckpointInfo, store: Path,
     outputs = write_outputs(discovery, outdir, staging_roots=scrub)
     outputs.update(write_blueprint_outputs(
         discovery, outdir, staging_roots=scrub, blueprint=blueprint))
+    outputs.update(write_derived_reports(
+        blueprint, _checkpoint_document(info), outdir, staging_roots=scrub))
     return outdir, blueprint, outputs
+
+
+def _checkpoint_document(info: CheckpointInfo) -> dict[str, Any]:
+    """The sealed ``checkpoint.json`` of *info*, or a refusal.
+
+    The manifest must describe the checkpoint that was actually verified and
+    read; if its metadata cannot be loaded the run fails closed rather than
+    publishing a discovery without a source identity.
+    """
+
+    try:
+        document = json.loads(
+            (info.path / "checkpoint.json").read_text(encoding="utf-8"))
+    except (OSError, ValueError) as exc:
+        raise IngestionError(
+            "the checkpoint metadata could not be read",
+            code="CHECKPOINT_INVALID",
+        ) from exc
+    if not isinstance(document, dict):
+        raise IngestionError(
+            "the checkpoint metadata is not a JSON object",
+            code="CHECKPOINT_INVALID",
+        )
+    return document
 
 
 def _cleanup(staging: Path) -> None:
