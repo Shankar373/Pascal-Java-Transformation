@@ -29,23 +29,56 @@ command lines, logs or outputs.
 python tools/p1/cli.py discover <source> --store <dir> [--ref REF] [--label NAME]
                                 [--kind git|zip|directory] [--allow-ssh] [--allow-host HOST]
 python tools/p1/cli.py checkpoint verify <store>/checkpoints/<CP-id>
-python tools/p1/cli.py serve [--store <dir>] [--port 8765] [--allow-local-root DIR]
+python tools/p1/cli.py discover <source> --tenant acme ...   # tenant-isolated store subtree
+python tools/p1/cli.py api [--store <dir>] [--port 8766] [--allow-local-root DIR]
+                           [--tenant-tokens-file FILE]          # FastAPI + React workbench
+python tools/p1/cli.py tenant-token --tokens-file FILE --tenant acme
+python tools/p1/cli.py serve [--store <dir>] [--port 8765] [--allow-local-root DIR]  # legacy stdlib UI
 ```
 
 `discover` exits `0` on success and `1` when the input is refused; a refused
 input produces **no** blueprint.
 
-## Dashboard
+## Workbench (React + FastAPI)
 
 ```text
-python tools/p1/cli.py serve --store .stage1-store
-# open http://127.0.0.1:8765/
+pip install -r requirements-api.txt
+(cd frontend && npm ci && npm run build)
+python tools/p1/cli.py api --store .stage1-store
+# open http://127.0.0.1:8766/
 ```
 
-The dashboard is a stdlib server with a vanilla-JS page (no build step, no
-CDN). It binds to loopback, rejects foreign `Host`/`Origin` headers and has
-**no authentication** (that arrives with Stage 6) — do not expose it. The
-Local Directory source is disabled unless you pass `--allow-local-root`.
+For UI development run `npm run dev` in `frontend/` (proxies `/api` to 8766).
+If `frontend/dist` has not been built, the service falls back to the legacy
+vanilla page (`/api/config` reports `"ui": "react"` or `"legacy"`).
+
+**Multi-tenant use.** Create one token per tenant and start the service with
+the token file; the tenant is derived from the token and stored under
+`<store>/tenants/<tenant>/`:
+
+```text
+python tools/p1/cli.py tenant-token --tokens-file tokens.txt --tenant acme   # prints the token once
+python tools/p1/cli.py api --store /srv/stage1 --tenant-tokens-file tokens.txt
+```
+
+The workbench asks for the token (kept in memory only; never written to
+browser storage). Without a token file the service is single-user: bind to
+loopback only; a non-loopback bind is refused unless tokens are configured
+(or `--allow-remote-bind`). Local Directory ingestion is disabled unless you
+pass `--allow-local-root`.
+
+**Private repositories.** Set `P1_GIT_TOKEN` and `P1_GIT_TOKEN_HOSTS=<host>`
+(HTTPS) or use the SSH variables above, in the service's environment — never
+in the URL or the UI.
+
+## Legacy dashboard
+
+```text
+python tools/p1/cli.py serve --store .stage1-store    # http://127.0.0.1:8765/
+```
+
+Stdlib server with a vanilla-JS page (no build step, no CDN, no third-party
+dependencies); same API, loopback only, no authentication.
 
 ## Store layout
 
@@ -57,7 +90,11 @@ Local Directory source is disabled unless you pass `--allow-local-root`.
                             application-manifest.json   dependency-graph.json
                             unresolved-dependencies.json diagnostics.json
                             inventory.csv  discovery-report.md  run-record.json
+<store>/discoveries/<CP-id>/checkpoint-manifest.json project-inventory.json
+                            architecture-report.json
 <store>/jobs/<id>/job.json                    dashboard job state
+<store>/uploads/                              transient (removed on success/failure)
+<store>/tenants/<tenant>/{jobs,uploads,checkpoints,discoveries}/   non-default tenants
 ```
 
 `CP-<12 hex>` is derived from the content (kind, commit, source digest):
@@ -85,8 +122,9 @@ is byte-identical for identical input.
 
 ## Honest limits
 
-Detection is not support: findings are `PARTIAL`/`UNKNOWN`, never
-`SUPPORTED`. Stage 1 does no symbol/type resolution, builds no semantic IR,
+Detection is not support: the `SUPPORTED`/`PARTIAL`/`UNKNOWN` values in
+Stage 1 outputs only say whether Stage 1 could scan a file or project; they
+are **not** a conversion-support claim (capability classification is Stage 3). Stage 1 does no symbol/type resolution, builds no semantic IR,
 does not connect to databases, does not decompile binaries, and the Delphi
 release name is reported as the raw `ProjectVersion` (no unverified mapping).
 Proxy-only networks are unsupported for remote Git (a proxy would bypass

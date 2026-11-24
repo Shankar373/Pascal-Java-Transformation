@@ -5,6 +5,8 @@
 **Date:** 18 November 2026 · **Environment:** Windows 11, Python 3.11.9, git 2.55.0, FPC 3.2.2 (host)
 **Stage 2 was not started.**
 
+> **Historical record (18 November 2026).** Current results, the FastAPI/React/tenancy work and the closure audit are in [`STAGE1_ACCEPTANCE.md`](STAGE1_ACCEPTANCE.md) and [`STAGE1_CLOSURE_REPORT.md`](STAGE1_CLOSURE_REPORT.md); counts below are as of that date.
+
 ## 1. Verdict
 
 Stage 1 is implemented end to end and verified in this environment, with the limitations in §6 stated, not hidden.

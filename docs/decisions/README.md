@@ -29,8 +29,8 @@ is an assumption, not a decision.
 
 | Item | Where tracked |
 |---|---|
-| This repository has no `LICENSE` file | `docs/p0/LICENCE_REVIEW.md` §4, `docs/p0/P1_TASKS.md` A1 |
-| Third-party notices file not yet generated | `docs/p0/P1_TASKS.md` A1 |
+| This repository has no `LICENSE` file — **OPEN, owner decision** | `docs/decisions/0006-pascal-repository-licence-unresolved.md` |
+| Third-party notices file | Generated: `THIRD_PARTY_NOTICES.md` (`tools/release/generate_notices.py`) |
 | DelphiAST FPC patch not yet reported upstream | `docs/p0/P1_TASKS.md` A2 |
 | Deferred licence reviews (SchemaCrawler, JSqlParser) | `docs/p0/LICENCE_REVIEW.md` §5 |
 | Local JDK 21 is not the Java 25 baseline | `docs/decisions/0003-target-java-version.md` |

@@ -278,9 +278,12 @@ form with **Ingest & Discover**, the five-step progress strip, and the
 Application Blueprint panels (project information, summary tiles, file-distribution
 donut, detected dialect, application structure tree, key dependencies top 5
 with Resolved/Unresolved pills, discovered components, View Report, Download
-Blueprint). Stdlib `http.server` + vanilla HTML/CSS/JS (no build step, no CDN,
-no framework — consistent with the stdlib-only constraint; React/Vite remains
-the planned production UI). All values come from the blueprint; nothing is
+Blueprint). Two front ends serve the same API contract: the **production
+workbench** is React 18 + TypeScript + Vite (`frontend/`) served by a FastAPI
+service (`p1/fastapi_app.py`, `python tools/p1/cli.py api`); the original
+stdlib `http.server` + vanilla JS dashboard (`p1/server.py`, `p1/web/`) is
+retained unchanged as a zero-dependency fallback and is used automatically by
+the FastAPI service when `frontend/dist` has not been built (see §8.1). All values come from the blueprint; nothing is
 hard-coded to the mock-up's sample data. The "Stage 1 – Completed" badge shows
 **Completed**, **Completed with N blockers** or **Failed** from real status.
 
@@ -308,6 +311,33 @@ nosniff`, `Referrer-Policy: no-referrer`; the UI inserts data with
 stable code and a sanitised message (no filesystem paths, no tokens); bounded
 job queue and one worker thread; request-body and header limits; local
 directory ingestion disabled unless explicitly enabled.
+
+### 8.1 FastAPI service, tenancy and tokens
+
+`p1/fastapi_app.py` is a thin adapter over the same tested core
+(`JobManager`, `server_security`, `tenancy`). A pure-ASGI `GuardMiddleware`
+applies, to every request: single allowed `Host`; `Origin`/`X-P1-Request` on
+POST; method allow-list (GET/HEAD/POST); absolute-path check; tenant
+resolution; security headers (CSP `default-src 'self'` etc.). Bodies are
+bounded (JSON 16 KiB; uploads need `Content-Length`, are capped, deadline-
+bound, magic-byte checked and removed on every failure path). Static files
+come from a table built at start-up (no path from user input).
+
+**Tenancy** (`p1/tenancy.py`): tenant ids match `[a-z0-9][a-z0-9_-]{0,62}` and
+are never a store directory name (`tenants`, `jobs`, `uploads`, `checkpoints`,
+`discoveries`). The default tenant uses the store root (backwards compatible);
+others use `<store>/tenants/<id>/{jobs,uploads,checkpoints,discoveries}`. A
+cross-tenant read answers 404 (indistinguishable from "does not exist").
+
+**Tenant tokens** (`p1/tenant_auth.py`, `tenant-token` command): with
+`--tenant-tokens-file` every `/api/*` request except `/api/config` needs
+`Authorization: Bearer <token>`; the tenant is *derived from the token* and
+`X-P1-Tenant` is ignored, so a client cannot pick another tenant. Only SHA-256
+digests are stored (file mode 0600 on POSIX); lookup compares every entry in
+constant time. Without a token file the server is single-user: `X-P1-Tenant`
+is a storage boundary, **not** authentication, and a non-loopback bind is
+refused unless `--allow-remote-bind` is given. Identity (OIDC), RBAC, rotation
+and revocation UI are Stage 6.
 
 ## 9. Testing and verification requirements
 

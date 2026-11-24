@@ -15,16 +15,16 @@ A discovery-first enterprise platform that analyzes legacy Pascal estates, conve
 
 ## Project maturity and status
 
-**Stage 1 of the six-stage architecture (Ingestion and Discovery) is implemented end to end and tested; Stages 2–6 have not started.** Stage 1 is roadmap phase P1 (committed earlier as `b197643`, building on the P0 feasibility work `fbf59d2`) plus the Stage 1 completion work: remote Git (HTTPS/SSH) with exact-commit pinning, an immutable checkpoint, directory inventory, external-integration / library / runtime-dependency discovery, the Application Blueprint, and a local dashboard. The architecture contract is approved in external reference documents (Final architecture v3.0, research snapshot 12 November 2026) held outside this repository — see [References](#references).
+**Stage 1 of the six-stage architecture (Ingestion and Discovery) is implemented end to end and tested; Stages 2–6 have not started.** Stage 1 is roadmap phase P1 (committed earlier as `b197643`, building on the P0 feasibility work `fbf59d2`) plus the Stage 1 completion work: remote Git (HTTPS/SSH) with exact-commit pinning, an immutable checkpoint, directory inventory, external-integration / library / runtime-dependency discovery, the Application Blueprint, per-tenant isolation, a FastAPI service and a React workbench (the original stdlib dashboard is retained as a fallback). The architecture contract is approved in external reference documents (Final architecture v3.0, research snapshot 12 November 2026) held outside this repository — see [References](#references).
 
 | Stage | Name | Status | Evidence |
 |---|---|---|---|
-| 1 | Ingestion and Discovery | **IMPLEMENTED AND TESTED** | `tools/p1/` (48 modules), `tests/` (1,633 tests), `docs/stage1/` |
+| 1 | Ingestion and Discovery | **IMPLEMENTED AND TESTED** | `tools/p1/`, `frontend/`, `tests/` (1,785 passed, 6 skipped), `docs/stage1/` — see [`STAGE1_ACCEPTANCE.md`](docs/stage1/STAGE1_ACCEPTANCE.md) |
 | 2 | Pascal Language Engineering | PLANNED | `tools/p1/plex.py` is a scanner (tokens/directives/uses/includes), not a parser frontend |
 | 3 | Modernization Intelligence | PLANNED | no capability registry, planner or recipe engine exists |
 | 4 | Java Generation and Compatibility | PLANNED | deliberately out of scope — no Java is generated |
 | 5 | Runtime and Verification | **BLOCKED** | FPC 3.2.2 present; no licensed Delphi toolchain, so `ORACLE_UNAVAILABLE`; no oracle/differential harness |
-| 6 | Enterprise Platform and Operations | **PARTIAL (security only)** | ingestion hardening is implemented and adversarially tested; tenancy, RBAC/OIDC, audit, SBOM and signing are not |
+| 6 | Enterprise Platform and Operations | **PARTIAL (security only)** | ingestion hardening and storage-level tenant isolation (optional per-tenant bearer tokens) are implemented and tested; OIDC/RBAC, audit trail, SBOM and signing are not |
 
 ## Overview
 
@@ -99,7 +99,7 @@ request → [1 Ingestion] → [2 Checkpoint] → [3 Scanning & Inventory] → [4
 | Runtime dependencies | DLL/BPL/OCX/COM, config files, registry keys, environment variables, hard-coded paths, database client libraries, services — each marked resolved/unresolved against the input |
 | Graphs & unresolved | Unit/include/package/native dependency graph with source locations; every unresolved dependency with severity, location and remediation (nothing pruned) |
 | Blueprint | `application-blueprint.json` (`stage1.application-blueprint/1.0`, JSON Schema in `docs/stage1/schemas/`), plus `unresolved-dependencies.json`, `diagnostics.json`, `inventory.csv`, `dependency-graph.json`, `application-manifest.json`, `discovery-report.md` and a `run-record.json` (the only wall-clock artefact) |
-| Dashboard | Local web UI implementing the reference mock-up ([`docs/stage1/reference/discovery-dashboard.png`](docs/stage1/reference/discovery-dashboard.png)): ingest form, five-step progress, blueprint panels, recent discoveries, downloads |
+| Workbench | **React 18 + TypeScript + Vite** (`frontend/`) over a **FastAPI** service (`python tools/p1/cli.py api`), with optional per-tenant bearer tokens; falls back to the original stdlib/vanilla-JS dashboard if the React build is absent. Implements the reference mock-up ([`docs/stage1/reference/discovery-dashboard.png`](docs/stage1/reference/discovery-dashboard.png)): ingest form, five-step progress, blueprint panels, recent discoveries, downloads |
 
 Every finding carries located evidence (`file`, `line`, `column`, redacted excerpt); the blueprint is byte-identical for identical input; a refused input produces **no** blueprint.
 
@@ -111,7 +111,10 @@ Every finding carries located evidence (`file`, `line`, `column`, redacted excer
 python tools/p1/cli.py discover https://github.com/org/legacy-app.git --ref main --store .stage1-store
 python tools/p1/cli.py discover app.zip --store .stage1-store
 python tools/p1/cli.py checkpoint verify .stage1-store/checkpoints/CP-<id>
-python tools/p1/cli.py serve --store .stage1-store      # dashboard on http://127.0.0.1:8765/
+python tools/p1/cli.py discover app.zip --tenant acme --store .stage1-store   # tenant-isolated store
+pip install -r requirements-api.txt && (cd frontend && npm ci && npm run build)
+python tools/p1/cli.py api --store .stage1-store            # React workbench on http://127.0.0.1:8766/
+python tools/p1/cli.py serve --store .stage1-store          # legacy dashboard on http://127.0.0.1:8765/
 ```
 
 See [`docs/stage1/STAGE1_USER_GUIDE.md`](docs/stage1/STAGE1_USER_GUIDE.md) for inputs, the store layout and limits, and [`docs/stage1/STAGE1_DESIGN.md`](docs/stage1/STAGE1_DESIGN.md) for the contract.
@@ -290,9 +293,11 @@ Approved targets below are from architecture v3 (research snapshot 12 November 2
 
 | Layer | Technology | Version | Role | Status |
 |---|---|---|---|---|
-| Implementation language | Python (stdlib only) | 3.11.9 | `tools/p1/` ingestion, checkpoint, discovery, blueprint, dashboard | IMPLEMENTED AND TESTED |
-| Test runner | pytest | 9.0.3 | 1,633 unit / integration / security tests | IMPLEMENTED AND TESTED |
-| Dashboard | stdlib `http.server` + vanilla HTML/CSS/JS | no build step, no CDN | local Stage 1 UI and API (`tools/p1/web/`, `server.py`, `jobs.py`); React/Vite remains the planned production UI | IMPLEMENTED AND TESTED |
+| Implementation language | Python 3.11 — ingestion/discovery core is stdlib only | 3.11.9 | `tools/p1/` ingestion, checkpoint, discovery, blueprint | IMPLEMENTED AND TESTED |
+| API service | FastAPI 0.141.1 + uvicorn 0.54.0 (pinned in `requirements-api.txt`) | installed | `tools/p1/fastapi_app.py`, `api_main.py`, `tenant_auth.py` | IMPLEMENTED AND TESTED |
+| Test runner | pytest | 9.0.3 | 1,791 unit / integration / security / acceptance tests | IMPLEMENTED AND TESTED |
+| Web UI | React 18.3 + TypeScript 5.9 + Vite 7 (exact-pinned, `frontend/package-lock.json`) | Node 22 | Stage 1 workbench, 93 Vitest tests | IMPLEMENTED AND TESTED |
+| Legacy dashboard | stdlib `http.server` + vanilla HTML/CSS/JS | no build step, no CDN | zero-dependency fallback (`tools/p1/web/`, `server.py`) | IMPLEMENTED AND TESTED |
 | Host compiler gate | Free Pascal `fpc` | 3.2.2 (`C:\FPC\3.2.2\bin\i386-Win32\fpc.exe`) | scores `corpus/` against `corpus/expectations.txt` | IMPLEMENTED AND TESTED |
 | Container compiler gate | `freepascal/fpc:3.2.2-bookworm-full` | digest-pinned `sha256:6c951541…ed3872` | same sweep on pinned Linux | IMPLEMENTED AND TESTED |
 | VCS ingestion | `git` | 2.55.0 (≥ 2.37 required for HTTPS address pinning; older fails closed) | local path, `file://` and remote HTTPS/SSH fetch of one exact commit | IMPLEMENTED AND TESTED |
@@ -380,7 +385,7 @@ docs/        architecture · decisions · support-matrix (planned documentation 
 
 ## Prerequisites
 
-**To run Stage 1 and its gates:** `git` (2.37+ for remote HTTPS), Python 3.11+ (stdlib only — no third-party runtime dependency), and, for the compiler sweeps, Free Pascal 3.2.2 on the host. Docker (or another OCI runtime) is required for the pinned-container sweep; without it the container gate must be skipped explicitly with `-SkipContainer`, and it is then reported as `SKIP`, never as `PASS`.
+**To run Stage 1 and its gates:** `git` (2.37+ for remote HTTPS), Python 3.11+ (the ingestion/discovery core and the legacy dashboard are stdlib only; the FastAPI service needs `pip install -r requirements-api.txt`; building the React workbench needs Node 22), and, for the compiler sweeps, Free Pascal 3.2.2 on the host. Docker (or another OCI runtime) is required for the pinned-container sweep; without it the container gate must be skipped explicitly with `-SkipContainer`, and it is then reported as `SKIP`, never as `PASS`.
 
 Planned future prerequisites (Stages 2+): JDK 25 LTS, Apache Maven 3.10.0 with wrapper, Node.js 26 LTS, an OCI container runtime for isolated workers, PostgreSQL 18 for platform metadata, and — for Delphi profiles — a customer-licensed RAD Studio/Delphi toolchain on Windows.
 
@@ -412,7 +417,7 @@ When later stages exist, credentials will be configured through approved secure 
 
 | Command | What it does | Availability |
 |---|---|---|
-| `python -m pytest tests -q` | unit + integration + security suite (1,633 tests; ~5 min on Windows) | Available (verified) |
+| `python -m pytest tests -q` | unit + integration + security + acceptance suite (1,791 tests; ~4.5 min on Windows; needs `requirements-dev.txt`) | Available (verified) |
 | `python tools/p1/cli.py discover <source> --store <dir> [--ref REF] [--allow-ssh] [--allow-host H]` | **Stage 1**: ingest → checkpoint → blueprint | Available (verified) |
 | `python tools/p1/cli.py checkpoint verify <store>/checkpoints/<CP-id>` | re-hash a checkpoint, report tampering | Available (verified) |
 | `python tools/p1/cli.py serve [--store <dir>] [--port N] [--allow-local-root DIR]` | dashboard + API on loopback | Available (verified) |
@@ -432,7 +437,7 @@ No `mvn` or `npm` command appears here because none exists in this repository.
 
 ## Testing and verification
 
-**Implemented — 1,633 tests (1,627 pass, 6 skip, 0 fail; `python -m pytest tests -q`):**
+**Implemented — 1,791 tests (1,785 pass, 6 skip, 0 fail; `python -m pytest tests -q`), plus 93 frontend tests (`cd frontend && npm test`):**
 
 | Suite | Count | Covers |
 |---|---|---|
@@ -518,7 +523,7 @@ Phases P0–P8 from architecture v3 (mapped onto the six stages in [Six-stage ar
 | Phase | Scope | Exit gate / artifacts | Status |
 |---|---|---|---|
 | P0 — Feasibility and tool bake-off | ISO/Turbo/Delphi/FPC samples; Tree-sitter vs DelphiAST comparison; oracle access; legal review | Dialect fixture corpus; parser benchmark; compiler matrix; licence review; tool decision record | **complete** — committed as `fbf59d2` (66 files, 4 995 insertions) |
-| P1 — Secure ingestion and discovery (**Stage 1**) | ZIP/Git (local and remote)/directory intake, immutable checkpoint, file and directory inventory, project detection, build profiles, dependency/integration/library/runtime discovery, Application Blueprint, dashboard | Input manifest; classifier tests; Application Blueprint schema; Application Knowledge Graph; immutable checkpoint | **complete** — implemented and tested (1,633 tests); P1 core committed as `b197643`, Stage 1 completion committed separately |
+| P1 — Secure ingestion and discovery (**Stage 1**) | ZIP/Git (local and remote)/directory intake, immutable checkpoint, file and directory inventory, project detection, build profiles, dependency/integration/library/runtime discovery, Application Blueprint, dashboard | Input manifest; classifier tests; Application Blueprint schema; Application Knowledge Graph; immutable checkpoint | **complete** — implemented and tested (1,791 Python + 93 frontend tests); P1 core committed as `b197643`, Stage 1 completion committed separately |
 | P2 — Frontends and Semantic IR | Dialect adapters, directive/preprocessor model, unit graph, symbol/type resolution, control-flow/effects, IR versioning | Golden parser corpus; no silent node loss; IR schema/invariants; negative tests for unknown features | not started |
 | P3 — Original runtime harness | Pinned FPC oracle lane; licensed Delphi runner; resettable state; integration capture | Reproducible original builds/runs; runtime manifests; failure classification; oracle-unavailable path | not started |
 | P4 — Database preserve-first + compatibility library | JDBC metadata, preserved DB adapters, exact numeric/string/array/file semantics, transactions, exceptions | Same DBMS/schema used by the Java candidate in a clone; row-level and transaction parity tests | not started |
@@ -541,6 +546,10 @@ Phases P0–P8 from architecture v3 (mapped onto the six stages in [Six-stage ar
 - `docs/p1/P1_IMPLEMENTATION_PLAN.md` — P1 design: output schemas, ingestion limits, test matrix, execution order
 - `docs/p1/P1_VERIFICATION_REPORT.md` — P1 completion report: verification results, changed files, security findings, remaining limitations, recommended next phase
 - `docs/p1/evidence/` — recorded host and pinned-container corpus sweeps (24/24 `MATCH` each)
+- `docs/product/PRODUCT_REQUIREMENTS.md` — product and Stage 1 requirements
+- `docs/architecture/SIX_STAGE_ARCHITECTURE.md` — six-stage architecture and Stage 1 component view
+- `docs/reuse/COBOL_REUSE_AUDIT.md` — audit of the COBOL repository at a pinned commit (reuse classification, licences, provenance)
+- `docs/stage1/STAGE1_ACCEPTANCE.md` — Stage 1 acceptance criteria, results and limitations
 - `docs/stage1/STAGE1_DESIGN.md` — Stage 1 design contract (checkpoint, remote Git, detectors, blueprint, dashboard)
 - `docs/stage1/STAGE1_USER_GUIDE.md` — inputs, commands, store layout, limits
 - `docs/stage1/STAGE1_VERIFICATION_REPORT.md` — Stage 1 verification results, review findings and their fixes
