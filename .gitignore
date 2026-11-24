@@ -14,3 +14,7 @@ Thumbs.db
 
 # Stage 1 checkpoint/discovery store (runtime data, never committed).
 .stage1-store/
+
+frontend/node_modules/
+frontend/dist/
+frontend/coverage/
