@@ -68,7 +68,23 @@ def _rel(info, path: Path) -> str:
 
 
 def _unlock(path: Path) -> None:
-    os.chmod(path, 0o666)
+    """Grant a simulated tamperer the filesystem rights the test needs.
+
+    Checkpoints store files as ``0o444`` and directories as ``0o555``
+    (``p1/checkpoint.py``).  On Windows the read-only attribute on a
+    *directory* does not block create/delete/rename, so the tamper tests
+    passed there; on POSIX those same operations are correctly refused with
+    EACCES (first Linux CI run).  Unlock the target itself, when it exists,
+    and its ancestor chain up to the first directory that is already
+    writable.  Only filesystem rights change: every assertion is untouched
+    and tamper detection stays content-hash based either way.
+    """
+    if path.exists():
+        os.chmod(path, 0o666)
+    for parent in path.parents:
+        if os.access(parent, os.W_OK):
+            break
+        os.chmod(parent, 0o777)
 
 
 def _rewrite_json(info, mutate) -> None:
@@ -131,6 +147,7 @@ def test_deleted_file_is_detected(made, store: Path) -> None:
 
 def test_added_file_is_detected(made, store: Path) -> None:
     info, ingestion = made
+    _unlock(info.source_root / "backdoor.pas")  # target does not exist yet
     (info.source_root / "backdoor.pas").write_bytes(b"unit evil;")
 
     report = verify_checkpoint(info.path)
@@ -144,6 +161,7 @@ def test_renamed_file_is_missing_plus_extra(made) -> None:
     info, _ = made
     victim = _a_file(info)
     renamed = victim.with_name("renamed_" + victim.name)
+    _unlock(victim)  # also opens the shared parent directory for the rename
     victim.rename(renamed)
 
     report = verify_checkpoint(info.path)
@@ -170,6 +188,7 @@ def test_added_and_removed_directories_are_detected(tmp_path: Path, store: Path)
 
 def test_extra_top_level_entries_are_detected(made) -> None:
     info, _ = made
+    _unlock(info.path / "notes.txt")  # opens the checkpoint root directory
     (info.path / "notes.txt").write_text("hi")
     (info.path / "original").mkdir()
     report = verify_checkpoint(info.path)
@@ -307,6 +326,7 @@ def test_deleted_original_archive_is_detected(zip_made) -> None:
 
 def test_extra_file_beside_original_archive_is_detected(zip_made) -> None:
     info, _, _ = zip_made
+    _unlock(info.path / "original" / "second.zip")  # opens original/ (0o555 on POSIX)
     (info.path / "original" / "second.zip").write_bytes(b"x")
     assert verify_checkpoint(info.path).extra == ("original/second.zip",)
 
