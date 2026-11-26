@@ -140,7 +140,7 @@ Allowed statuses: `IMPLEMENTED AND TESTED` · `IMPLEMENTED, NOT VERIFIED` · `PA
 | Dependency knowledge graph with source references | IMPLEMENTED AND TESTED |
 | Structured discovery report (JSON + Markdown, evidence, confidence, unresolved edges) | IMPLEMENTED AND TESTED |
 | Capability states (`SUPPORTED`/`PARTIAL`/`UNSUPPORTED`/`UNAVAILABLE`/`UNKNOWN`) | IMPLEMENTED AND TESTED |
-| Fixture-corpus regression gate (host + pinned container) | IMPLEMENTED AND TESTED locally; CI workflow written, **not yet executed** |
+| Fixture-corpus regression gate (host + pinned container) | IMPLEMENTED AND TESTED locally and on GitHub Actions (host + container sweeps green, [run 45789568402](https://github.com/Shankar373/Pascal-Java-Transformation/actions/runs/45789568402)) |
 | Parser frontends (dialect adapters) | PLANNED |
 | AST with source spans | PLANNED — `tools/p1/plex.py` emits tokens, directives and includes with spans, not an AST |
 | Symbol/type resolution across units | PLANNED — *unit/include* resolution is implemented above; symbol and type resolution is P2 |
@@ -301,7 +301,7 @@ Approved targets below are from architecture v3 (research snapshot 12 November 2
 | Host compiler gate | Free Pascal `fpc` | 3.2.2 (`C:\FPC\3.2.2\bin\i386-Win32\fpc.exe`) | scores `corpus/` against `corpus/expectations.txt` | IMPLEMENTED AND TESTED |
 | Container compiler gate | `freepascal/fpc:3.2.2-bookworm-full` | digest-pinned `sha256:6c951541…ed3872` | same sweep on pinned Linux | IMPLEMENTED AND TESTED |
 | VCS ingestion | `git` | 2.55.0 (≥ 2.37 required for HTTPS address pinning; older fails closed) | local path, `file://` and remote HTTPS/SSH fetch of one exact commit | IMPLEMENTED AND TESTED |
-| CI | GitHub Actions | `.github/workflows/p1-gates.yml` | pytest + guard + both sweeps | IMPLEMENTED, NOT VERIFIED — written, never executed here |
+| CI | GitHub Actions | `.github/workflows/p1-gates.yml` | pytest + guard + both sweeps | IMPLEMENTED AND TESTED — all 3 jobs green on [run 45789568402](https://github.com/Shankar373/Pascal-Java-Transformation/actions/runs/45789568402) (PR) and [run 45790563117](https://github.com/Shankar373/Pascal-Java-Transformation/actions/runs/45790563117) (`main`), 26 Nov 2026 |
 
 **Approved targets (Final architecture v3 — approved targets, not installed dependencies):**
 
@@ -503,7 +503,7 @@ The **no-LLM product rule is a hard requirement**, enforced at CI and release ga
 - **LCL/VCL unit-name collision:** the two frameworks share unit names (`Forms`, `Controls`, `Graphics`, …), so a single unit's framework label can be wrong — the GUI fixture's `lcl/uMainForm.pas` is reported as `framework: vcl`. Application-shape detection still resolves to `gui_lcl` because it counts references across the whole tree, but per-file framework labelling is unreliable when a tree mixes both.
 - **Build-requirement inference is deliberately conservative:** it returns `PARTIAL` or `UNKNOWN`, never `SUPPORTED`, and emits `COMPILER_SIGNAL_CONFLICT` when a project file and the sources disagree.
 - **No original execution oracle exists.** The Delphi lane is unlicensed (`ORACLE_UNAVAILABLE`), so no Delphi-equivalence or `VERIFIED` claim is possible in this phase; full-scope certification needs an oracle and differential tests (P3/P6).
-- **The CI workflow is written but has never been executed** — `.github/workflows/p1-gates.yml` cannot run until the work is pushed, so it is recorded `IMPLEMENTED, NOT VERIFIED`. Its individual commands were all run locally.
+- **The CI workflow has been executed and is green** — `.github/workflows/p1-gates.yml` ran on GitHub Actions (`ubuntu-24.04`) on 26 Nov 2026: all three jobs (pytest + no-LLM guard, React workbench, host + container fixture sweeps) passed on the PR run and the post-merge `main` run ([evidence](https://github.com/Shankar373/Pascal-Java-Transformation/actions/runs/45790563117)). The first attempt failed 7 tamper-test setups on POSIX directory permissions and was fixed in `f275ca6` (test harness only). macOS and real-host Git paths remain unverified.
 - GUI conversion (VCL, FireMonkey, LCL) is an explicit non-goal for the first release; detecting a GUI application does not mean it can be converted.
 - Binary-only components (`.dcu`, `.ppu`, `.bpl`, `.exe`, DLL/OCX without source) are classified, never decompiled; missing source blocks the dependent conversion scope.
 - FPC is not a universal Delphi substitute; oracle-unavailable estates receive restricted certification only. Database support is unproven — an inventory list is not a driver, adapter or test claim.
