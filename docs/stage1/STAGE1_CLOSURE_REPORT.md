@@ -20,6 +20,7 @@
 | Frontend coverage | `vitest --coverage` | 99.7 % statements, 90.7 % branches |
 | Notices drift | `python tools/release/generate_notices.py --check` + `tests/unit/test_notices.py` | current |
 | Link/secret scan of tracked + new files | scripted | no broken links; no credentials; local absolute paths only in pre-existing `docs/p0/evidence`, `tools/p0` (see F-8) |
+| **GitHub Actions `p1-gates` (first-ever execution, 26 Nov 2026)** | `gh run` on `ubuntu-24.04`, jobs: tests + guard / frontend / fixture sweep | **All 3 jobs green**: PR run [`45789568402`](https://github.com/Shankar373/Pascal-Java-Transformation/actions/runs/45789568402) and post-merge `main` run [`45790563117`](https://github.com/Shankar373/Pascal-Java-Transformation/actions/runs/45790563117) — pytest `1787 passed, 4 skipped` + guard `PASS (0 findings)`, React 93/93 + build, both sweeps `MATCH=24 MISMATCH=0`. First attempt ([`45787617127`](https://github.com/Shankar373/Pascal-Java-Transformation/actions/runs/45787617127)) failed 7 POSIX-permission tamper-test setups → fixed `f275ca6` (test harness only) |
 
 ### Mutation checks (do the key tests actually fail?)
 
@@ -69,7 +70,7 @@ Stage 2 prerequisites that are **not** Stage 1 deliverables: parser SPI and prof
 |---|---|---|
 | B-1 | **Repository licence unresolved** — no root `LICENSE`; ADR 0006 records options and closure criteria. Blocks any public/customer release and any decision to port COBOL (Apache-2.0) code | Owner |
 | B-2 | No external validation of Git hosting paths: SSH to a real server, HTTPS to a public TLS host, a real private repository (token path tested only against a local smart-HTTP server) | Needs credentials/hosts |
-| B-3 | CI workflow (`p1-gates.yml`, including the new `frontend` job) has **never run on GitHub Actions**; container fixture sweep not re-run | Needs a pushed branch (not done, by instruction) |
+| B-3 | ~~CI workflow (`p1-gates.yml`, including the new `frontend` job) has **never run on GitHub Actions**; container fixture sweep not re-run~~ **RESOLVED 26 Nov 2026** — three jobs green on [run `45789568402`](https://github.com/Shankar373/Pascal-Java-Transformation/actions/runs/45789568402) (PR) and [run `45790563117`](https://github.com/Shankar373/Pascal-Java-Transformation/actions/runs/45790563117) (`main`), including both fixture sweeps; first attempt failed 7 tamper-test setups, fixed `f275ca6` | **Closed** |
 | B-4 | No Linux/macOS run; all evidence is Windows 11 / Python 3.11 / Node 22 | Needs another host or CI |
 | B-5 | Identity: no OIDC/RBAC, token revocation needs a restart, no per-tenant disk quota, local-directory roots shared by tenants (Stage 6) | Product decision |
 | B-6 | Resource exhaustion not fully closed: no uvicorn header-read timeout (needs a reverse proxy), upload writes block the event loop, per-tenant worker polls every 50 ms (capped at 64 tenants), artefacts read fully into memory up to 64 MiB | Hardening backlog |
@@ -80,8 +81,8 @@ Stage 2 prerequisites that are **not** Stage 1 deliverables: parser SPI and prof
 
 - [ ] **X-1** Human security review / penetration test of the API, uploads, token mode and checkpoint sealing (focus: tenant isolation, archive/Git ingestion, DoS)
 - [ ] **X-2** Real remote Git: HTTPS public, HTTPS private (token + `P1_GIT_TOKEN_HOSTS`), SSH with pinned host keys; branch/tag/commit pinning; a hostile repository (tree bomb, submodule, symlink, hooks)
-- [ ] **X-3** Push the branch and confirm `p1-gates` is green on `ubuntu-24.04` (tests, no-LLM guard, frontend job, FPC host + container sweeps)
-- [ ] **X-4** Linux and macOS runs of the Python suite and the service; real symlink tests (the 6 skips) on a host that permits them
+- [x] **X-3** Push the branch and confirm `p1-gates` is green on `ubuntu-24.04` (tests, no-LLM guard, frontend job, FPC host + container sweeps) — **done 26 Nov 2026**: [PR run `45789568402`](https://github.com/Shankar373/Pascal-Java-Transformation/actions/runs/45789568402), [`main` run `45790563117`](https://github.com/Shankar373/Pascal-Java-Transformation/actions/runs/45790563117)
+- [ ] **X-4** Linux and macOS runs of the Python suite and the service; real symlink tests (the 6 skips) on a host that permits them — **Linux done** (CI `1787 passed, 4 skipped`; local WSL Ubuntu 24.04 full suite green; symlink tests now execute and pass on POSIX). **macOS still open**
 - [ ] **X-5** Customer-representative Pascal estates (Delphi VCL/FMX, FPC/Lazarus, Turbo/Borland, ISO) — compare blueprint against a human-built inventory; review false negatives/positives
 - [ ] **X-6** Browser E2E (Playwright) across Chrome/Firefox/Edge/Safari including token flow, upload progress, downloads, keyboard-only and screen-reader pass
 - [ ] **X-7** Deployment behind a TLS reverse proxy (`--behind-tls-proxy`), header/body timeouts, backup/restore of the store, durable (non-tmpfs) store location
@@ -101,3 +102,15 @@ Commits 1–3 are `1c4b926`, `5b39235` and `3aca820`; commit 4 is the one that a
 | 4 | `docs(stage1): add requirements, architecture, reuse audit, acceptance, closure report, notices and CI` | `README.md`, `docs/**` (product, architecture, reuse, ADR 0006, acceptance, closure, design, user guide), `THIRD_PARTY_NOTICES.md`, `tools/release/generate_notices.py`, `tests/unit/test_notices.py`, `.github/workflows/p1-gates.yml` |
 
 Notes: git reports LF→CRLF normalisation warnings on this Windows checkout (`core.autocrlf=true`); commits will be normalised and no `.gitattributes` is added. `frontend/node_modules`, `frontend/dist` and `frontend/coverage` are ignored.
+
+## 8. Closure addendum (26 November 2026 — release engineering)
+
+Executed with the owner's explicit approvals (PR-first merge; fix + doc push authority; `docs/stage1/STAGE1_SECURITY.md` path; licence decision deferred):
+
+1. **Merge-readiness verified:** clean tree at `5dfc763` == origin; `main` a strict ancestor (0/5); `git merge-tree` dry-run conflict-free; local gates re-run green (pytest 1785/6/0, guard PASS, frontend 93/93 + build, notices `--check` current); diff secret scan clean (only fake test credentials).
+2. **PR #1 opened and merged with history preserved** — merge commit `d370632` on `main`; branch not deleted; no force-push.
+3. **First GitHub Actions execution** (closes B-3/X-3): attempt 1 ([`45787617127`](https://github.com/Shankar373/Pascal-Java-Transformation/actions/runs/45787617127)) failed 7 tests in `tests/security/test_checkpoint_integrity.py` (`PermissionError` — checkpoints store `0o555` directories, which POSIX enforces and Windows ignores for create/delete/rename). **Fix `f275ca6`:** `_unlock` now also opens the target's ancestor directory chain up to the first writable directory, and four tamper tests gained the explicit unlock call they implicitly had on Windows. **Test harness only — no assertion changed, no test skipped or weakened**; verified before push on Windows (64 passed/3 skipped) and WSL Ubuntu 24.04 (full suite 1787 passed/4 skipped, guard PASS). Attempt 2 ([`45789568402`](https://github.com/Shankar373/Pascal-Java-Transformation/actions/runs/45789568402)) green on all 3 jobs; post-merge [`main` run `45790563117`](https://github.com/Shankar373/Pascal-Java-Transformation/actions/runs/45790563117) green.
+4. **`docs/stage1/STAGE1_SECURITY.md` created** (owner-approved path; the literal `docs/stage-1/STAGE_1_SECURITY.md` deviation is recorded there and in the acceptance header) — consolidates S1-S1…S1-S6/S1-N1…N3 requirements, threat model, control→test matrix, review outcomes, residual risks and the operator checklist.
+5. **Licence (B-1/X-9):** the four option families (Apache-2.0 / MIT-BSD / proprietary / copyleft) were presented with implications; the owner **deferred** — ADR 0006 remains OPEN, no `LICENSE` file created.
+6. **Notices (B-7/X-10):** `THIRD_PARTY_NOTICES.md` verified current and summarised for legal review (permissive runtime deps; MPL-2.0 = `certifi` test-only + DelphiAST diff; GPL only as external processes). **No legal approval is claimed.**
+7. **Acceptance record updated** so claims match evidence (L-2, L-8, gate table, header). Stages 2–6 remain `PLANNED`; Stage 2 was not started.

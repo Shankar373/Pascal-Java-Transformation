@@ -1,6 +1,7 @@
 # ADR 0006: The Pascal repository's own licence is unresolved
 
 - **Status:** **OPEN — owner decision required.** Engineering has not selected, added or changed a licence.
+- **Update 2026-11-26 (Stage 1 release closure):** the four option families (Apache-2.0; MIT/BSD-3-Clause; proprietary all-rights-reserved; copyleft) were presented to the owner with implications. The owner **deferred the decision** ("decide later"). Status remains OPEN; no `LICENSE` file was created. The decision still blocks public release and any porting of COBOL (Apache-2.0) code.
 - **Date:** 2026-11-24
 - **Phase:** Stage 1 closure
 - **Evidence:** `git ls-files` (no `LICENSE`/`COPYING`/`NOTICE` file), `docs/p0/LICENCE_REVIEW.md` §4, `docs/reuse/COBOL_REUSE_AUDIT.md` §3, `THIRD_PARTY_NOTICES.md`

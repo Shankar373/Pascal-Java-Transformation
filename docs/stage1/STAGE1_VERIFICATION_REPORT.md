@@ -19,7 +19,7 @@ Stage 1 is implemented end to end and verified in this environment, with the lim
 | Host corpus sweep (`python tools/p1/sweep.py --host`) | **24/24 MATCH**, 0 MISMATCH |
 | End-to-end `discover` | directory, ZIP, local Git and **real smart-HTTP remote Git** produce the same analysis; output schema-valid and byte-identical on rerun |
 | Dashboard | run against the real `discover` through the job runner; headless-Chrome render compared with the reference mock-up |
-| Not verified | container sweep (not re-run this session), GitHub Actions workflow (never executed), SSH against a real server, HTTPS against a public TLS host |
+| Not verified | SSH against a real server, HTTPS against a public TLS host, macOS (the GitHub Actions workflow and the container sweep **have** since run green — see [`STAGE1_ACCEPTANCE.md`](STAGE1_ACCEPTANCE.md) §1) |
 
 The 6 skips are symlink-creation tests that need a Windows privilege this account lacks; junction handling is covered by real-junction tests instead.
 
@@ -76,8 +76,8 @@ Nine adversarial files (megabyte-long lines, 300k quoted tokens, 100k-item `uses
 
 ## 6. Limitations and unverified items (stated, not glossed)
 
-1. **GitHub Actions workflow** `.github/workflows/p1-gates.yml` has never executed here; it does not yet run the Stage 1 suite beyond what `pytest tests` covers.
-2. **Container corpus sweep** was not re-run in this session (host sweep: 24/24).
+1. ~~**GitHub Actions workflow** `.github/workflows/p1-gates.yml` has never executed here~~ **Resolved 26 Nov 2026:** all three jobs green on GitHub Actions ([PR run `45789568402`](https://github.com/Shankar373/Pascal-Java-Transformation/actions/runs/45789568402), [`main` run `45790563117`](https://github.com/Shankar373/Pascal-Java-Transformation/actions/runs/45790563117)).
+2. ~~**Container corpus sweep** was not re-run in this session (host sweep: 24/24)~~ **Resolved:** container sweep green in CI (host and container each `MATCH=24 MISMATCH=0`, `fpc:3.2.2`, platform linux).
 3. **SSH remotes** are verified by command-construction tests only; **HTTPS** was exercised against a local smart-HTTP server (loopback allow-listed through a test-only policy flag that cannot be set from the CLI or API), not a public TLS host.
 4. Submodule and symlink entries in a repository are **refused**, so such repositories cannot be ingested yet.
 5. Detection is name/pattern based (false positives and `unresolved` unknown libraries are possible); DFM component classes, `with` statements and timer-driven jobs are not analysed; Delphi release names are not mapped (raw `ProjectVersion` is reported).

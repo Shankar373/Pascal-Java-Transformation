@@ -1,8 +1,8 @@
 # Stage 1 acceptance record — Ingestion and Discovery
 
-**Contract:** [`PRODUCT_REQUIREMENTS.md`](../product/PRODUCT_REQUIREMENTS.md) §5 · **Design:** [`STAGE1_DESIGN.md`](STAGE1_DESIGN.md)
-**Run:** 24 November 2026 · Windows 11, Python 3.11.9, Node 22, git 2.55 · branch `feat/stage1-ingestion-discovery` (uncommitted)
-**Stage 2 was not started. Nothing was committed or pushed. The COBOL repository was not modified.**
+**Contract:** [`PRODUCT_REQUIREMENTS.md`](../product/PRODUCT_REQUIREMENTS.md) §5 · **Design:** [`STAGE1_DESIGN.md`](STAGE1_DESIGN.md) · **Security:** [`STAGE1_SECURITY.md`](STAGE1_SECURITY.md)
+**Run:** 24 November 2026 (local gates, Windows 11, Python 3.11.9, Node 22, git 2.55) · **26 November 2026 (GitHub Actions, ubuntu-24.04)** · branch `feat/stage1-ingestion-discovery`, merged to `main` as `d370632` via PR #1 with history preserved
+**Stage 2 was not started. The COBOL repository was not modified. Every commit and push in this closure (the POSIX test fix and these documentation updates) was made with the owner's explicit approval.**
 
 ## 1. Result
 
@@ -15,6 +15,7 @@
 | React workbench: `npm ci`, `typecheck`, `test`, `build` (clean tree) | 93 tests passed, ~99.7 % statement coverage, build OK, `npm audit --omit=dev`: 0 vulnerabilities |
 | Live smoke over real uvicorn | ZIP upload → 5 steps completed → blueprint; React UI served with CSP and rendered from the real job in headless Chrome (matches the reference mock-up layout); token mode: no token 401, bad token 401, good token 200 with a spoofed `X-P1-Tenant` ignored; non-loopback bind with tokens but no TLS refused |
 | Independent security review of the FastAPI/tenancy layer | No CRITICAL/HIGH. 4 MEDIUM + cheap LOW items fixed (§4) |
+| **GitHub Actions `p1-gates` on `ubuntu-24.04` (first-ever execution, 26 Nov 2026)** | **All 3 jobs green** on PR run [`45789568402`](https://github.com/Shankar373/Pascal-Java-Transformation/actions/runs/45789568402) and post-merge `main` run [`45790563117`](https://github.com/Shankar373/Pascal-Java-Transformation/actions/runs/45790563117): tests **1787 passed, 4 skipped, 0 failed** in 33 s + no-LLM guard `PASS (0 findings)`; React workbench 93/93 + typecheck + build; fixture-corpus sweep **host and container each MATCH=24, MISMATCH=0** (`fpc:3.2.2`, platform linux). The first attempt ([`45787617127`](https://github.com/Shankar373/Pascal-Java-Transformation/actions/runs/45787617127)) failed 7 checkpoint-tamper tests with `PermissionError` on POSIX `0o555` directories — fixed in `f275ca6` by unlocking parent directories in the **test harness only** (every assertion untouched; no test skipped or weakened) |
 
 **Verdict: Stage 1 meets every acceptance criterion below in this environment, with the limitations in §5 stated, not hidden.**
 
@@ -48,6 +49,8 @@
 
 ## 4. Security review outcome
 
+Consolidated in [`STAGE1_SECURITY.md`](STAGE1_SECURITY.md) (requirements → controls → evidence matrix, threat model, residual risks, operator checklist).
+
 | Finding | Severity | Resolution |
 |---|---|---|
 | Unbounded tenant creation via `X-P1-Tenant` in open mode (threads/dirs) | MEDIUM | Capped at 64 tenants (`TOO_MANY_TENANTS`); test added |
@@ -60,13 +63,13 @@
 ## 5. Limitations and remaining blockers (honest)
 
 * **L-1 — Git was not exercised through the HTTP API against a real remote.** The API refuses loopback/non-public hosts by design, so the real smart-HTTP and token tests run at the pipeline level (`ingest_remote_git`) with an explicit test policy. Verified: local Git, `file://`, real smart-HTTP on loopback. **Not verified:** SSH against a real server; HTTPS to a public TLS host; a private repository on a real hosting service.
-* **L-2 — Not verified:** the GitHub Actions workflow (never executed; the new `frontend` job likewise); the container fixture sweep (not re-run this session); behaviour on Linux/macOS (all runs were on Windows).
+* **L-2 — Verification status (updated 26 Nov 2026):** the GitHub Actions workflow **has now executed** — all three jobs green on [run `45789568402`](https://github.com/Shankar373/Pascal-Java-Transformation/actions/runs/45789568402) (PR) and [run `45790563117`](https://github.com/Shankar373/Pascal-Java-Transformation/actions/runs/45790563117) (`main`), covering Linux (ubuntu-24.04), the frontend job, and **both** fixture sweeps (host FPC + digest-pinned container). The first attempt failed 7 tamper-test setups on POSIX directory permissions; fixed in `f275ca6`. **Still not verified:** macOS; SSH against a real server; a public TLS host (L-1); no browser E2E (L-5).
 * **L-3 — Identity.** Without a token file `X-P1-Tenant` is a storage boundary, **not authentication**. With tokens, tenant is derived from the token, but there is no OIDC, RBAC, token rotation or revocation without restart (Stage 6). Tenants share the single worker pipeline's host resources; there is no per-tenant disk quota. Local-directory ingestion roots are operator-trust and shared by all tenants — disable them in multi-tenant deployments.
 * **L-4 — Resource exhaustion not fully closed:** no header-read timeout in uvicorn (put a proxy in front for slow-client protection); upload writes are synchronous on the event loop; each tenant's job worker polls every 50 ms (cap of 64 tenants bounds this).
 * **L-5 — Frontend verification is jsdom plus one headless-Chrome render at 1672 px.** No automated browser end-to-end test (Playwright) and no mobile/accessibility audit beyond preserved ARIA attributes. Frontend dependency versions are exact-pinned and `npm audit` is clean, but their release age was not checked. Python dependencies are version-pinned, not hash-pinned.
 * **L-6 — Status vocabulary.** Stage 1 outputs carry `SUPPORTED/PARTIAL/UNKNOWN` meaning "Stage 1 could scan this file/project", **not** conversion support; the UI column is labelled "Discovery status" and the guide says so. Capability classification is Stage 3.
 * **L-7 — Detection limits** as before: no AST/symbol resolution, no binary decompilation, Delphi release name reported as raw `ProjectVersion`.
-* **L-8 — Licence.** This repository has no root `LICENSE` file; the COBOL repo is Apache-2.0. Engineering did not add or change a licence. Third-party licences (FastAPI/Starlette/uvicorn/pydantic, React/Vite) are not yet listed in a notices file. Owner decision needed before any COBOL code is ported.
+* **L-8 — Licence.** This repository has no root `LICENSE` file; the COBOL repo is Apache-2.0. Engineering did not add or change a licence. Third-party licences **are** listed in [`THIRD_PARTY_NOTICES.md`](../../THIRD_PARTY_NOTICES.md) (generated by `tools/release/generate_notices.py`, drift-tested; legal sign-off X-10 pending). On 26 Nov 2026 the owner was presented the four licence option families with implications and **deferred the decision** (ADR 0006 stays OPEN); it still blocks any public release and any porting of COBOL code.
 * **Out of scope and unchanged:** Stages 2–6 (Stage 5 remains blocked on a licensed Delphi toolchain).
 
 ## 6. Reproducing
