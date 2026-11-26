@@ -1,0 +1,53 @@
+# Fixture-corpus expectations - single source of truth for gate E5.
+#
+# Consumed by:
+#   tools/p1/sweep.py            (host sweep + container sweep comparison)
+#   tools/p0/sweep-fpc-docker.sh (in-container expectation check)
+#
+# Format, one fixture per line:
+#   <relative path>|<expected>|[<platform overrides>]
+#
+# relative path  POSIX separators, relative to corpus/, case-sensitive.
+# expected       corpus/README.md vocabulary:
+#                  PASS             compiles under the documented FPC mode
+#                  FAIL-DEPENDENCY  must fail with a missing unit; that is the
+#                                   expected result and proves dependency
+#                                   discovery, not a defect
+# platform       comma-separated <os>=<expected> overrides, <os> in
+#                {windows, linux}.  Used where a fixture legitimately differs
+#                by host, e.g. a Windows-only unit.
+#
+# Lines beginning with '#' and blank lines are ignored.
+# Adding a fixture without an entry here is a MISMATCH (missing expectation);
+# removing an entry is also a MISMATCH (unexpected fixture).  Both fail the
+# build, so the table cannot drift away from corpus/.
+
+applications/console_multiunit/miniapp.dpr|PASS
+applications/console_multiunit/uMath.pas|PASS
+applications/console_multiunit/uReport.pas|PASS
+applications/lazarus_app/lazarusapp.lpr|FAIL-DEPENDENCY
+applications/lazarus_app/uMainForm.pas|FAIL-DEPENDENCY
+applications/project_files/delphi_style_app.dpr|PASS
+
+# ComObj is Windows-only: PASS on the Windows host, missing unit on Linux.
+dbaccess/ado_style_connection.pas|PASS|linux=FAIL-DEPENDENCY
+dbaccess/bde_style_query.pas|FAIL-DEPENDENCY
+dbaccess/embedded_sql.pas|PASS
+
+dialects/delphi/DelphiClasses.pas|PASS
+dialects/fpc/mode_objfpc.pas|PASS
+dialects/iso7185/hello_iso.pas|PASS
+dialects/turbo/tp_point.pas|PASS
+
+directives/directive_ifdef.pas|PASS
+directives/directive_include.pas|PASS
+directives/directive_range_checks.pas|PASS
+
+language/currency_math.pas|PASS
+language/exception_flow.pas|PASS
+language/file_io.pas|PASS
+language/NestedRoutines.pas|PASS
+language/pointer_alloc.pas|PASS
+language/records_sets.pas|PASS
+language/string_kinds.pas|PASS
+language/variant_record.pas|PASS

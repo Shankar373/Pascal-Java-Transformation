@@ -1,0 +1,15 @@
+INPUT|rec_two_errors.pas|two syntax errors + trailing statement (does it report both? does it reach the tail?)
+TS |rec_two_errors.pas|errors=3|missing=0|nodes=17|nodes_after_error=yes|first=(ERROR [2, 2] - [2, 3])
+DA |rec_two_errors.pas|ERROR|position=3:3|message='End' expected found ')'|result_lines=1
+VERDICT|rec_two_errors.pas|tree-sitter reported 3 error node(s) and continuing past them; DelphiAST produced 1 result line(s) (first error only)
+
+INPUT|rec_missing_end.pas|missing end. at EOF (EOF recovery)
+TS |rec_missing_end.pas|errors=2|missing=0|nodes=11|nodes_after_error=yes|first=(ERROR [0, 0] - [3, 0]
+DA |rec_missing_end.pas|ERROR|position=1:4|message='End' expected found 'end of file'|result_lines=1
+VERDICT|rec_missing_end.pas|tree-sitter errors=2 missing=0; DelphiAST=ERROR
+
+INPUT|rec_valid_control.pas|valid control - both parsers must accept
+TS |rec_valid_control.pas|errors=0|missing=0|nodes=29|nodes_after_error=no|first=
+DA |rec_valid_control.pas|OK|nodes=22|result_lines=1
+VERDICT|rec_valid_control.pas|control=PASS accepted by both parsers (tree-sitter errors=0; DelphiAST=OK)
+

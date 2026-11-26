@@ -1,0 +1,35 @@
+# P0 toolchain versions (reproducibility record)
+# captured: 2026-11-13 18:36:03
+
+--- node ---
+v22.23.4
+
+--- npm ---
+10.9.9
+
+--- python ---
+Python 3.11.9
+
+--- java ---
+openjdk version "21.0.12.1" 2026-08-18 LTS
+OpenJDK Runtime Environment Temurin-21.0.12.1+1 (build 21.0.12.1+1-LTS)
+OpenJDK 64-Bit Server VM Temurin-21.0.12.1+1 (build 21.0.12.1+1-LTS, mixed mode, sharing)
+
+--- mvn ---
+Apache Maven 3.9.16 (2bdd9fddda4b155ebf8000e807eb73fd829a51d5)
+Maven home: C:\Users\bandi\AppData\Local\Programs\apache-maven-3.9.16
+Java version: 21.0.12.1, vendor: Eclipse Adoptium, runtime: C:\Program Files\Eclipse Adoptium\jdk-21.0.12.101-hotspot
+Default locale: en_IN, platform encoding: UTF-8
+
+--- fpc ---
+3.2.2
+
+--- docker ---
+client=29.8.2 server=29.8.2
+freepascal/fpc:3.2.2-bookworm-full digest=sha256:6c951541251e24e67d358ec7a5b2dfb3121069cdf73fd0252226868dbecd3872
+
+--- tree-sitter-cli ---
+tree-sitter 0.24.5 (1a983b7e2c45d9b9f45b2133a4e3a829f7e961be)
+
+--- gcc (tree-sitter grammar build) ---
+gcc.exe (MinGW-W64 x86_64-ucrt-posix-seh, built by Brecht Sanders, r3) 16.2.0

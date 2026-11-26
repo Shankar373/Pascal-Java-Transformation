@@ -1,0 +1,20 @@
+# Python bytecode and test caches — never part of a commit.
+__pycache__/
+*.py[cod]
+.pytest_cache/
+*.egg-info/
+.venv/
+venv/
+
+# Local editor / OS noise.
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Stage 1 checkpoint/discovery store (runtime data, never committed).
+.stage1-store/
+
+frontend/node_modules/
+frontend/dist/
+frontend/coverage/

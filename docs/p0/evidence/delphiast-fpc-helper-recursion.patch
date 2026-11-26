@@ -1,0 +1,40 @@
+diff --git a/Source/SimpleParser/SimpleParser.pas b/Source/SimpleParser/SimpleParser.pas
+index d7efd2c..3e633f5 100644
+--- a/Source/SimpleParser/SimpleParser.pas
++++ b/Source/SimpleParser/SimpleParser.pas
+@@ -693,12 +693,24 @@ begin
+ var
+   Encoding: TEncoding;
+   Bytes: TBytes;
+-begin
++  OldPos: Int64;
++  Count: Integer;
++begin
++  { P0-EVAL PATCH (docs/p0/evidence/delphiast-fpc-helper-recursion.patch):
++    original line was "Bytes := BytesOf(DataString);" which under FPC resolves
++    DataString's getter back into this very helper method (FPC class-helper
++    precedence) => infinite recursion / EStackOverflow on every input.
++    Read the stream buffer directly instead. }
+   Encoding := nil;
+-  SetLength(Bytes, Self.Size);
+-  Bytes := BytesOf(DataString);
++  OldPos := Position;
++  Position := 0;
++  Count := Size;
++  SetLength(Bytes, Count);
++  if Count > 0 then
++    ReadBuffer(Bytes[0], Count);
++  Position := OldPos;
+   TEncoding.GetBufferEncoding(Bytes, Encoding);
+-  Result := Encoding.GetString(Bytes, Length(Encoding.GetPreamble), Size);
++  Result := Encoding.GetString(Bytes, Length(Encoding.GetPreamble), Count);
+ {$ENDIF}
+ end;
+ 
+@@ -5915,4 +5927,4 @@ begin
+   AttributeSections;
+ end;
+ 
+-end.
+\ No newline at end of file
++end.

@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="referrer" content="no-referrer">
+<title>Pascal-to-Java Modernization Platform</title>
+<link rel="icon" href="/favicon.ico">
+<link rel="stylesheet" href="/app.css">
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to main content</a>
+
+<header class="topbar">
+  <div class="brand" id="brand">
+    <span class="brand-mark" id="brand-mark" aria-hidden="true"></span>
+    <span class="brand-text">Pascal-to-Java<br>Modernization Platform</span>
+  </div>
+  <nav class="topnav" aria-label="Primary">
+    <span class="topnav-item" id="nav-dashboard" aria-disabled="true" title="Not available in Stage 1"><span class="nav-label">Dashboard</span></span>
+    <span class="topnav-item is-current" id="nav-projects" aria-current="page"><span class="nav-label">Projects</span></span>
+    <span class="topnav-item" id="nav-reports" aria-disabled="true" title="Not available in Stage 1"><span class="nav-label">Reports</span></span>
+    <span class="topnav-item" id="nav-settings" aria-disabled="true" title="Not available in Stage 1"><span class="nav-label">Settings</span></span>
+  </nav>
+  <div class="topbar-tools" aria-hidden="true">
+    <span class="tool-icon" id="tool-help"></span>
+    <span class="tool-icon" id="tool-bell"></span>
+    <span class="avatar">A</span>
+  </div>
+</header>
+
+<div class="shell">
+  <aside class="sidebar" aria-labelledby="pipeline-title">
+    <h2 class="sidebar-title" id="pipeline-title">Modernization Pipeline</h2>
+    <nav aria-label="Modernization pipeline">
+      <ol class="stage-list">
+        <li class="stage is-active" aria-current="step" id="stage-1">
+          <span class="stage-marker" id="stage-1-marker" data-state="idle"></span>
+          <span class="stage-body"><span class="stage-head"><span class="stage-no">Stage 1</span></span><span class="stage-name">Ingestion and Discovery</span></span>
+        </li>
+        <li class="stage is-planned" aria-disabled="true">
+          <span class="stage-marker"></span>
+          <span class="stage-body"><span class="stage-head"><span class="stage-no">Stage 2</span><span class="stage-tag">Planned</span></span><span class="stage-name">Pascal Language Engineering</span></span>
+        </li>
+        <li class="stage is-planned" aria-disabled="true">
+          <span class="stage-marker"></span>
+          <span class="stage-body"><span class="stage-head"><span class="stage-no">Stage 3</span><span class="stage-tag">Planned</span></span><span class="stage-name">Modernization Intelligence</span></span>
+        </li>
+        <li class="stage is-planned" aria-disabled="true">
+          <span class="stage-marker"></span>
+          <span class="stage-body"><span class="stage-head"><span class="stage-no">Stage 4</span><span class="stage-tag">Planned</span></span><span class="stage-name">Java Generation &amp; Compatibility</span></span>
+        </li>
+        <li class="stage is-planned" aria-disabled="true">
+          <span class="stage-marker"></span>
+          <span class="stage-body"><span class="stage-head"><span class="stage-no">Stage 5</span><span class="stage-tag">Planned</span></span><span class="stage-name">Runtime and Verification</span></span>
+        </li>
+        <li class="stage is-planned" aria-disabled="true">
+          <span class="stage-marker"></span>
+          <span class="stage-body"><span class="stage-head"><span class="stage-no">Stage 6</span><span class="stage-tag">Planned</span></span><span class="stage-name">Enterprise Platform &amp; Operations</span></span>
+        </li>
+      </ol>
+    </nav>
+  </aside>
+
+  <main class="main" id="main" tabindex="-1">
+    <div class="page-head">
+      <div class="page-head-text">
+        <h1>Stage 1: Ingestion and Discovery</h1>
+        <p>Understand the customer's entire Pascal application estate by securely ingesting the source, creating a checkpoint, and discovering its structure, technologies, and dependencies.</p>
+      </div>
+      <div class="stage-badge" id="stage-badge" data-state="idle" role="status">
+        <span class="badge-icon" id="stage-badge-icon" aria-hidden="true"></span>
+        <span id="stage-badge-text">Stage 1 &ndash; Idle</span>
+      </div>
+    </div>
+
+    <div class="tabs" role="tablist" aria-label="Stage 1 views">
+      <button type="button" role="tab" class="tab is-selected" id="tab-ingest" aria-selected="true" aria-controls="panel-ingest"><span class="tab-label">Ingest Application</span></button>
+      <button type="button" role="tab" class="tab" id="tab-recent" aria-selected="false" aria-controls="panel-recent" tabindex="-1"><span class="tab-label">Recent Discoveries</span></button>
+    </div>
+
+    <section class="panel-ingest card" id="panel-ingest" role="tabpanel" aria-labelledby="tab-ingest">
+      <fieldset class="sources">
+        <legend class="visually-hidden">Application source</legend>
+        <label class="source-card is-selected" id="card-git">
+          <input type="radio" name="source" value="git" id="radio-git" checked>
+          <span class="radio-dot" aria-hidden="true"></span>
+          <span class="source-icon" id="icon-git" aria-hidden="true"></span>
+          <span class="source-text"><strong>Git Repository</strong><small>Ingest from a Git repository (HTTPS/SSH)</small></span>
+        </label>
+        <label class="source-card" id="card-zip">
+          <input type="radio" name="source" value="zip" id="radio-zip">
+          <span class="radio-dot" aria-hidden="true"></span>
+          <span class="source-icon" id="icon-zip" aria-hidden="true"></span>
+          <span class="source-text"><strong>ZIP Archive</strong><small>Upload a ZIP file of the application</small></span>
+        </label>
+        <label class="source-card" id="card-directory">
+          <input type="radio" name="source" value="directory" id="radio-directory">
+          <span class="radio-dot" aria-hidden="true"></span>
+          <span class="source-icon" id="icon-directory" aria-hidden="true"></span>
+          <span class="source-text"><strong>Local Directory</strong><small id="directory-hint">Ingest from a local project directory</small></span>
+        </label>
+      </fieldset>
+
+      <form class="source-form" id="form-git" novalidate>
+        <div class="field field-url">
+          <label for="repo-url">Repository URL <span class="req" aria-hidden="true">*</span></label>
+          <input type="text" id="repo-url" name="url" required autocomplete="off" spellcheck="false" placeholder="https://git.example.com/org/application.git" aria-describedby="ingest-error">
+        </div>
+        <div class="field field-ref">
+          <label for="repo-ref">Branch / Ref</label>
+          <input type="text" id="repo-ref" name="ref" list="ref-suggestions" autocomplete="off" spellcheck="false" placeholder="default branch">
+          <datalist id="ref-suggestions"><option value="main"><option value="master"><option value="develop"></datalist>
+        </div>
+        <button type="submit" class="btn btn-primary" id="btn-git"><span class="btn-icon" id="btn-git-icon" aria-hidden="true"></span>Ingest &amp; Discover</button>
+      </form>
+
+      <form class="source-form" id="form-zip" hidden novalidate>
+        <div class="field field-drop">
+          <span class="field-label" id="zip-label">ZIP archive <span class="req" aria-hidden="true">*</span></span>
+          <div class="dropzone" id="zip-drop" tabindex="0" role="button" aria-labelledby="zip-label zip-name">
+            <span class="dropzone-icon" id="zip-drop-icon" aria-hidden="true"></span>
+            <span class="dropzone-text" id="zip-name">Drag a .zip file here, or press Enter to choose one</span>
+          </div>
+          <input type="file" id="zip-input" accept=".zip,application/zip" class="visually-hidden" tabindex="-1">
+          <progress id="zip-progress" max="100" value="0" hidden aria-label="Upload progress"></progress>
+        </div>
+        <button type="submit" class="btn btn-primary" id="btn-zip"><span class="btn-icon" id="btn-zip-icon" aria-hidden="true"></span>Ingest &amp; Discover</button>
+      </form>
+
+      <form class="source-form" id="form-directory" hidden novalidate>
+        <div class="field field-url">
+          <label for="dir-path">Directory path <span class="req" aria-hidden="true">*</span></label>
+          <input type="text" id="dir-path" name="path" autocomplete="off" spellcheck="false" placeholder="Path inside an allowed local root">
+        </div>
+        <button type="submit" class="btn btn-primary" id="btn-directory"><span class="btn-icon" id="btn-dir-icon" aria-hidden="true"></span>Ingest &amp; Discover</button>
+      </form>
+
+      <p class="form-error" id="ingest-error" role="alert" hidden></p>
+    </section>
+
+    <section class="panel-recent card" id="panel-recent" role="tabpanel" aria-labelledby="tab-recent" hidden>
+      <h2 class="section-title">Recent Discoveries</h2>
+      <p class="muted" id="recent-empty" hidden>No discoveries yet. Ingest an application to create one.</p>
+      <div class="table-wrap" id="recent-wrap"><table class="data-table" id="recent-table"><caption class="visually-hidden">Recent discoveries, newest first</caption><thead id="recent-head"></thead><tbody id="recent-body"></tbody></table></div>
+      <p class="form-error" id="recent-error" role="alert" hidden></p>
+    </section>
+
+    <section class="progress-strip" id="progress-section" aria-label="Discovery progress">
+      <ol class="steps" id="progress-steps"></ol>
+      <p class="visually-hidden" id="progress-live" aria-live="polite" role="status"></p>
+      <p class="job-error" id="job-error" role="alert" hidden></p>
+    </section>
+
+    <section class="blueprint card" id="blueprint-section" aria-labelledby="bp-title" hidden>
+      <div class="bp-head">
+        <span class="bp-head-icon" id="bp-head-icon" aria-hidden="true"></span>
+        <div class="bp-head-text">
+          <h2 id="bp-title">Application Blueprint</h2>
+          <p>Complete analysis of the ingested Pascal application.</p>
+        </div>
+        <div class="bp-actions">
+          <a class="btn btn-secondary" id="btn-report" target="_blank" rel="noopener"><span class="btn-icon" id="btn-report-icon" aria-hidden="true"></span>View Report</a>
+          <div class="dropdown" id="download-dropdown">
+            <button type="button" class="btn btn-secondary" id="btn-download" aria-haspopup="true" aria-expanded="false" aria-controls="download-menu"><span class="btn-icon" id="btn-download-icon" aria-hidden="true"></span>Download Blueprint<span class="btn-icon" id="btn-download-caret" aria-hidden="true"></span></button>
+            <ul class="menu" id="download-menu" hidden></ul>
+          </div>
+        </div>
+      </div>
+      <div class="blocker-banner" id="blocker-banner" hidden role="note"></div>
+      <div class="bp-grid" id="bp-grid"></div>
+    </section>
+
+    <div class="details" id="details" hidden></div>
+    <p class="visually-hidden" id="copy-live" aria-live="polite" role="status"></p>
+  </main>
+</div>
+<script src="/app.js" defer></script>
+</body>
+</html>

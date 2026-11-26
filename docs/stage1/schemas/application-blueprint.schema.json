@@ -1,0 +1,1686 @@
+{
+  "$defs": {
+    "buildScriptFinding": {
+      "additionalProperties": false,
+      "properties": {
+        "confidence": {
+          "$ref": "#/$defs/confidence"
+        },
+        "evidence": {
+          "$ref": "#/$defs/evidenceNonEmpty"
+        },
+        "kind": {
+          "enum": [
+            "batch",
+            "ci-config",
+            "dcc-command-line",
+            "installer",
+            "lazbuild",
+            "makefile",
+            "msbuild",
+            "powershell",
+            "shell"
+          ],
+          "type": "string"
+        },
+        "path": {
+          "type": "string"
+        },
+        "referenced_projects": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "status": {
+          "$ref": "#/$defs/status"
+        },
+        "tools": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "confidence",
+        "evidence",
+        "kind",
+        "path",
+        "referenced_projects",
+        "status",
+        "tools"
+      ],
+      "type": "object"
+    },
+    "capabilityState": {
+      "additionalProperties": false,
+      "properties": {
+        "construct": {
+          "type": "string"
+        },
+        "evidence": {
+          "type": "string"
+        },
+        "mode": {
+          "type": "string"
+        },
+        "platform": {
+          "type": "string"
+        },
+        "status": {
+          "enum": [
+            "SUPPORTED",
+            "PARTIAL",
+            "UNSUPPORTED",
+            "UNAVAILABLE",
+            "UNKNOWN"
+          ],
+          "type": "string"
+        }
+      },
+      "required": [
+        "construct",
+        "evidence",
+        "mode",
+        "platform",
+        "status"
+      ],
+      "type": "object"
+    },
+    "compilerConfigFinding": {
+      "additionalProperties": false,
+      "properties": {
+        "confidence": {
+          "$ref": "#/$defs/confidence"
+        },
+        "defines": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "evidence": {
+          "$ref": "#/$defs/evidenceNonEmpty"
+        },
+        "kind": {
+          "enum": [
+            "dcc-cfg",
+            "delphi-options",
+            "delphi-project",
+            "fpc-cfg",
+            "lazarus-project",
+            "other-cfg"
+          ],
+          "type": "string"
+        },
+        "path": {
+          "type": "string"
+        },
+        "scope": {
+          "type": "string"
+        },
+        "search_paths": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "status": {
+          "$ref": "#/$defs/status"
+        },
+        "switches": {
+          "items": {
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 2,
+            "minItems": 2,
+            "type": "array"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "confidence",
+        "defines",
+        "evidence",
+        "kind",
+        "path",
+        "scope",
+        "search_paths",
+        "status",
+        "switches"
+      ],
+      "type": "object"
+    },
+    "component": {
+      "additionalProperties": false,
+      "description": "present=false implies count=0 and no evidence; present=true implies at least one located evidence.",
+      "oneOf": [
+        {
+          "properties": {
+            "count": {
+              "const": 0
+            },
+            "evidence": {
+              "maxItems": 0,
+              "type": "array"
+            },
+            "present": {
+              "const": false
+            }
+          }
+        },
+        {
+          "properties": {
+            "count": {
+              "minimum": 1,
+              "type": "integer"
+            },
+            "evidence": {
+              "minItems": 1,
+              "type": "array"
+            },
+            "present": {
+              "const": true
+            }
+          }
+        }
+      ],
+      "properties": {
+        "count": {
+          "minimum": 0,
+          "type": "integer"
+        },
+        "evidence": {
+          "$ref": "#/$defs/evidenceList"
+        },
+        "id": {
+          "enum": [
+            "gui_application",
+            "database",
+            "com_activex",
+            "reports",
+            "scheduled_jobs",
+            "services",
+            "build_scripts",
+            "documentation",
+            "integrations"
+          ],
+          "type": "string"
+        },
+        "label": {
+          "type": "string"
+        },
+        "present": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "count",
+        "evidence",
+        "id",
+        "label",
+        "present"
+      ],
+      "type": "object"
+    },
+    "confidence": {
+      "enum": [
+        "high",
+        "medium",
+        "low"
+      ],
+      "type": "string"
+    },
+    "countMap": {
+      "additionalProperties": {
+        "minimum": 0,
+        "type": "integer"
+      },
+      "type": "object"
+    },
+    "database": {
+      "additionalProperties": false,
+      "properties": {
+        "confidence": {
+          "$ref": "#/$defs/confidence"
+        },
+        "evidence": {
+          "$ref": "#/$defs/evidenceNonEmpty"
+        },
+        "status": {
+          "$ref": "#/$defs/status"
+        },
+        "technology": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "confidence",
+        "evidence",
+        "status",
+        "technology"
+      ],
+      "type": "object"
+    },
+    "diagnostic": {
+      "additionalProperties": false,
+      "properties": {
+        "code": {
+          "type": "string"
+        },
+        "column": {
+          "minimum": 0,
+          "type": "integer"
+        },
+        "file": {
+          "type": "string"
+        },
+        "line": {
+          "minimum": 0,
+          "type": "integer"
+        },
+        "message": {
+          "type": "string"
+        },
+        "severity": {
+          "enum": [
+            "error",
+            "warning",
+            "info"
+          ],
+          "type": "string"
+        }
+      },
+      "required": [
+        "code",
+        "message",
+        "severity"
+      ],
+      "type": "object"
+    },
+    "directoryEntry": {
+      "additionalProperties": false,
+      "properties": {
+        "depth": {
+          "minimum": 1,
+          "type": "integer"
+        },
+        "empty": {
+          "type": "boolean"
+        },
+        "file_count": {
+          "minimum": 0,
+          "type": "integer"
+        },
+        "path": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "total_bytes": {
+          "minimum": 0,
+          "type": "integer"
+        },
+        "total_file_count": {
+          "minimum": 0,
+          "type": "integer"
+        }
+      },
+      "required": [
+        "depth",
+        "empty",
+        "file_count",
+        "path",
+        "total_bytes",
+        "total_file_count"
+      ],
+      "type": "object"
+    },
+    "evidence": {
+      "additionalProperties": false,
+      "description": "A located, credential-redacted observation.",
+      "properties": {
+        "column": {
+          "minimum": 0,
+          "type": "integer"
+        },
+        "file": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "line": {
+          "minimum": 0,
+          "type": "integer"
+        },
+        "text": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "column",
+        "file",
+        "line",
+        "text"
+      ],
+      "type": "object"
+    },
+    "evidenceList": {
+      "items": {
+        "$ref": "#/$defs/evidence"
+      },
+      "type": "array"
+    },
+    "evidenceNonEmpty": {
+      "items": {
+        "$ref": "#/$defs/evidence"
+      },
+      "minItems": 1,
+      "type": "array"
+    },
+    "integrationFinding": {
+      "additionalProperties": false,
+      "properties": {
+        "category": {
+          "enum": [
+            "com-ole",
+            "dcom",
+            "email",
+            "file-exchange",
+            "ftp",
+            "http-client",
+            "http-server",
+            "ldap",
+            "messaging",
+            "printing",
+            "reporting",
+            "rpc",
+            "scheduled-job",
+            "serial-port",
+            "soap-webservice",
+            "socket",
+            "windows-service"
+          ],
+          "type": "string"
+        },
+        "confidence": {
+          "$ref": "#/$defs/confidence"
+        },
+        "endpoints": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "evidence": {
+          "$ref": "#/$defs/evidenceNonEmpty"
+        },
+        "status": {
+          "$ref": "#/$defs/status"
+        },
+        "technology": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "category",
+        "confidence",
+        "endpoints",
+        "evidence",
+        "status",
+        "technology"
+      ],
+      "type": "object"
+    },
+    "keyDependency": {
+      "additionalProperties": false,
+      "properties": {
+        "category": {
+          "type": "string"
+        },
+        "evidence": {
+          "$ref": "#/$defs/evidenceNonEmpty"
+        },
+        "kind": {
+          "enum": [
+            "database",
+            "library",
+            "native-library",
+            "unit"
+          ],
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "reason": {
+          "type": "string"
+        },
+        "references": {
+          "minimum": 1,
+          "type": "integer"
+        },
+        "status": {
+          "enum": [
+            "resolved",
+            "unresolved"
+          ],
+          "type": "string"
+        }
+      },
+      "required": [
+        "category",
+        "evidence",
+        "kind",
+        "name",
+        "reason",
+        "references",
+        "status"
+      ],
+      "type": "object"
+    },
+    "libraryFinding": {
+      "additionalProperties": false,
+      "properties": {
+        "category": {
+          "enum": [
+            "compression",
+            "crypto",
+            "database",
+            "framework",
+            "json-xml",
+            "networking",
+            "other",
+            "reporting",
+            "rtl",
+            "ui-components",
+            "utility"
+          ],
+          "type": "string"
+        },
+        "confidence": {
+          "$ref": "#/$defs/confidence"
+        },
+        "evidence": {
+          "$ref": "#/$defs/evidenceNonEmpty"
+        },
+        "name": {
+          "type": "string"
+        },
+        "origin": {
+          "enum": [
+            "bundled",
+            "external",
+            "framework",
+            "rtl",
+            "unresolved"
+          ],
+          "type": "string"
+        },
+        "referenced_by": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "resolved": {
+          "type": "boolean"
+        },
+        "status": {
+          "$ref": "#/$defs/status"
+        },
+        "units": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "vendor": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "category",
+        "confidence",
+        "evidence",
+        "name",
+        "origin",
+        "referenced_by",
+        "resolved",
+        "status",
+        "units",
+        "vendor"
+      ],
+      "type": "object"
+    },
+    "location": {
+      "additionalProperties": false,
+      "properties": {
+        "column": {
+          "minimum": 0,
+          "type": "integer"
+        },
+        "file": {
+          "type": "string"
+        },
+        "line": {
+          "minimum": 0,
+          "type": "integer"
+        }
+      },
+      "required": [
+        "column",
+        "file",
+        "line"
+      ],
+      "type": "object"
+    },
+    "nativeLibrary": {
+      "additionalProperties": false,
+      "properties": {
+        "evidence": {
+          "$ref": "#/$defs/evidenceNonEmpty"
+        },
+        "kind": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "resolved_in_input": {
+          "type": "boolean"
+        },
+        "status": {
+          "$ref": "#/$defs/status"
+        }
+      },
+      "required": [
+        "evidence",
+        "kind",
+        "name",
+        "resolved_in_input",
+        "status"
+      ],
+      "type": "object"
+    },
+    "node": {
+      "additionalProperties": false,
+      "description": "Bounded tree node; `primary` appears on project nodes only. Project nodes' `counts` carry `files`, one count per group id (`units` = pascal_unit files only, matching projects[].unit_count; `other` includes include files and the program file) and the subset counts `includes` and `programs`.",
+      "properties": {
+        "children": {
+          "items": {
+            "$ref": "#/$defs/node"
+          },
+          "type": "array"
+        },
+        "counts": {
+          "$ref": "#/$defs/countMap"
+        },
+        "kind": {
+          "enum": [
+            "application",
+            "project",
+            "group",
+            "file"
+          ],
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "path": {
+          "type": "string"
+        },
+        "primary": {
+          "type": "boolean"
+        },
+        "truncated": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "children",
+        "counts",
+        "kind",
+        "name",
+        "path",
+        "truncated"
+      ],
+      "type": "object"
+    },
+    "project": {
+      "additionalProperties": false,
+      "properties": {
+        "entry_point": {
+          "$ref": "#/$defs/location"
+        },
+        "evidence": {
+          "$ref": "#/$defs/evidenceNonEmpty"
+        },
+        "form_count": {
+          "minimum": 0,
+          "type": "integer"
+        },
+        "kind": {
+          "type": "string"
+        },
+        "meta_files": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "package_count": {
+          "minimum": 0,
+          "type": "integer"
+        },
+        "path": {
+          "type": "string"
+        },
+        "primary": {
+          "type": "boolean"
+        },
+        "profile": {
+          "properties": {
+            "app_type": {
+              "type": "string"
+            },
+            "defines": {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            "mode": {
+              "type": "string"
+            },
+            "output_kind": {
+              "type": "string"
+            },
+            "overflow_check": {
+              "type": "string"
+            },
+            "platform": {
+              "type": "string"
+            },
+            "range_check": {
+              "type": "string"
+            },
+            "sources": {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            "string_model": {
+              "type": "string"
+            },
+            "unit_search_paths": {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            }
+          },
+          "type": "object"
+        },
+        "shape": {
+          "type": "string"
+        },
+        "status": {
+          "$ref": "#/$defs/status"
+        },
+        "unit_count": {
+          "minimum": 0,
+          "type": "integer"
+        }
+      },
+      "required": [
+        "entry_point",
+        "evidence",
+        "form_count",
+        "kind",
+        "meta_files",
+        "package_count",
+        "path",
+        "primary",
+        "profile",
+        "shape",
+        "status",
+        "unit_count"
+      ],
+      "type": "object"
+    },
+    "runtimeFinding": {
+      "additionalProperties": false,
+      "properties": {
+        "confidence": {
+          "$ref": "#/$defs/confidence"
+        },
+        "evidence": {
+          "$ref": "#/$defs/evidenceNonEmpty"
+        },
+        "kind": {
+          "enum": [
+            "bpl-package",
+            "com-component",
+            "configuration-file",
+            "data-file",
+            "database-client",
+            "dll",
+            "environment-variable",
+            "hardcoded-path",
+            "registry-key",
+            "runtime-library",
+            "service"
+          ],
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "required_by": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "resolved_in_input": {
+          "type": "boolean"
+        },
+        "status": {
+          "$ref": "#/$defs/status"
+        }
+      },
+      "required": [
+        "confidence",
+        "evidence",
+        "kind",
+        "name",
+        "required_by",
+        "resolved_in_input",
+        "status"
+      ],
+      "type": "object"
+    },
+    "sqlFile": {
+      "additionalProperties": false,
+      "properties": {
+        "confidence": {
+          "$ref": "#/$defs/confidence"
+        },
+        "dialect": {
+          "type": "string"
+        },
+        "evidence": {
+          "$ref": "#/$defs/evidenceNonEmpty"
+        },
+        "path": {
+          "type": "string"
+        },
+        "status": {
+          "$ref": "#/$defs/status"
+        }
+      },
+      "required": [
+        "confidence",
+        "dialect",
+        "evidence",
+        "path",
+        "status"
+      ],
+      "type": "object"
+    },
+    "status": {
+      "enum": [
+        "SUPPORTED",
+        "PARTIAL",
+        "UNSUPPORTED",
+        "UNAVAILABLE",
+        "UNKNOWN"
+      ],
+      "type": "string"
+    },
+    "step": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "enum": [
+            "ingestion",
+            "checkpoint",
+            "scanning_inventory",
+            "dependency_analysis",
+            "blueprint"
+          ],
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "status": {
+          "enum": [
+            "COMPLETED",
+            "COMPLETED_WITH_WARNINGS"
+          ],
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "status"
+      ],
+      "type": "object"
+    },
+    "unresolvedItem": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "pattern": "^[a-z-]+:.+$",
+          "type": "string"
+        },
+        "kind": {
+          "enum": [
+            "unit",
+            "include",
+            "native-library",
+            "library",
+            "runtime",
+            "project-file"
+          ],
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "reason": {
+          "type": "string"
+        },
+        "referenced_by": {
+          "items": {
+            "$ref": "#/$defs/location"
+          },
+          "type": "array"
+        },
+        "remediation": {
+          "type": "string"
+        },
+        "severity": {
+          "enum": [
+            "error",
+            "warning",
+            "info"
+          ],
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "kind",
+        "name",
+        "reason",
+        "referenced_by",
+        "remediation",
+        "severity"
+      ],
+      "type": "object"
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "Evidence-backed discovery result of a Pascal application. Generated by tools/p1/blueprint.py.",
+  "properties": {
+    "blockers": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "detail": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "code",
+          "detail"
+        ],
+        "type": "object"
+      },
+      "type": "array"
+    },
+    "capability_states": {
+      "items": {
+        "$ref": "#/$defs/capabilityState"
+      },
+      "type": "array"
+    },
+    "components": {
+      "items": {
+        "$ref": "#/$defs/component"
+      },
+      "maxItems": 9,
+      "minItems": 9,
+      "type": "array"
+    },
+    "dependencies": {
+      "additionalProperties": false,
+      "properties": {
+        "build": {
+          "additionalProperties": false,
+          "properties": {
+            "compiler_configs": {
+              "items": {
+                "$ref": "#/$defs/compilerConfigFinding"
+              },
+              "type": "array"
+            },
+            "requirements": {
+              "properties": {
+                "blockers": {
+                  "items": {
+                    "additionalProperties": false,
+                    "properties": {
+                      "code": {
+                        "type": "string"
+                      },
+                      "detail": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "code",
+                      "detail"
+                    ],
+                    "type": "object"
+                  },
+                  "type": "array"
+                },
+                "compiler": {
+                  "type": "string"
+                },
+                "compiler_evidence": {
+                  "additionalProperties": false,
+                  "description": "Located signals per compiler (`path`, `path:line (note)`), plus a static `note`.",
+                  "properties": {
+                    "delphi": {
+                      "items": {
+                        "type": "string"
+                      },
+                      "type": "array"
+                    },
+                    "fpc": {
+                      "items": {
+                        "type": "string"
+                      },
+                      "type": "array"
+                    },
+                    "note": {
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                },
+                "defines": {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                },
+                "flags": {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                },
+                "modes": {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                },
+                "status": {
+                  "$ref": "#/$defs/status"
+                },
+                "unit_search_paths": {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                }
+              },
+              "type": "object"
+            },
+            "scripts": {
+              "items": {
+                "$ref": "#/$defs/buildScriptFinding"
+              },
+              "type": "array"
+            }
+          },
+          "required": [
+            "compiler_configs",
+            "requirements",
+            "scripts"
+          ],
+          "type": "object"
+        },
+        "databases": {
+          "items": {
+            "$ref": "#/$defs/database"
+          },
+          "type": "array"
+        },
+        "integrations": {
+          "items": {
+            "$ref": "#/$defs/integrationFinding"
+          },
+          "type": "array"
+        },
+        "key": {
+          "items": {
+            "$ref": "#/$defs/keyDependency"
+          },
+          "maxItems": 5,
+          "type": "array"
+        },
+        "libraries": {
+          "items": {
+            "$ref": "#/$defs/libraryFinding"
+          },
+          "type": "array"
+        },
+        "native_libraries": {
+          "items": {
+            "$ref": "#/$defs/nativeLibrary"
+          },
+          "type": "array"
+        },
+        "runtime": {
+          "items": {
+            "$ref": "#/$defs/runtimeFinding"
+          },
+          "type": "array"
+        },
+        "sql_files": {
+          "items": {
+            "$ref": "#/$defs/sqlFile"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "build",
+        "databases",
+        "integrations",
+        "key",
+        "libraries",
+        "native_libraries",
+        "runtime",
+        "sql_files"
+      ],
+      "type": "object"
+    },
+    "diagnostics": {
+      "items": {
+        "$ref": "#/$defs/diagnostic"
+      },
+      "type": "array"
+    },
+    "dialect": {
+      "additionalProperties": false,
+      "properties": {
+        "by_dialect": {
+          "$ref": "#/$defs/countMap"
+        },
+        "compiler": {
+          "additionalProperties": false,
+          "properties": {
+            "evidence": {
+              "$ref": "#/$defs/evidenceList"
+            },
+            "name": {
+              "type": "string"
+            },
+            "status": {
+              "$ref": "#/$defs/status"
+            }
+          },
+          "required": [
+            "evidence",
+            "name",
+            "status"
+          ],
+          "type": "object"
+        },
+        "confidence": {
+          "$ref": "#/$defs/confidence"
+        },
+        "evidence": {
+          "$ref": "#/$defs/evidenceList"
+        },
+        "label": {
+          "type": "string"
+        },
+        "primary": {
+          "type": "string"
+        },
+        "status": {
+          "$ref": "#/$defs/status"
+        },
+        "version": {
+          "additionalProperties": false,
+          "properties": {
+            "source": {
+              "type": "string"
+            },
+            "status": {
+              "$ref": "#/$defs/status"
+            },
+            "value": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "source",
+            "status",
+            "value"
+          ],
+          "type": "object"
+        }
+      },
+      "required": [
+        "by_dialect",
+        "compiler",
+        "confidence",
+        "evidence",
+        "label",
+        "primary",
+        "status",
+        "version"
+      ],
+      "type": "object"
+    },
+    "file_distribution": {
+      "additionalProperties": false,
+      "properties": {
+        "by_class": {
+          "$ref": "#/$defs/countMap"
+        },
+        "by_extension": {
+          "$ref": "#/$defs/countMap"
+        },
+        "groups": {
+          "items": {
+            "additionalProperties": false,
+            "properties": {
+              "count": {
+                "minimum": 0,
+                "type": "integer"
+              },
+              "id": {
+                "enum": [
+                  "pascal_source",
+                  "project_package",
+                  "form_ui",
+                  "config_build",
+                  "other"
+                ],
+                "type": "string"
+              },
+              "label": {
+                "type": "string"
+              },
+              "percent": {
+                "maximum": 100,
+                "minimum": 0,
+                "type": "number"
+              }
+            },
+            "required": [
+              "count",
+              "id",
+              "label",
+              "percent"
+            ],
+            "type": "object"
+          },
+          "maxItems": 5,
+          "minItems": 5,
+          "type": "array"
+        },
+        "total": {
+          "minimum": 0,
+          "type": "integer"
+        }
+      },
+      "required": [
+        "by_class",
+        "by_extension",
+        "groups",
+        "total"
+      ],
+      "type": "object"
+    },
+    "generator": {
+      "additionalProperties": false,
+      "properties": {
+        "llm_assisted": {
+          "const": false
+        },
+        "stage": {
+          "const": 1
+        },
+        "tool": {
+          "const": "tools/p1"
+        }
+      },
+      "required": [
+        "llm_assisted",
+        "stage",
+        "tool"
+      ],
+      "type": "object"
+    },
+    "graphs": {
+      "additionalProperties": false,
+      "properties": {
+        "libraries": {
+          "items": {
+            "additionalProperties": false,
+            "properties": {
+              "library": {
+                "type": "string"
+              },
+              "used_by": {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              }
+            },
+            "required": [
+              "library",
+              "used_by"
+            ],
+            "type": "object"
+          },
+          "type": "array"
+        },
+        "packages": {
+          "items": {
+            "additionalProperties": false,
+            "properties": {
+              "package": {
+                "type": "string"
+              },
+              "requires": {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              }
+            },
+            "required": [
+              "package",
+              "requires"
+            ],
+            "type": "object"
+          },
+          "type": "array"
+        },
+        "projects": {
+          "items": {
+            "additionalProperties": false,
+            "properties": {
+              "externals": {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "libraries": {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "packages": {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "project": {
+                "type": "string"
+              },
+              "uses": {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              }
+            },
+            "required": [
+              "externals",
+              "libraries",
+              "packages",
+              "project",
+              "uses"
+            ],
+            "type": "object"
+          },
+          "type": "array"
+        },
+        "unit": {
+          "additionalProperties": false,
+          "properties": {
+            "edges": {
+              "minimum": 0,
+              "type": "integer"
+            },
+            "nodes": {
+              "minimum": 0,
+              "type": "integer"
+            },
+            "ref": {
+              "const": "dependency-graph.json"
+            },
+            "resolved": {
+              "minimum": 0,
+              "type": "integer"
+            },
+            "unresolved": {
+              "minimum": 0,
+              "type": "integer"
+            }
+          },
+          "required": [
+            "edges",
+            "nodes",
+            "ref",
+            "resolved",
+            "unresolved"
+          ],
+          "type": "object"
+        }
+      },
+      "required": [
+        "libraries",
+        "packages",
+        "projects",
+        "unit"
+      ],
+      "type": "object"
+    },
+    "inventory": {
+      "additionalProperties": false,
+      "properties": {
+        "directories": {
+          "items": {
+            "$ref": "#/$defs/directoryEntry"
+          },
+          "type": "array"
+        },
+        "file_count": {
+          "minimum": 0,
+          "type": "integer"
+        },
+        "files_ref": {
+          "const": "inventory.csv"
+        }
+      },
+      "required": [
+        "directories",
+        "file_count",
+        "files_ref"
+      ],
+      "type": "object"
+    },
+    "limitations": {
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1,
+      "type": "array"
+    },
+    "project": {
+      "additionalProperties": false,
+      "properties": {
+        "checkpoint": {
+          "additionalProperties": false,
+          "properties": {
+            "directory_count": {
+              "minimum": 0,
+              "type": "integer"
+            },
+            "file_count": {
+              "minimum": 0,
+              "type": "integer"
+            },
+            "id": {
+              "pattern": "^(CP-[0-9a-f]{12})?$",
+              "type": "string"
+            },
+            "source_digest": {
+              "pattern": "^([0-9a-f]{64})?$",
+              "type": "string"
+            },
+            "tree_id": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "directory_count",
+            "file_count",
+            "id",
+            "source_digest",
+            "tree_id"
+          ],
+          "type": "object"
+        },
+        "ingestion_source": {
+          "additionalProperties": false,
+          "properties": {
+            "commit": {
+              "pattern": "^([0-9a-f]{40})?$",
+              "type": "string"
+            },
+            "commit_timestamp": {
+              "type": "string"
+            },
+            "kind": {
+              "type": "string"
+            },
+            "origin": {
+              "type": "string"
+            },
+            "ref": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "commit",
+            "commit_timestamp",
+            "kind",
+            "origin",
+            "ref"
+          ],
+          "type": "object"
+        },
+        "name": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "checkpoint",
+        "ingestion_source",
+        "name"
+      ],
+      "type": "object"
+    },
+    "projects": {
+      "description": "unit_count = number of pascal_unit files reachable from the project (includes and the program file are not units); a unit shared by two projects counts for each project that reaches it, while `structure` lists it once under its owner. form_count = forms whose unit (same directory and stem) is reachable.",
+      "items": {
+        "$ref": "#/$defs/project"
+      },
+      "type": "array"
+    },
+    "schema_version": {
+      "const": "stage1.application-blueprint/1.0"
+    },
+    "stage": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "const": 1
+        },
+        "name": {
+          "type": "string"
+        },
+        "status": {
+          "enum": [
+            "COMPLETED",
+            "COMPLETED_WITH_BLOCKERS"
+          ],
+          "type": "string"
+        },
+        "steps": {
+          "items": {
+            "$ref": "#/$defs/step"
+          },
+          "maxItems": 5,
+          "minItems": 5,
+          "type": "array"
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "status",
+        "steps"
+      ],
+      "type": "object"
+    },
+    "structure": {
+      "$ref": "#/$defs/node"
+    },
+    "summary": {
+      "additionalProperties": false,
+      "description": "database_artifacts = SQL/database files + detected database technologies; external_dependencies = third-party libraries + native libraries + database technologies; unresolved_dependencies counts only error/warning items of `unresolved`.",
+      "properties": {
+        "blockers": {
+          "minimum": 0,
+          "type": "integer"
+        },
+        "database_artifacts": {
+          "minimum": 0,
+          "type": "integer"
+        },
+        "diagnostics": {
+          "additionalProperties": false,
+          "properties": {
+            "error": {
+              "minimum": 0,
+              "type": "integer"
+            },
+            "info": {
+              "minimum": 0,
+              "type": "integer"
+            },
+            "warning": {
+              "minimum": 0,
+              "type": "integer"
+            }
+          },
+          "required": [
+            "error",
+            "info",
+            "warning"
+          ],
+          "type": "object"
+        },
+        "directories": {
+          "minimum": 0,
+          "type": "integer"
+        },
+        "external_dependencies": {
+          "minimum": 0,
+          "type": "integer"
+        },
+        "forms": {
+          "minimum": 0,
+          "type": "integer"
+        },
+        "packages": {
+          "minimum": 0,
+          "type": "integer"
+        },
+        "pascal_sources": {
+          "minimum": 0,
+          "type": "integer"
+        },
+        "projects": {
+          "minimum": 0,
+          "type": "integer"
+        },
+        "total_bytes": {
+          "minimum": 0,
+          "type": "integer"
+        },
+        "total_files": {
+          "minimum": 0,
+          "type": "integer"
+        },
+        "unresolved_dependencies": {
+          "minimum": 0,
+          "type": "integer"
+        }
+      },
+      "required": [
+        "blockers",
+        "database_artifacts",
+        "diagnostics",
+        "directories",
+        "external_dependencies",
+        "forms",
+        "packages",
+        "pascal_sources",
+        "projects",
+        "total_bytes",
+        "total_files",
+        "unresolved_dependencies"
+      ],
+      "type": "object"
+    },
+    "unresolved": {
+      "items": {
+        "$ref": "#/$defs/unresolvedItem"
+      },
+      "type": "array"
+    }
+  },
+  "required": [
+    "blockers",
+    "capability_states",
+    "components",
+    "dependencies",
+    "diagnostics",
+    "dialect",
+    "file_distribution",
+    "generator",
+    "graphs",
+    "inventory",
+    "limitations",
+    "project",
+    "projects",
+    "schema_version",
+    "stage",
+    "structure",
+    "summary",
+    "unresolved"
+  ],
+  "title": "Stage 1 Application Blueprint (stage1.application-blueprint/1.0)",
+  "type": "object"
+}
