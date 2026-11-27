@@ -7,7 +7,7 @@ A discovery-first enterprise platform that analyzes legacy Pascal estates, conve
 ## Table of contents
 
 - Status: [maturity](#project-maturity-and-status) · [overview](#overview) · [problem](#problem-being-solved) · [goals and principles](#goals-and-engineering-principles)
-- Architecture: [six-stage architecture](#six-stage-architecture) · [**Stage 1 — Ingestion and Discovery**](#stage-1--ingestion-and-discovery-implemented)
+- Architecture: [six-stage architecture](#six-stage-architecture) · [**Stage 1 — Ingestion and Discovery**](#stage-1--ingestion-and-discovery-implemented) · [Stage 2 plan](docs/stage2/README.md)
 - Analysis: [capabilities and status](#key-capabilities-and-feature-status) · [dialect and application coverage](#pascal-dialect-and-application-coverage-matrix) · [architecture](#architecture-at-a-glance) · [workflow](#end-to-end-modernization-workflow)
 - Semantics: [Semantic IR](#deterministic-semantic-ir-and-transformation-approach) · [dependency discovery](#enterprise-dependency-discovery) · [database strategy](#database-preservation-strategy) · [Java output profiles](#java-output-profiles) · [runtime equivalence](#runtime-and-behavioral-equivalence)
 - Engineering: [technology stack](#technology-stack) · [open-source vs custom](#open-source-components-vs-custom-platform-components) · [repository structure](#repository-structure) · [prerequisites](#prerequisites) · [installation](#installation-and-quick-start) · [configuration](#configuration) · [commands](#development-commands) · [testing](#testing-and-verification) · [security](#security)
@@ -20,7 +20,7 @@ A discovery-first enterprise platform that analyzes legacy Pascal estates, conve
 | Stage | Name | Status | Evidence |
 |---|---|---|---|
 | 1 | Ingestion and Discovery | **IMPLEMENTED AND TESTED** | `tools/p1/`, `frontend/`, `tests/` (1,785 passed, 6 skipped), `docs/stage1/` — see [`STAGE1_ACCEPTANCE.md`](docs/stage1/STAGE1_ACCEPTANCE.md) |
-| 2 | Pascal Language Engineering | PLANNED | `tools/p1/plex.py` is a scanner (tokens/directives/uses/includes), not a parser frontend |
+| 2 | Pascal Language Engineering | PLANNED — roadmap documented; implementation not started | [Stage 2 plan](docs/stage2/README.md); `tools/p1/plex.py` remains a scanner, not a parser frontend |
 | 3 | Modernization Intelligence | PLANNED | no capability registry, planner or recipe engine exists |
 | 4 | Java Generation and Compatibility | PLANNED | deliberately out of scope — no Java is generated |
 | 5 | Runtime and Verification | **BLOCKED** | FPC 3.2.2 present; no licensed Delphi toolchain, so `ORACLE_UNAVAILABLE`; no oracle/differential harness |
